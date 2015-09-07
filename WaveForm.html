@@ -1,0 +1,189 @@
+<html>
+<head>
+	<title>Waveform</title>
+	<link rel="stylesheet" type="text/css" href="waveform.css">
+</head>
+<body>
+	code adapted from: https://github.com/katspaugh/wavesurfer.js/blob/master/example/main.js
+	<br><br>
+	<div id="waveform">
+		<canvas class="waveform-canvas" id="waveform-canvas-left"></canvas>
+		<br><br>
+		<canvas class="waveform-canvas" id="waveform-canvas-right"></canvas>
+
+		<!-- try drawing with D3 here -->
+	</div>
+
+	<br>
+
+	<div id="drop">
+		<h2>drag and drop here!</h2>
+	</div>
+
+</body>
+
+<script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
+<script type="text/javascript">
+	var audioCtx = new AudioContext();
+	var bufferSrc = null;
+	var songData = null;
+
+	// Drag'n'drop
+	document.addEventListener('DOMContentLoaded', function () {
+		var toggleActive = function (e, toggle) {
+			e.stopPropagation();
+			e.preventDefault();
+			toggle ? e.target.classList.add('dragover') :
+			e.target.classList.remove('dragover');
+		};
+
+		var handlers = {
+			// Drop event
+			drop: function (e) {
+				toggleActive(e, false);
+
+				// Load the file into wavesurfer
+				if (e.dataTransfer.files.length) {
+					console.log("proceed to load Blob");
+					loadBlob(e.dataTransfer.files[0]);
+				} else {
+					console.log("error, not a file");
+					// wavesurfer.fireEvent('error', 'Not a file');
+				}
+			},
+
+			// Drag-over event
+			dragover: function (e) {
+				toggleActive(e, true);
+			},
+
+			// Drag-leave event
+			dragleave: function (e) {
+				toggleActive(e, false);
+			}
+		};
+
+		var dropTarget = document.querySelector('#drop');
+		Object.keys(handlers).forEach(function (event) {
+			dropTarget.addEventListener(event, handlers[event]);
+		});
+	});
+
+	/**
+	 * Loads audio data from a Blob or File object.
+	 *
+	 * @param {Blob|File} blob Audio data.
+	 */
+	function loadBlob (blob) {
+		// Create file reader
+		var reader = new FileReader();
+		reader.addEventListener('load', function (e) {
+			decodeArrayBuffer(e.target.result);
+		});
+
+		reader.readAsArrayBuffer(blob);
+	}
+
+	function decodeArrayBuffer (arraybuffer) {
+		var offlineAc = new OfflineAudioContext(2, 44100*40, 44100);
+		
+		// decode data using OfflineAudioContext
+		offlineAc.decodeAudioData(arraybuffer, (function (data) {
+			// save data locally first
+			songData = data;
+
+			// load song to be played
+			loadDecodedBuffer(data);
+			drawWaveform(data);
+
+			// play
+			// play();
+		}));
+	}
+
+	function loadDecodedBuffer(buffer) {
+		bufferSrc = audioCtx.createBufferSource();
+		bufferSrc.buffer = buffer;
+		bufferSrc.connect(audioCtx.destination);
+	}
+
+	function drawWaveform(buffer) {
+		var canvasHeight = 150;
+
+		var pcmL = buffer.getChannelData(0);
+		var pcmR = buffer.getChannelData(1);
+		
+		console.log("buffer len: " + buffer.length);
+		var bufferLen = buffer.length;
+
+		var windowWidth = $(window).width();
+		console.log("windowWidth: " + windowWidth);
+
+		var canvasLeft = document.getElementById('waveform-canvas-left');
+		var canvasRight = document.getElementById('waveform-canvas-right');
+
+		var canvasLeftCtx = $("#waveform-canvas-left").get()[0].getContext("2d");
+		var canvasRightCtx = $("#waveform-canvas-right").get()[0].getContext("2d");
+
+		canvasLeft.setAttribute('width', windowWidth);
+		canvasRight.setAttribute('width', windowWidth);
+		canvasLeft.setAttribute('height', canvasHeight);
+		canvasRight.setAttribute('height', canvasHeight);
+
+		canvasLeftCtx.fillRect(0, 0, windowWidth, canvasHeight);
+		canvasRightCtx.fillRect(0, 0, windowWidth, canvasHeight);
+
+		canvasLeftCtx.fillStyle = '#0FF000';
+		canvasRightCtx.fillStyle = '#0FF000';
+		
+		var jump = Math.floor(bufferLen / windowWidth);
+		console.log('jump: ' + jump);
+
+		var maxL = 0;
+		var maxR = 0;
+		
+		for (var i = 0; i < bufferLen; i = i + jump) {
+			maxL = Math.abs(pcmL[i]) > maxL ? Math.abs(pcmL[i]) : maxL;
+			maxR = Math.abs(pcmR[i]) > maxR ? Math.abs(pcmR[i]) : maxR;
+		}
+
+		console.log("maxL: " + maxL);
+		console.log("maxR: " + maxR);
+
+		var x = 0;
+		var heightL = 0;
+		var heightR = 0;
+
+		for(var i = 0; i < bufferLen; i = i + jump) {
+			// -5 scale to leave a gap between waveform and border of canvas
+			heightL = pcmL[i] / maxL * ((canvasHeight / 2) - 5);
+			heightR = pcmR[i] / maxR * ((canvasHeight / 2) - 5);
+			
+			if (heightL < 0) {
+				canvasLeftCtx.fillRect(x, (canvasHeight / 2), 1, Math.abs(heightL));
+			} else {
+				canvasLeftCtx.fillRect(x, (canvasHeight / 2) - heightL, 1, Math.abs(heightL));
+			}
+
+			if (heightR < 0) {
+				canvasRightCtx.fillRect(x, (canvasHeight / 2), 1, Math.abs(heightR));
+			} else {
+				canvasRightCtx.fillRect(x, (canvasHeight / 2) - heightR, 1, Math.abs(heightR));
+			}
+			// if (!(x % 50))
+			// 	canvasLeftCtx.fillRect(x, 0, 1, 180);
+			x++;
+		}
+	}
+
+	function play() {
+		if (bufferSrc!=null) {
+			bufferSrc.start();
+
+		} else {
+			console.log("buffer src not declared yet");
+		}
+	}
+
+</script>
+</html>

@@ -4,7 +4,7 @@
 	<link rel="stylesheet" type="text/css" href="drag-and-drop.css">
 </head>
 <body>
-	code from: https://github.com/katspaugh/wavesurfer.js/blob/master/example/main.js
+	code adapted from: https://github.com/katspaugh/wavesurfer.js/blob/master/example/main.js
 	<br><br>
 	<div id="drop">
 		drag and drop here!
@@ -75,12 +75,15 @@
 	function decodeArrayBuffer (arraybuffer) {
 		var offlineAc = new OfflineAudioContext(2, 44100*40, 44100);
 		
+		// decode data using OfflineAudioContext
 		offlineAc.decodeAudioData(arraybuffer, (function (data) {
 			// save data locally first
 			songData = data;
-			
+
 			// load song to be played
 			loadDecodedBuffer(data);
+
+			// play
 			play();
 		}));
 	}

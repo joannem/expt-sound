@@ -1,0 +1,19 @@
+#drop {
+	border-style: solid;
+	border-width: 1px;
+	border-color: black;
+	height: 20%;
+	text-align: center;
+}
+
+#drop.dragover {
+	border-color: red;
+	color: red;
+}
+
+.waveform-canvas {
+	border-style: solid;
+	border-width: 1px;
+	height: 150;
+	width: 100%;
+}
