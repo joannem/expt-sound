@@ -1,0 +1,240 @@
+<html>
+<head>
+	<title>Spectrogram</title>
+	<link rel="stylesheet" type="text/css" href="spectrogram.css">
+</head>
+<body>
+	code adapted from: https://github.com/katspaugh/wavesurfer.js/blob/master/example/main.js
+	<br><br>
+	<div id="spectrogram">
+		<canvas id="spectrogram-canvas"></canvas>
+		<!-- try drawing with D3 here -->
+	</div>
+
+	<br>
+
+	<div id="drop">
+		<h2>drag and drop here!</h2>
+	</div>
+
+	<div id="controls">
+		<button onclick="play()">play</button>
+	</div>
+
+</body>
+
+<script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="js/chroma.js"></script>
+<script type="text/javascript" src="js/fft.js"></script>
+<script type="text/javascript">
+	var audioCtx = new AudioContext();
+	var songData = null;
+	var songFFT = [];
+
+	var logN = 10;		// 2^10 = 1024
+
+	var fft = new FFT();
+	fft.init(logN);
+
+	// Drag'n'drop
+	document.addEventListener('DOMContentLoaded', function () {
+		var toggleActive = function (e, toggle) {
+			e.stopPropagation();
+			e.preventDefault();
+			toggle ? e.target.classList.add('dragover') :
+			e.target.classList.remove('dragover');
+		};
+
+		var handlers = {
+			// Drop event
+			drop: function (e) {
+				toggleActive(e, false);
+
+				// Load the file into wavesurfer
+				if (e.dataTransfer.files.length) {
+					loadBlob(e.dataTransfer.files[0]);
+				} else {
+					console.log("error, not a file");
+					// wavesurfer.fireEvent('error', 'Not a file');
+				}
+			},
+
+			// Drag-over event
+			dragover: function (e) {
+				toggleActive(e, true);
+			},
+
+			// Drag-leave event
+			dragleave: function (e) {
+				toggleActive(e, false);
+			}
+		};
+
+		var dropTarget = document.querySelector('#drop');
+		Object.keys(handlers).forEach(function (event) {
+			dropTarget.addEventListener(event, handlers[event]);
+		});
+	});
+
+	/**
+	 * Loads audio data from a Blob or File object.
+	 *
+	 * @param {Blob|File} blob Audio data.
+	 */
+	function loadBlob (blob) {
+		// Create file reader
+		var reader = new FileReader();
+		reader.addEventListener('load', function (e) {
+			decodeArrayBuffer(e.target.result);
+		});
+
+		reader.readAsArrayBuffer(blob);
+	}
+
+	function decodeArrayBuffer (arraybuffer) {
+		var offlineAc = new OfflineAudioContext(2, 44100*40, 44100);
+		
+		// decode data using OfflineAudioContext
+		offlineAc.decodeAudioData(arraybuffer, (function (data) {
+			// save data locally first
+			songData = data;
+			
+			// set-up FFT
+			var windowSize = 1 << logN;
+			var overlap = 0.5;
+			var overlapSize = overlap * windowSize;
+			var noOfFrames = Math.floor(data.length / (overlapSize)) - 1;	// discard the last frame
+			
+			// console.log(data.getChannelData(0));
+			// console.log('noOfFrames: ' + noOfFrames);
+
+			var windowedFrame = [];
+			var specRe = [];
+			var specIm = [];
+			var magRe = [];
+
+			console.log('data.len: ' + data.length);
+
+			var maxMag = 0; // for scaling later
+
+			var pos = 0;
+			for (var i = 0; i < noOfFrames; i++) {
+				windowedFrame = hanningWindow(data.getChannelData(0).slice(pos, pos + windowSize), windowSize);
+
+				// for (var i = 0; i < (windowSize/2 + 1); i++) {
+				// 	specRe[i] = 0.0;
+				// 	specIm[i] = 0.0;
+				// }
+				specRe = Array.apply(null, Array(windowSize/2 + 1)).map(Number.prototype.valueOf,0.0);
+				specIm = Array.apply(null, Array(windowSize/2 + 1)).map(Number.prototype.valueOf,0.0);
+
+				// fft on each frame
+				performFft(windowedFrame, specRe, specIm);
+				
+				// calculate the magnitude
+				for (var j = 0; j < (windowSize/2 + 1); j++) {
+					magRe[j] = Math.sqrt((specRe[j] * specRe[j]) + (specIm[j] * specIm[j]));
+					maxMag = maxMag > magRe[j] ? maxMag : magRe[j];
+				}
+
+				songFFT.push(magRe);
+
+				// reset magRe
+				magRe = [];
+
+				pos += (windowSize / 2);
+			}
+
+			// console.log(songFFT);	// noOfFrames * (windowSize/2 + 1)
+
+			// draw the spectrogram
+			console.log('maxMag: ' + maxMag);
+			drawSpectrogram(noOfFrames, (windowSize/2 + 1), maxMag);
+
+		}));
+	}
+
+	/**
+	 * Does a Hanning window on a given frame.
+	 * Code adapted from: http://stackoverflow.com/questions/
+	 * 11600515/hanning-von-hann-window
+	 * @param  {Array} 	frame  Values from a frame of from a signal
+	 * @param  {int} 	size   Size of frame
+	 * @return {Array}	       Windowed frame
+	 */
+	function hanningWindow(frame, size) {
+		var windowedFrame = [];
+
+		for (var i = 0; i < size; i++) {
+			windowedFrame.push(frame[i] * 0.5 * (1.0 - Math.cos(2.0 * Math.PI * i / size)));
+		}
+		// console.log(windowedFrame);
+
+		return windowedFrame;
+	}
+
+	function performFft(signal, specRe, specIm) {
+		fft.forwardReal(signal, specRe, specIm);
+	}
+
+	function drawSpectrogram(noOfFrames, maxFreq, maxMag) {
+		// get canvas objects
+		var canvas = document.getElementById('spectrogram-canvas');
+		var canvasCtx = $("#spectrogram-canvas").get()[0].getContext("2d");
+
+		// canvas size
+		var canvasHeight = 518;
+		var windowWidth = $(window).width();
+		console.log("windowWidth: " + windowWidth);		
+		canvas.setAttribute('width', windowWidth);
+		canvas.setAttribute('height', canvasHeight);
+
+		// set canvas background
+		canvasCtx.fillRect(0, 0, windowWidth, canvasHeight);
+
+		// determine spectrogram colours
+		var hot = new chroma.ColorScale({
+			colors:['#000000', '#ff0000', '#ffff00', '#ffffff'],
+			positions:[0, .25, .75, 1],
+			mode:'rgb',
+			limits:[0, maxMag]
+		});
+
+		console.log ('maxMag: ' + maxMag);
+		// console.log(noOfFrames);
+		// console.log(songFFT.length);
+
+		var jump = Math.floor(noOfFrames / windowWidth) > 1 ? Math.floor(noOfFrames / windowWidth) : 1;
+		console.log('jump: ' + jump);
+
+		x = 0;
+		for(var i = 0; i < noOfFrames; i += jump) {
+		// for (var i = 0; i < noOfFrames; i++) {
+			for (var freq = 0; freq < maxFreq; freq++) {
+				canvasCtx.fillStyle = hot.getColor(songFFT[i][freq]).hex();
+				// canvasCtx.fillRect(i, freq, 1, 1);
+				canvasCtx.fillRect(x, (canvasHeight - freq), 1, 1);
+			}
+			++x;
+		}
+		console.log('spectrogram: done');
+	}
+
+	function play() {
+		// load buffer source
+		var bufferSrc = audioCtx.createBufferSource();
+		bufferSrc.buffer = songData;
+		bufferSrc.connect(audioCtx.destination);
+
+		// play
+		// TODO: check if there is a song playing
+		if (bufferSrc!=null) {
+			bufferSrc.start();
+
+		} else {
+			console.log("buffer src not declared yet");
+		}
+	}
+
+</script>
+</html>
