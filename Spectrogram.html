@@ -121,10 +121,6 @@
 			for (var i = 0; i < noOfFrames; i++) {
 				windowedFrame = hanningWindow(data.getChannelData(0).slice(pos, pos + windowSize), windowSize);
 
-				// for (var i = 0; i < (windowSize/2 + 1); i++) {
-				// 	specRe[i] = 0.0;
-				// 	specIm[i] = 0.0;
-				// }
 				specRe = Array.apply(null, Array(windowSize/2 + 1)).map(Number.prototype.valueOf,0.0);
 				specIm = Array.apply(null, Array(windowSize/2 + 1)).map(Number.prototype.valueOf,0.0);
 
@@ -133,7 +129,7 @@
 				
 				// calculate the magnitude
 				for (var j = 0; j < (windowSize/2 + 1); j++) {
-					magRe[j] = Math.sqrt((specRe[j] * specRe[j]) + (specIm[j] * specIm[j]));
+					magRe[j] = Math.sqrt(Math.sqrt((specRe[j] * specRe[j]) + (specIm[j] * specIm[j])));
 					maxMag = maxMag > magRe[j] ? maxMag : magRe[j];
 				}
 
@@ -168,7 +164,6 @@
 		for (var i = 0; i < size; i++) {
 			windowedFrame.push(frame[i] * 0.5 * (1.0 - Math.cos(2.0 * Math.PI * i / size)));
 		}
-		// console.log(windowedFrame);
 
 		return windowedFrame;
 	}
@@ -183,14 +178,14 @@
 		var canvasCtx = $("#spectrogram-canvas").get()[0].getContext("2d");
 
 		// canvas size
-		var canvasHeight = 518;
+		var canvasHeight = maxFreq;
 		var windowWidth = $(window).width();
 		console.log("windowWidth: " + windowWidth);		
 		canvas.setAttribute('width', windowWidth);
 		canvas.setAttribute('height', canvasHeight);
 
 		// set canvas background
-		canvasCtx.fillRect(0, 0, windowWidth, canvasHeight);
+		// canvasCtx.fillRect(0, 0, windowWidth, canvasHeight);
 
 		// determine spectrogram colours
 		var hot = new chroma.ColorScale({
@@ -208,11 +203,10 @@
 		console.log('jump: ' + jump);
 
 		x = 0;
+		canvasCtx.translate(0, -1);
 		for(var i = 0; i < noOfFrames; i += jump) {
-		// for (var i = 0; i < noOfFrames; i++) {
 			for (var freq = 0; freq < maxFreq; freq++) {
 				canvasCtx.fillStyle = hot.getColor(songFFT[i][freq]).hex();
-				// canvasCtx.fillRect(i, freq, 1, 1);
 				canvasCtx.fillRect(x, (canvasHeight - freq), 1, 1);
 			}
 			++x;
