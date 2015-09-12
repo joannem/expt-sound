@@ -4,7 +4,6 @@
 	<link rel="stylesheet" type="text/css" href="waveform.css">
 </head>
 <body>
-	code adapted from: https://github.com/katspaugh/wavesurfer.js/blob/master/example/main.js
 	<br><br>
 	<div id="waveform">
 		<canvas class="waveform-canvas" id="waveform-canvas-left"></canvas>
@@ -27,6 +26,7 @@
 </body>
 
 <script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="js/dragAndDropFileLoader.js"></script>
 <script type="text/javascript" src="js/playback.js"></script>
 
 <script type="text/javascript">
@@ -35,72 +35,8 @@
 	var windowWidth = $(window).width();
 	var canvasHeight = 150;
 
-	// Drag'n'drop
-	document.addEventListener('DOMContentLoaded', function () {
-		var toggleActive = function (e, toggle) {
-			e.stopPropagation();
-			e.preventDefault();
-			toggle ? e.target.classList.add('dragover') :
-			e.target.classList.remove('dragover');
-		};
-
-		var handlers = {
-			// Drop event
-			drop: function (e) {
-				toggleActive(e, false);
-
-				// Load the file into wavesurfer
-				if (e.dataTransfer.files.length) {
-					console.log("proceed to load Blob");
-					loadBlob(e.dataTransfer.files[0]);
-				} else {
-					console.log("error, not a file");
-					// wavesurfer.fireEvent('error', 'Not a file');
-				}
-			},
-
-			// Drag-over event
-			dragover: function (e) {
-				toggleActive(e, true);
-			},
-
-			// Drag-leave event
-			dragleave: function (e) {
-				toggleActive(e, false);
-			}
-		};
-
-		var dropTarget = document.querySelector('#drop');
-		Object.keys(handlers).forEach(function (event) {
-			dropTarget.addEventListener(event, handlers[event]);
-		});
-	});
-
-	/**
-	 * Loads audio data from a Blob or File object.
-	 *
-	 * @param {Blob|File} blob Audio data.
-	 */
-	function loadBlob (blob) {
-		// Create file reader
-		var reader = new FileReader();
-		reader.addEventListener('load', function (e) {
-			decodeArrayBuffer(e.target.result);
-		});
-
-		reader.readAsArrayBuffer(blob);
-	}
-
-	function decodeArrayBuffer (arraybuffer) {
-		var offlineAc = new OfflineAudioContext(2, 44100*40, 44100);
-		
-		offlineAc.decodeAudioData(arraybuffer, (function (data) {	
-			// save data to local variable
-			soundData = data;
-
-			drawWaveform(data);
-
-		}));
+	function setUpVisualisations() {
+		drawWaveform(soundData);
 	}
 
 	function drawWaveform(buffer) {
