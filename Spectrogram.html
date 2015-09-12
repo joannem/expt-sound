@@ -4,7 +4,6 @@
 	<link rel="stylesheet" type="text/css" href="spectrogram.css">
 </head>
 <body>
-	code adapted from: https://github.com/katspaugh/wavesurfer.js/blob/master/example/main.js
 	<br><br>
 	<div id="spectrogram">
 		<canvas id="spectrogram-canvas"></canvas>
@@ -28,128 +27,31 @@
 <script type="text/javascript" src="js/dragAndDropFileLoader.js"></script>
 <script type="text/javascript" src="js/chroma.js"></script>
 <script type="text/javascript" src="js/fft.js"></script>
+<script type="text/javascript" src="js/visualisations.js"></script>
 
 <script type="text/javascript">
 	var audioCtx = new AudioContext();
 	var soundData = null;
-	var songFFT = [];
+	var soundFFT = [];
 
+	// set-up FFT values
 	var logN = 10;		// 2^10 = 1024
+	var windowSize = 1 << logN;
+	var overlap = 0.5;
 
+	// set-up fft calculator
 	var fft = new FFT();
 	fft.init(logN);
 
+	setupBlankSpectrogramCanvas();
+
 	function setupVisualisations() {
-		setupSpectrogram();
-	}
+		var noOfFrames = Math.floor(soundData.length / (overlap * windowSize)) - 1;	// discard the last frame
+		var maxMagnitude = calculateFft(soundData, windowSize, noOfFrames);
+	
+		drawSpectrogram(noOfFrames, (windowSize/2 + 1), maxMagnitude);
 
-	function setupSpectrogram() {
-		// set-up FFT
-		var windowSize = 1 << logN;
-		var overlap = 0.5;
-		var overlapSize = overlap * windowSize;
-		var noOfFrames = Math.floor(soundData.length / (overlapSize)) - 1;	// discard the last frame
-		
-		// console.log(soundData.getChannelData(0));
-		// console.log('noOfFrames: ' + noOfFrames);
-
-		var windowedFrame = [];
-		var specRe = [];
-		var specIm = [];
-		var magRe = [];
-
-		console.log('soundData.len: ' + soundData.length);
-
-		var maxMag = 0; // for scaling later
-
-		var pos = 0;
-		for (var i = 0; i < noOfFrames; i++) {
-			windowedFrame = hanningWindow(soundData.getChannelData(0).slice(pos, pos + windowSize), windowSize);
-
-			specRe = Array.apply(null, Array(windowSize/2 + 1)).map(Number.prototype.valueOf,0.0);
-			specIm = Array.apply(null, Array(windowSize/2 + 1)).map(Number.prototype.valueOf,0.0);
-
-			// fft on each frame
-			fft.forwardReal(windowedFrame, specRe, specIm);
-			
-			// calculate the magnitude
-			for (var j = 0; j < (windowSize/2 + 1); j++) {
-				magRe[j] = Math.sqrt(Math.sqrt((specRe[j] * specRe[j]) + (specIm[j] * specIm[j])));
-				maxMag = maxMag > magRe[j] ? maxMag : magRe[j];
-			}
-
-			songFFT.push(magRe);
-
-			// reset magRe
-			magRe = [];
-
-			pos += (windowSize / 2);
-		}
-
-		// console.log(songFFT);	// noOfFrames * (windowSize/2 + 1)
-
-		// draw the spectrogram
-		console.log('maxMag: ' + maxMag);
-		drawSpectrogram(noOfFrames, (windowSize/2 + 1), maxMag);
-
-	}
-
-	/**
-	 * Does a Hanning window on a given frame.
-	 * Code adapted from: http://stackoverflow.com/questions/
-	 * 11600515/hanning-von-hann-window
-	 * @param  {Array} 	frame  Values from a frame of from a signal
-	 * @param  {int} 	size   Size of frame
-	 * @return {Array}	       Windowed frame
-	 */
-	function hanningWindow(frame, size) {
-		var windowedFrame = [];
-
-		for (var i = 0; i < size; i++) {
-			windowedFrame.push(frame[i] * 0.5 * (1.0 - Math.cos(2.0 * Math.PI * i / size)));
-		}
-
-		return windowedFrame;
-	}
-
-	function drawSpectrogram(noOfFrames, maxFreq, maxMag) {
-		// get canvas objects
-		var canvas = document.getElementById('spectrogram-canvas');
-		var canvasCtx = $("#spectrogram-canvas").get()[0].getContext("2d");
-
-		// canvas size
-		var canvasHeight = maxFreq;
-		var windowWidth = $(window).width();
-		console.log("windowWidth: " + windowWidth);		
-		canvas.setAttribute('width', windowWidth);
-		canvas.setAttribute('height', canvasHeight);
-
-		// determine spectrogram colours
-		var hot = new chroma.ColorScale({
-			colors:['#000000', '#ff0000', '#ffff00', '#ffffff'],
-			positions:[0, .25, .75, 1],
-			mode:'rgb',
-			limits:[0, maxMag]
-		});
-
-		console.log ('maxMag: ' + maxMag);
-		// console.log(noOfFrames);
-		// console.log(songFFT.length);
-
-		var jump = Math.floor(noOfFrames / windowWidth) > 1 ? Math.floor(noOfFrames / windowWidth) : 1;
-		console.log('jump: ' + jump);
-
-		x = 0;
-		canvasCtx.translate(0, -1);
-		for(var i = 0; i < noOfFrames; i += jump) {
-			for (var freq = 0; freq < maxFreq; freq++) {
-				canvasCtx.fillStyle = hot.getColor(songFFT[i][freq]).hex();
-				canvasCtx.fillRect(x, (canvasHeight - freq), 1, 1);
-			}
-			++x;
-		}
-		console.log('spectrogram: done');
-	}
+	}	
 
 </script>
 </html>

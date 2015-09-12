@@ -62,7 +62,7 @@ function loadBlob (blob) {
 function decodeArrayBuffer (arraybuffer) {
 	var offlineAc = new OfflineAudioContext(2, 44100*40, 44100);
 
-	offlineAc.decodeAudioData(arraybuffer, (function (data) {	
+	offlineAc.decodeAudioData(arraybuffer, (function (data) {
 		soundData = data;
 		setupVisualisations();
 
