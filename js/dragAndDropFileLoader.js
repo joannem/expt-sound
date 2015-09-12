@@ -15,7 +15,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 			// Load the file
 			if (e.dataTransfer.files.length) {
-				console.log("proceed to load Blob");
 				loadBlob(e.dataTransfer.files[0]);
 			} else {
 				console.log("error, not a file");
@@ -54,12 +53,20 @@ function loadBlob (blob) {
 	reader.readAsArrayBuffer(blob);
 }
 
+/**
+ * Converts an ArrayBuffer into an AudioBuffer representing the 
+ * decoded PCM audio data.
+ * @param  {ArrayBuffer} arraybuffer ArrayBuffer to be decoded into 
+ *                                   an AudioBuffer for playback
+ */
 function decodeArrayBuffer (arraybuffer) {
 	var offlineAc = new OfflineAudioContext(2, 44100*40, 44100);
 
 	offlineAc.decodeAudioData(arraybuffer, (function (data) {	
 		soundData = data;
-		setUpVisualisations();
+		setupVisualisations();
 
 	}));
+
+	//TOOD: catch error here
 }
