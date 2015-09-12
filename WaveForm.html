@@ -6,7 +6,7 @@
 <body>
 	<br><br>
 	<div id="waveform">
-		<input type="range" style="position: absolute; z-index: 1;">
+		<input type="range" class="waveform-slider">
 		<canvas class="waveform-canvas" id="waveform-canvas-left"></canvas>
 		<br><br>
 		<canvas class="waveform-canvas" id="waveform-canvas-right"></canvas>
@@ -16,12 +16,12 @@
 
 	<br>
 
-	<div id="drop" style="position: relative;">
+	<div id="drop">
 		<h2>drag and drop here!</h2>
 	</div>
 
 	<div id="controls">
-		<button class="play-pause-btn" style="position: static;">play</button>
+		<button class="play-pause-btn">play</button>
 	</div>
 
 </body>
@@ -40,35 +40,14 @@
 	function setupVisualisations() {
 		drawWaveform(soundData);
 	}
-
-	// window.addEventListener('load', function () {
-	// 	var img = new Image;
-	// 	var ctx = document.getElementById('left-waveform-scroll').getContext('2d');
-
-	// 	document.getElementById('left-waveform-scroll').setAttribute('width', $(window).width());
-	// 	document.getElementById('left-waveform-scroll').setAttribute('height', 150);
-
-	// 	// img.src = 'http://www.gravatar.com/avatar/a1f80339c0cef95be6dc73e0ac510d5d?s=32&d=identicon&r=PG';
-	// 	// img.addEventListener('load', function () {
-
-	// 	var interval = setInterval(function() {
-	// 		var x = 0, y = 0;
-
-	// 		ctx.fillStyle = '#FF0000';
-	// 		return function () {
-	// 			ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-	// 			// ctx.drawImage(img, x, y);
-	// 			ctx.fillRect(x, y, 2, 150);
-
-	// 			x += 1;
-	// 			if (x > ctx.canvas.width) {
-	// 				x = 0;
-	// 			}
-	// 		};
-
-	// 	}(), 1000/40);
-	// 	// }, false);
-	// }, false);
+	
+	$(".waveform-slider").on("change", function(){
+		console.log(this.value);
+		if (soundPlaying) {
+			soundOffset = this.value / 100 * soundData.duration;
+			play();
+		}
+	});
 
 </script>
 </html>
