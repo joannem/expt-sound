@@ -21,16 +21,19 @@
 	</div>
 
 	<div id="controls">
-		<button onclick="play()">play</button>
+		<button class="play-pause-btn">play</button>
 	</div>
 
 </body>
 
 <script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="js/playback.js"></script>
+
 <script type="text/javascript">
 	var audioCtx = new AudioContext();
-	var bufferSrc = null;
-	var songData = null;
+	var soundData = null;
+	var windowWidth = $(window).width();
+	var canvasHeight = 150;
 
 	// Drag'n'drop
 	document.addEventListener('DOMContentLoaded', function () {
@@ -91,38 +94,23 @@
 	function decodeArrayBuffer (arraybuffer) {
 		var offlineAc = new OfflineAudioContext(2, 44100*40, 44100);
 		
-		// decode data using OfflineAudioContext
-		offlineAc.decodeAudioData(arraybuffer, (function (data) {
-			// save data locally first
-			songData = data;
+		offlineAc.decodeAudioData(arraybuffer, (function (data) {	
+			// save data to local variable
+			soundData = data;
 
-			// load song to be played
-			loadDecodedBuffer(data);
 			drawWaveform(data);
 
-			// play
-			// play();
 		}));
 	}
 
-	function loadDecodedBuffer(buffer) {
-		bufferSrc = audioCtx.createBufferSource();
-		bufferSrc.buffer = buffer;
-		bufferSrc.connect(audioCtx.destination);
-	}
-
 	function drawWaveform(buffer) {
-		var canvasHeight = 150;
-
 		var pcmL = buffer.getChannelData(0);
 		var pcmR = buffer.getChannelData(1);
 		
 		console.log("buffer len: " + buffer.length);
 		var bufferLen = buffer.length;
 
-		var windowWidth = $(window).width();
-		console.log("windowWidth: " + windowWidth);
-
+		
 		var canvasLeft = document.getElementById('waveform-canvas-left');
 		var canvasRight = document.getElementById('waveform-canvas-right');
 
@@ -174,18 +162,8 @@
 			} else {
 				canvasRightCtx.fillRect(x, (canvasHeight / 2) - heightR, 1, Math.abs(heightR));
 			}
-			// if (!(x % 50))
-			// 	canvasLeftCtx.fillRect(x, 0, 1, 180);
+
 			x++;
-		}
-	}
-
-	function play() {
-		if (bufferSrc!=null) {
-			bufferSrc.start();
-
-		} else {
-			console.log("buffer src not declared yet");
 		}
 	}
 

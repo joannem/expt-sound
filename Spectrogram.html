@@ -18,7 +18,7 @@
 	</div>
 
 	<div id="controls">
-		<button onclick="play()">play</button>
+		<button class="play-pause-btn">play</button>
 	</div>
 
 </body>
@@ -26,9 +26,10 @@
 <script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
 <script type="text/javascript" src="js/chroma.js"></script>
 <script type="text/javascript" src="js/fft.js"></script>
+<script type="text/javascript" src="js/playback.js"></script>
 <script type="text/javascript">
 	var audioCtx = new AudioContext();
-	var songData = null;
+	var soundData = null;
 	var songFFT = [];
 
 	var logN = 10;		// 2^10 = 1024
@@ -97,7 +98,7 @@
 		// decode data using OfflineAudioContext
 		offlineAc.decodeAudioData(arraybuffer, (function (data) {
 			// save data locally first
-			songData = data;
+			soundData = data;
 			
 			// set-up FFT
 			var windowSize = 1 << logN;
@@ -125,7 +126,7 @@
 				specIm = Array.apply(null, Array(windowSize/2 + 1)).map(Number.prototype.valueOf,0.0);
 
 				// fft on each frame
-				performFft(windowedFrame, specRe, specIm);
+				fft.forwardReal(windowedFrame, specRe, specIm);
 				
 				// calculate the magnitude
 				for (var j = 0; j < (windowSize/2 + 1); j++) {
@@ -166,10 +167,6 @@
 		}
 
 		return windowedFrame;
-	}
-
-	function performFft(signal, specRe, specIm) {
-		fft.forwardReal(signal, specRe, specIm);
 	}
 
 	function drawSpectrogram(noOfFrames, maxFreq, maxMag) {
@@ -214,21 +211,21 @@
 		console.log('spectrogram: done');
 	}
 
-	function play() {
-		// load buffer source
-		var bufferSrc = audioCtx.createBufferSource();
-		bufferSrc.buffer = songData;
-		bufferSrc.connect(audioCtx.destination);
+	// function play() {
+	// 	// load buffer source
+	// 	var bufferSrc = audioCtx.createBufferSource();
+	// 	bufferSrc.buffer = soundData;
+	// 	bufferSrc.connect(audioCtx.destination);
 
-		// play
-		// TODO: check if there is a song playing
-		if (bufferSrc!=null) {
-			bufferSrc.start();
+	// 	// play
+	// 	// TODO: check if there is a song playing
+	// 	if (bufferSrc!=null) {
+	// 		bufferSrc.start();
 
-		} else {
-			console.log("buffer src not declared yet");
-		}
-	}
+	// 	} else {
+	// 		console.log("buffer src not declared yet");
+	// 	}
+	// }
 
 </script>
 </html>
