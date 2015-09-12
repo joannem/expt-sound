@@ -5,6 +5,7 @@ $(document).ready(function() {
 	var soundPlaying = false;
 	var bufferSrc = null;
 
+	// play button
 	$('.play-pause-btn').click(function() {
 		if (!soundPlaying) {
 			if (soundData != null) {
@@ -30,13 +31,8 @@ $(document).ready(function() {
 		soundPlaying = true;
 		$('.play-pause-btn').text('pause'); 
 
-		// triggered after a pause or after song ends
-		bufferSrc.onended = function () {
-			resetOffset();
-			soundPlaying = false;
-			$('.play-pause-btn').text('play');
-
-		}
+		setupOnendedEvents();
+		
 
 	}
 
@@ -44,10 +40,27 @@ $(document).ready(function() {
 		if(bufferSrc != null) {
 			bufferSrc.stop();
 			// onended events will be triggered here
+			// see setupOnendedEvents() function
 		}
 	}
 
-	// triggered after a pause or after song ends
+	/**
+	 * Events to trigger once song ends, activated after a pause
+	 * or when sound stopps playing. 
+	 * 
+	 */
+	function setupOnendedEvents() {
+		if(bufferSrc != null) {
+			bufferSrc.onended = function () {
+				// bufferSrc will be garbage-collected 
+				resetOffset();
+				soundPlaying = false;
+				$('.play-pause-btn').text('play');
+
+			}
+		}
+	}
+
 	function resetOffset() {
 		songOffset += audioCtx.currentTime - startTime;
 
