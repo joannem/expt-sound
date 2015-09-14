@@ -23,6 +23,15 @@ $(document).ready(function() {
 
 	});
 
+	// slider
+	$(".waveform-slider").on("change", function(){
+		console.log(this.value);
+		if (soundPlaying) {
+			soundOffset = this.value / 100 * soundData.duration;
+			play();
+		}
+	});
+
 	function play() {
 		loadBufferSrc();
 		startTime = audioCtx.currentTime;
