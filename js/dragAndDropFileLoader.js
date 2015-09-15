@@ -65,7 +65,7 @@ function decodeArrayBuffer (arraybuffer) {
 	offlineAc.decodeAudioData(arraybuffer, (function (data) {
 		soundData = data;
 		setupVisualisations();
-
+		$('.waveform-slider').attr('max', soundData.duration * 1000);
 	}));
 
 	//TOOD: catch error here

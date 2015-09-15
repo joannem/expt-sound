@@ -34,57 +34,11 @@
 	var audioCtx = new AudioContext();
 	var soundData = null;
 
-	var animationFrameRequestID = null;
-	var scrollValue = 0;
-	var playing = false;
-
 	setupBlankWaveformCanvases();
 
 	function setupVisualisations() {
 		drawWaveform(soundData);
 	}
-	
-	var then;
-	var soundDuration = 5000;	// use AudioBuffer.duration * 1000
-	$('.waveform-slider').attr('max', soundDuration);
-
-	function animate(highResTimestamp) {
-		animationFrameRequestID = requestAnimationFrame(animate);
-		var now = Date.now();
-		var diff = now - then;
-
-		if (diff) {
-			scrollValue = (scrollValue + diff) % (soundDuration + 1);
-			$('.waveform-slider').val(scrollValue);
-			then = now;
-		 }
-
-	}
-
-	$('.play-pause-btn').click(function() {
-		if (!playing) {
-			then = Date.now();
-			animationFrameRequestID = requestAnimationFrame(animate);
-			playing = true;
-			soundDuration = soundData.duration * 1000;
-			$('.waveform-slider').attr('max', soundDuration);
-
-		} else {
-			cancelAnimationFrame(animationFrameRequestID);
-			animationFrameRequestID = null;		// TOOD: check if this is neccessary
-			playing = false;
-			
-		}
-		
-	});
-
-	$('.stop-btn').click(function() {
-		cancelAnimationFrame(animationFrameRequestID);
-		$('.waveform-slider').val(0);	// reset slider
-		scrollValue = 0;
-		animationFrameRequestID = null;		// TOOD: check if this is neccessary
-		playing = false;
-	});
 
 </script>
 </html>
