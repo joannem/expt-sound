@@ -1,13 +1,13 @@
 $(document).ready(function() {
 	// for audio play back
-	var startTime = 0;
+	var startTime = 0;	// relative to the point you start playing
 	var soundOffset = 0;
 	var soundPlaying = false;
 	var bufferSrc = null;
 
 	// for slider animations
+	var then = 0;
 	var scrollValue = 0;	
-	var then;
 	var animationFrameRequestID = null;
 
 
@@ -15,6 +15,7 @@ $(document).ready(function() {
 	$('.play-pause-btn').click(function() {
 		if (soundData != null) {
 			if (!soundPlaying) {
+					startTime = audioCtx.currentTime;
 					play();
 					
 					soundPlaying = true;
@@ -33,14 +34,34 @@ $(document).ready(function() {
 		stop();
 	});
 
+	// slider
+	$(".waveform-slider").on("mousedown", function(){
+		if (soundPlaying) {
+			pause();
+			// soundPlaying = true;
+		}
+	});
+
+	$(".waveform-slider").on("mouseup", function(){
+		soundOffset = this.value / 1000.0;		
+		// if (soundPlaying) {
+			startTime = audioCtx.currentTime - soundOffset;
+			console.log("currentTime: " + audioCtx.currentTime);
+			console.log("soundOffset: " + soundOffset);
+			console.log("startTime: " + startTime);
+			play();
+			soundPlaying = true;
+			$('.play-pause-btn').text('pause'); 
+		// }
+
+	});
+
 	function play() {
-		then = Date.now();
+		then = audioCtx.currentTime;
 		animationFrameRequestID = requestAnimationFrame(advanceSlider);
 
-		loadBufferSrc();
-		startTime = audioCtx.currentTime;
+		loadBufferSrc();	
 		bufferSrc.start(0, soundOffset % soundData.duration, soundData.duration);
-		
 		setupOnendedEvents();
 	}
 
@@ -49,8 +70,8 @@ $(document).ready(function() {
 		animationFrameRequestID = null;
 		
 		if(bufferSrc != null) {
-			bufferSrc.stop();
 			soundOffset += audioCtx.currentTime - startTime;
+			bufferSrc.stop();
 			// onended events will be triggered here
 			// see setupOnendedEvents() function
 		}
@@ -81,7 +102,7 @@ $(document).ready(function() {
 			// this function will be triggered after the pause() or stop() function
 			bufferSrc.onended = function () {
 				// bufferSrc will be garbage-collected 
-				if (((audioCtx.currentTime - startTime + soundOffset) - soundData.duration) > 0) {
+				if ((soundOffset - soundData.duration) > 0) {		// TODO: this function screws up as well due to advanceSlider()'s changes'
 					stop();
 					console.log("sound reached the end");
 				} else {
@@ -100,16 +121,12 @@ $(document).ready(function() {
 		bufferSrc.buffer = soundData;
 		bufferSrc.connect(audioCtx.destination);
 	}
-
+	// TODO: change to take reference from current point in time, not startTime
 	function advanceSlider(highResTimestamp) {
+		soundOffset = audioCtx.currentTime - startTime;
 		animationFrameRequestID = requestAnimationFrame(advanceSlider);
-		var now = Date.now();
-		var diff = now - then;
-
-		if (diff) {
-			scrollValue = (scrollValue + diff) % (soundData.duration * 1000 + 1);
-			$('.waveform-slider').val(scrollValue);
-			then = now;
-		 }
+		scrollValue = (soundOffset % soundData.duration) * 1000;
+		$('.waveform-slider').val(scrollValue);
+		// then = audioCtx.currentTime;
 	}
 });

@@ -14,10 +14,6 @@
 
 	<br>
 
-	<div id="drop">
-		<h2>drag and drop here!</h2>
-	</div>
-
 	<div id="controls">
 		<button class="play-pause-btn">play</button>
 		<button class="stop-btn">stop</button>
@@ -26,19 +22,39 @@
 </body>
 
 <script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
-<script type="text/javascript" src="js/dragAndDropFileLoader.js"></script>
-<script type="text/javascript" src="js/visualisations.js"></script>
-<script type="text/javascript" src="js/playback.js"></script>
-
+<script type="text/javascript" src="js/slider.js"></script>
 <script type="text/javascript">
-	var audioCtx = new AudioContext();
-	var soundData = null;
+	var gPlaying = false;
+	var gslider = new Slider($('.waveform-slider'), 7000, true);
+	var gOffset = 0;
 
-	setupBlankWaveformCanvases();
+	$('.play-pause-btn').click(function() {
+		if (!gPlaying) {
+			gslider.startSlider(gOffset);
+			gPlaying = true;
+		} else {
+			gOffset = gslider.pauseSlider();
+			gPlaying = false;
+		}
+	});
 
-	function setupVisualisations() {
-		drawWaveform(soundData);
-	}
+	$('.stop-btn').click(function() {
+		gslider.stopSlider();
+		gOffset = 0;
+		gPlaying = false;
+	});
+
+	$('.waveform-slider').on("mousedown", function(){
+		gslider.pauseSlider();
+	});
+
+	$('.waveform-slider').on("mouseup", function(){
+		gOffset = this.value;
+		console.log("gOffset: " + gOffset);
+		if (gPlaying) {
+			gslider.startSlider(gOffset);
+		}
+	});	
 
 </script>
 </html>

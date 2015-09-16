@@ -40,14 +40,6 @@
 	function setupVisualisations() {
 		drawWaveform(soundData);
 	}
-	
-	$(".waveform-slider").on("change", function(){
-		console.log(this.value);
-		if (soundPlaying) {
-			soundOffset = this.value / 100 * soundData.duration;
-			play();
-		}
-	});
 
 </script>
 </html>
