@@ -8,7 +8,10 @@ function Slider (sliderDom, soundDurationInMs, isLoop) {
 	that.isLoop = isLoop;
 
 	that.animationFrameRequestID = null;
+	
 	that.sliderOffset = 0;
+	that.justNow = Date.now();
+	that.now = Date.now();
 	
 	$(sliderDom).attr('max', soundDurationInMs);
 
