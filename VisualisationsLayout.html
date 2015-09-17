@@ -1,0 +1,42 @@
+<html>
+<head>
+	<title>Test Animation</title>
+	<link rel="stylesheet" type="text/css" href="spectrogram.css">
+	<link rel="stylesheet" type="text/css" href="waveform.css">
+	<link rel="stylesheet" type="text/css" href="slider.css">
+</head>
+<body>
+	<br>	
+	<div id="drop">
+		<p>drag and drop here!</p>
+	</div>
+	<br>
+	<div id="spectrogram">
+		<canvas id="spectrogram-canvas"></canvas>
+	</div>
+	<br>
+	<div id="waveform">
+		<input type="range" class="waveform-slider" value="0">
+		<canvas class="waveform-canvas" id="waveform-canvas-left"></canvas>
+		<br><br>
+		<canvas class="waveform-canvas" id="waveform-canvas-right"></canvas>
+	</div>
+
+	<br>
+
+	<div id="controls">
+		<button class="play-pause-btn">play</button>
+		<button class="stop-btn">stop</button>
+	</div>
+
+</body>
+
+<script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="js/dragAndDropFileLoader.js"></script>
+<script type="text/javascript" src="js/sound.js"></script>
+<script type="text/javascript" src="js/slider.js"></script>
+<script type="text/javascript" src="js/chroma.js"></script>
+<script type="text/javascript" src="js/visualisations.js"></script>
+<script type="text/javascript" src="js/fft.js"></script>
+<script type="text/javascript" src ="js/visualisationsLayout.js"></script>
+</html>
