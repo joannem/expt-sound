@@ -39,7 +39,7 @@ Sound.prototype = {
 		if (this.bufferSrc != null) {
 			this.bufferSrc.onended = function () {
 				// bufferSrc will be garbage-collected 
-				if ((this.relativePlayStartTimeInSecs - this.buffer.duration) > 0) {
+				if ((Date.now() / 1000.0 - this.relativePlayStartTimeInSecs) > this.buffer.duration) {
 					console.log("sound reached the end");
 					this.onededCallback();
 					// TODO: call back to change play-pause-btn to read "play"
