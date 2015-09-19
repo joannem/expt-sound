@@ -1,32 +1,31 @@
 <html>
 <head>
 	<title>Test Animation</title>
+	<link rel="stylesheet" type="text/css" href="visualisations-layout.css">
 	<link rel="stylesheet" type="text/css" href="spectrogram.css">
 	<link rel="stylesheet" type="text/css" href="waveform.css">
 	<link rel="stylesheet" type="text/css" href="slider.css">
+	<link rel="stylesheet" type="text/css" href="drag-and-drop.css">
 </head>
 <body>
-	<br>	
-	<div id="drop">
-		<p>drag and drop here!</p>
-	</div>
-	<br>
-	<div id="spectrogram">
-		<canvas id="spectrogram-canvas"></canvas>
-	</div>
-	<br>
-	<div id="waveform">
-		<input type="range" class="waveform-slider" value="0">
-		<canvas class="waveform-canvas" id="waveform-canvas-left"></canvas>
-		<br><br>
-		<canvas class="waveform-canvas" id="waveform-canvas-right"></canvas>
-	</div>
+	<div class="drop-container">
+	<div class="prompt">Drag and drop your .mp3 or .wav files into the space below!</div>
+		<div id="spectrogram">
+			<canvas id="spectrogram-canvas"></canvas>
+		</div>
+		<br>
+		<div id="waveform">
+			<input type="range" class="waveform-slider" value="0">
+			<canvas class="waveform-canvas" id="waveform-canvas-left"></canvas>
+			<canvas class="waveform-canvas" id="waveform-canvas-right"></canvas>
+		</div>
 
-	<br>
+		<br>
 
-	<div id="controls">
-		<button class="play-pause-btn">play</button>
-		<button class="stop-btn">stop</button>
+		<div id="controls">
+			<button class="play-pause-btn">play</button>
+			<button class="stop-btn">stop</button>
+		</div>
 	</div>
 
 </body>

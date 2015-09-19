@@ -4,8 +4,8 @@ document.addEventListener('DOMContentLoaded', function () {
 	var toggleActive = function (e, toggle) {
 		e.stopPropagation();
 		e.preventDefault();
-		toggle ? e.target.classList.add('dragover') :
-		e.target.classList.remove('dragover');
+		toggle ? $('.drop-container').addClass('dragover') :
+			$('.drop-container').removeClass('dragover');
 	};
 
 	var handlers = {
@@ -23,16 +23,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
 		// Drag-over event
 		dragover: function (e) {
+			// console.log(e.target.classList, "dragover");
 			toggleActive(e, true);
 		},
 
 		// Drag-leave event
 		dragleave: function (e) {
+			// console.log(e.target.classList, "dragleave");
 			toggleActive(e, false);
 		}
 	};
 
-	var dropTarget = document.querySelector('#drop');
+	var dropTarget = document.querySelector('.drop-container');
 	Object.keys(handlers).forEach(function (event) {
 		dropTarget.addEventListener(event, handlers[event]);
 	});

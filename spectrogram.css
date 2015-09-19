@@ -1,20 +1,7 @@
-#drop {
-	border-style: solid;
-	border-width: 1px;
-	border-color: black;
-	height: 20%;
-	text-align: center;
-}
-
-#drop.dragover {
-	border-color: red;
-	color: red;
-}
-
 #spectrogram-canvas {
 	border-style: solid;
 	border-width: 1px;
-	height: 513;
+	height: 60%;
 	width: 100%;
 }
 
