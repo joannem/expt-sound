@@ -40,11 +40,10 @@ Sound.prototype = {
 			this.bufferSrc.onended = function () {
 				// bufferSrc will be garbage-collected 
 				if ((Date.now() / 1000.0 - this.relativePlayStartTimeInSecs) > this.buffer.duration) {
-					console.log("sound reached the end");
+					// console.log("sound reached the end");
 					this.onededCallback();
-					// TODO: call back to change play-pause-btn to read "play"
 				} else {
-					console.log("sound has not finished to the end");
+					// console.log("sound has not finished to the end");
 				}
 			}
 		}

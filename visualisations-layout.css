@@ -6,6 +6,11 @@
 	color: #5C5C5C;
 }
 
+#controls {
+	padding: 10px;
+	text-align: center;
+}
+
 .play-pause-btn, .stop-btn {
 	font-size: 14pt;
 	margin: 0px 15px 0px 15px;

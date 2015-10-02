@@ -13,7 +13,6 @@ function setupBlankWaveformCanvases() {
 
 	var canvasLeft = document.getElementById('waveform-canvas-left');
 	var canvasRight = document.getElementById('waveform-canvas-right');
-	var canvasSpec = document.getElementById('spectrogram-canvas');
 	
 	canvasLeft.setAttribute('width', windowWidth);
 	canvasRight.setAttribute('width', windowWidth);
@@ -31,14 +30,20 @@ function setupBlankWaveformCanvases() {
 
 function setupBlankSpectrogramCanvas () {
 	canvasSpecCtx = $("#spectrogram-canvas").get()[0].getContext("2d");
+	canvasVisualCtx = $("#visualSpect-canvas").get()[0].getContext("2d");
+	
 	var canvasSpec = document.getElementById('spectrogram-canvas');
+	var canvasVisual = document.getElementById('visualSpect-canvas');
 
 	canvasSpec.setAttribute('width', windowWidth);
 	canvasSpec.setAttribute('height', canvasSpecHeight);
 	canvasSpecCtx.fillRect(0, 0, windowWidth, canvasSpecHeight);
 
-	canvasSpecCtx.translate(0, -1);	// leave a 1 px gap below
+	canvasVisual.setAttribute('width', windowWidth);
+	canvasVisual.setAttribute('height', canvasSpecHeight);
 
+	canvasSpecCtx.translate(0, -1);	// leave a 1 px gap below
+	canvasVisualCtx.translate(0, -1);	// leave a 1 px gap below
 }
 
 /**
@@ -160,7 +165,11 @@ function calculateFft(buffer, windowSize, noOfFrames) {
 			pos += (windowSize / 2);
 		}
 
+		var data_type = jsfeat.F32_t | jsfeat.C1_t;
+		var my_matrix = new jsfeat.matrix_t(soundFFT.length, noOfFrames, data_type, data_buffer = soundFFT);
+
 		// console.log(soundFFT); // noOfFrames * (windowSize/2 + 1)
+		// console.log(my_matrix);
 
 		return maxMagnitude;
 

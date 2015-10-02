@@ -1,11 +1,17 @@
-#spectrogram-canvas {
-	border-style: solid;
-	border-width: 1px;
+#spectrogram-canvas, #visualSpect-canvas {
 	height: 60%;
 	width: 100%;
 }
 
-#controls {
-	padding: 10px;
-	text-align: center;
+#spectrogram-canvas {
+	position: relative;
+	z-index: 0;
+}
+
+#visualSpect-canvas {
+	position: absolute;
+	z-index: 1;
+
+	background-color: white;
+	opacity: 0.25;
 }
