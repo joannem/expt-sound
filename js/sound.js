@@ -1,6 +1,6 @@
 "use strict";
 
-function Sound (soundData, isLoop, onededCallback) {
+function Sound(soundData, isLoop, onededCallback) {
 	var that = (this === window) ? {} : this;
 
 	that.soundData = soundData;
@@ -16,7 +16,7 @@ function Sound (soundData, isLoop, onededCallback) {
 Sound.prototype = {
 	constructor: Sound,
 
-	playSound: function (soundOffsetInSecs) {
+	playSound: function(soundOffsetInSecs) {
 		this.loadBufferSrc((Date.now() / 1000.0) - soundOffsetInSecs);
 		this.bufferSrc.start(0, (soundOffsetInSecs % this.soundData.duration), this.soundData.duration);
 
@@ -50,7 +50,7 @@ Sound.prototype = {
 		}
 	},
 
-	pauseSound: function () {
+	pauseSound: function() {
 		if (this.bufferSrc != null) {
 			this.bufferSrc.stop();
 		}
@@ -60,5 +60,9 @@ Sound.prototype = {
 		if (this.bufferSrc != null) {
 			this.bufferSrc.stop();
 		}
+	},
+
+	getSoundData: function() {
+		return  this.soundData;
 	}
 }

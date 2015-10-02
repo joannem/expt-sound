@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function () {
  *
  * @param {Blob|File} blob Audio data.
  */
-function loadBlob (blob) {
+function loadBlob(blob) {
 	// Create file reader
 	var reader = new FileReader();
 	reader.addEventListener('load', function (e) {
@@ -61,12 +61,11 @@ function loadBlob (blob) {
  * @param  {ArrayBuffer} arraybuffer ArrayBuffer to be decoded into 
  *                                   an AudioBuffer for playback
  */
-function decodeArrayBuffer (arraybuffer) {
+function decodeArrayBuffer(arraybuffer) {
 	var offlineAc = new OfflineAudioContext(2, 44100*40, 44100);
 
-	offlineAc.decodeAudioData(arraybuffer, (function (data) {
-		soundData = data;
-		prepareSound();
+	offlineAc.decodeAudioData(arraybuffer, (function (soundData) {
+		prepareSound(soundData);
 		setupVisualisations();
 		$('.waveform-slider').attr('max', soundData.duration * 1000);
 		// TODO: return true if done

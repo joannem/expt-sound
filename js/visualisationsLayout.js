@@ -1,10 +1,10 @@
 var gPlaying = false;
 var gSound = null;
+// TODO: var gIsLoop = false;
 var gslider = null;
 var gOffset = 0;
 
-var soundData = null;	// TODO: change to localised variable
-var soundFFT = [];		// TODO: changed to localised variable
+var soundFFT = [];		// TODO: change to localised variable
 var fft = null; 		// TODO: change to localised variable
 
 $('.play-pause-btn').click(function() {
@@ -70,14 +70,14 @@ function resetSoundAndSlider() {
 setupBlankWaveformCanvases();
 setupBlankSpectrogramCanvas();
 
-function prepareSound() {
+function prepareSound(soundData) {
 	gSound = new Sound(soundData, false, resetSoundAndSlider);
-	gslider = new Slider($('.waveform-slider'), Math.abs(soundData.duration * 1000), true);
+	gslider = new Slider($('.waveform-slider'), Math.abs(gSound.getSoundData().duration * 1000), true);
 }
 
 function setupVisualisations() {
 
-	drawWaveform(soundData);
+	drawWaveform(gSound.getSoundData());
 
 	// FFT values:
 	var logN = 10;
@@ -89,8 +89,8 @@ function setupVisualisations() {
 	fft.init(logN);
 
 	// set up FFT
-	var noOfFrames = Math.floor(soundData.length / (overlap * windowSize)) - 1;	// discard the last frame
-	var maxMagnitude = calculateFft(soundData, windowSize, noOfFrames);
+	var noOfFrames = Math.floor(gSound.getSoundData().length / (overlap * windowSize)) - 1;	// discard the last frame
+	var maxMagnitude = calculateFft(gSound.getSoundData(), windowSize, noOfFrames);
 
 	drawSpectrogram(noOfFrames, (windowSize/2 + 1), maxMagnitude);
 }
