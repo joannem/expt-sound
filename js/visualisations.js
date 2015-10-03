@@ -1,6 +1,7 @@
 var canvasLeftCtx = null;
 var canvasRightCtx = null;
 var canvasSpecCtx = null;
+var canvasVisualCtx = null;
 
 var canvasWaveformHeight = 150;
 var canvasSpecHeight = 513;
@@ -53,22 +54,22 @@ function setupBlankSpectrogramCanvas () {
  * @param  {AudioBuffer} buffer AudioBuffer containing sound data
  */
 function drawWaveform(buffer) {
- 	if (buffer != null) {
- 		if (canvasLeftCtx != null && canvasRightCtx != null) {
- 			// clean canvas
- 			canvasLeftCtx.fillStyle = '#000000';
- 			canvasRightCtx.fillStyle = '#000000';
- 			canvasLeftCtx.fillRect(0, 0, windowWidth, canvasWaveformHeight);
+	if (buffer != null) {
+		if (canvasLeftCtx != null && canvasRightCtx != null) {
+			// clean canvas
+			canvasLeftCtx.fillStyle = '#000000';
+			canvasRightCtx.fillStyle = '#000000';
+			canvasLeftCtx.fillRect(0, 0, windowWidth, canvasWaveformHeight);
 			canvasRightCtx.fillRect(0, 0, windowWidth, canvasWaveformHeight);
 
- 			var pcmL = buffer.getChannelData(0);
- 			var pcmR = buffer.getChannelData(1);
+			var pcmL = buffer.getChannelData(0);
+			var pcmR = buffer.getChannelData(1);
 
- 			var maxL = 0;
- 			var maxR = 0;
+			var maxL = 0;
+			var maxR = 0;
 
- 			var bufferLen = buffer.length;
- 			var jump = Math.floor(bufferLen / windowWidth);
+			var bufferLen = buffer.length;
+			var jump = Math.floor(bufferLen / windowWidth);
 
 			// note: nominal range of PCM data is [-1.0, 1.0]
 			// TODO: decide on whether to fix maxL and maxR to 1.0
@@ -131,6 +132,9 @@ function drawWaveform(buffer) {
  */
 function calculateFft(buffer, windowSize, noOfFrames) {
 	if (buffer != null) {
+		// reset ...
+		soundFFT = [];
+
 		// set-up temp holder of each frame's values 
 		var windowedFrame = [];
 		var specRe = [];
@@ -142,9 +146,9 @@ function calculateFft(buffer, windowSize, noOfFrames) {
 		var pos = 0;
 		for (var i = 0; i < noOfFrames; i++) {
 			// reset all arrays
-			specRe = Array.apply(null, Array(windowSize/2 + 1)).map(Number.prototype.valueOf,0.0);
-			specIm = Array.apply(null, Array(windowSize/2 + 1)).map(Number.prototype.valueOf,0.0);
-			magnitude = Array.apply(null, Array(windowSize/2 + 1)).map(Number.prototype.valueOf,0.0);
+			specRe = [];
+			specIm = [];
+			magnitude = [];
 
 			// slice the next frame apply hanning window to the frame
 			windowedFrame = hanningWindow(buffer.getChannelData(0).slice(pos, pos + windowSize), windowSize);
@@ -159,26 +163,19 @@ function calculateFft(buffer, windowSize, noOfFrames) {
 				maxMagnitude = maxMagnitude > magnitude[j] ? maxMagnitude : magnitude[j];
 
 			}
-
 			soundFFT.push(magnitude);
 
 			pos += (windowSize / 2);
 		}
 
-		var data_type = jsfeat.F32_t | jsfeat.C1_t;
-		var my_matrix = new jsfeat.matrix_t(soundFFT.length, noOfFrames, data_type, data_buffer = soundFFT);
-
 		// console.log(soundFFT); // noOfFrames * (windowSize/2 + 1)
-		// console.log(my_matrix);
 
 		return maxMagnitude;
 
 	} else {
 		console.log ("Error: No sound data loaded.");
 		return 0;
-
 	}
-
 }
 
 /**
@@ -190,13 +187,13 @@ function calculateFft(buffer, windowSize, noOfFrames) {
  * @return {Array}	       Windowed frame
  */
 function hanningWindow(frame, size) {
- 	var windowedFrame = [];
+	var windowedFrame = [];
 
- 	for (var i = 0; i < size; i++) {
- 		windowedFrame.push(frame[i] * 0.5 * (1.0 - Math.cos(2.0 * Math.PI * i / size)));
- 	}
+	for (var i = 0; i < size; i++) {
+		windowedFrame.push(frame[i] * 0.5 * (1.0 - Math.cos(2.0 * Math.PI * i / size)));
+	}
 
- 	return windowedFrame;
+	return windowedFrame;
 }
 
 /**
@@ -225,7 +222,7 @@ function drawSpectrogram(noOfFrames, maxFreq, maxMagnitude) {
 
 		x = 0;
 		for(var i = 0; i < noOfFrames; i += jump) {
-			for (var freq = 0; freq < maxFreq; freq++) {
+			for (var freq = 0; freq < maxFreq; ++freq) {
 				canvasSpecCtx.fillStyle = hot.getColor(soundFFT[i][freq]).hex();
 				canvasSpecCtx.fillRect(x, (maxFreq - freq), 1, 1);
 
@@ -234,6 +231,29 @@ function drawSpectrogram(noOfFrames, maxFreq, maxMagnitude) {
 
 		}
 		console.log('spectrogram: done');
+
+		var spect_data = canvasSpecCtx.getImageData(0, 0, windowWidth, canvasSpecHeight);
+		var edged_img = new jsfeat.matrix_t(windowWidth, canvasSpecHeight, jsfeat.F32_t | jsfeat.C1_t);
+
+		// console.log(soundFFT); // noOfFrames * (windowSize/2 + 1)
+
+//////MOVE THIS CODE
+// code adapted from: https://github.com/inspirit/jsfeat/blob/gh-pages/sample_canny_edge.html
+		jsfeat.imgproc.grayscale(spect_data.data, windowWidth, canvasSpecHeight, edged_img);
+		jsfeat.imgproc.gaussian_blur(edged_img, edged_img, 1, 0);
+		jsfeat.imgproc.canny(edged_img, edged_img, 1, 90);
+
+		var data_u32 = new Uint32Array(spect_data.data.buffer);
+		var alpha = (0xff << 24);
+		var i = edged_img.cols*edged_img.rows, pix = 0;
+		while(--i >= 0) {
+			pix = edged_img.data[i];
+			data_u32[i] = alpha | (pix << 16) | (pix << 8) | pix;
+		}
+		
+		canvasVisualCtx.putImageData(spect_data, 0, 0);
+
+////////////
 
 	} else {
 		console.log ("Error: canvasSpecCtx not defined.");

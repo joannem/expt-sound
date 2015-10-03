@@ -55,6 +55,11 @@ $('.waveform-slider').on("mouseup", function(){
 	}
 });
 
+$('.edge-btn').click(function() {
+	$('#visualSpect-canvas').toggle();
+
+});
+
 // call back triggered when sound is stopped normally
 function resetSoundAndSlider() {
 	if (gslider !=null && gSound != null) {

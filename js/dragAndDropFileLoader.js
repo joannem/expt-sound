@@ -15,9 +15,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
 			// Load the file
 			if (e.dataTransfer.files.length) {
+				console.log("Begin file decode.");
 				loadBlob(e.dataTransfer.files[0]);
 			} else {
-				console.log("error, not a file");
+				console.log("Error, not a file.");
 			}
 		},
 
