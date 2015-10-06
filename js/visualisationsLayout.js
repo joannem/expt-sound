@@ -1,3 +1,4 @@
+var gDDFileLoader = null;
 var gPlaying = false;
 var gSound = null;
 // TODO: var gIsLoop = false;
@@ -7,57 +8,63 @@ var gOffset = 0;
 var soundFFT = [];		// TODO: change to localised variable
 var fft = null; 		// TODO: change to localised variable
 
-$('.play-pause-btn').click(function() {
-	if (!gPlaying && gslider != null && gSound != null) {
-		gSound.playSound(gOffset / 1000.0);
-		gslider.startSlider(gOffset);
-		
-		gPlaying = true;
-		$('.play-pause-btn').text('pause'); 
+document.addEventListener('DOMContentLoaded', function () {
+	// console.log(document.querySelector('.drop-container'));
+	// console.log($('.drop-container').addClass('dragover'));
+	gDDFileLoader = new DDFileLoader($('.drop-container'));
 
-	} else if (gPlaying && gslider != null && gSound != null) {
-		gSound.pauseSound();
-		gOffset = gslider.pauseSlider();
-		
-		gPlaying = false;
-		$('.play-pause-btn').text('play'); 
+	$('.play-pause-btn').click(function() {
+		if (!gPlaying && gslider != null && gSound != null) {
+			gSound.playSound(gOffset / 1000.0);
+			gslider.startSlider(gOffset);
+			
+			gPlaying = true;
+			$('.play-pause-btn').text('pause'); 
 
-	} else {
-		console.log ("No sound data found.");
+		} else if (gPlaying && gslider != null && gSound != null) {
+			gSound.pauseSound();
+			gOffset = gslider.pauseSlider();
+			
+			gPlaying = false;
+			$('.play-pause-btn').text('play'); 
 
-	}
-});
+		} else {
+			console.log ("No sound data found.");
 
-$('.stop-btn').click(function() {
-	if (gslider !=null && gSound != null) {
-		gSound.stopSound();
-		gslider.stopSlider();
-		gOffset = 0;
+		}
+	});
 
-		gPlaying = false;
-		$('.play-pause-btn').text('play'); 
-	}
-});
+	$('.stop-btn').click(function() {
+		if (gslider !=null && gSound != null) {
+			gSound.stopSound();
+			gslider.stopSlider();
+			gOffset = 0;
 
-$('.waveform-slider').on("mousedown", function(){
-	if (gslider != null && gSound != null) {
-		gSound.pauseSound();
-		gslider.pauseSlider();
-	}
-});
+			gPlaying = false;
+			$('.play-pause-btn').text('play'); 
+		}
+	});
 
-$('.waveform-slider').on("mouseup", function(){
-	gOffset = this.value;
+	$('.waveform-slider').on("mousedown", function(){
+		if (gslider != null && gSound != null) {
+			gSound.pauseSound();
+			gslider.pauseSlider();
+		}
+	});
 
-	if (gPlaying && gslider != null && gSound != null) {
-		gSound.playSound(gOffset / 1000.0)
-		gslider.startSlider(gOffset);
-	}
-});
+	$('.waveform-slider').on("mouseup", function(){
+		gOffset = this.value;
 
-$('.edge-btn').click(function() {
-	$('#visualSpect-canvas').toggle();
+		if (gPlaying && gslider != null && gSound != null) {
+			gSound.playSound(gOffset / 1000.0)
+			gslider.startSlider(gOffset);
+		}
+	});
 
+	$('.edge-btn').click(function() {
+		$('#visualSpect-canvas').toggle();
+
+	});
 });
 
 // call back triggered when sound is stopped normally
