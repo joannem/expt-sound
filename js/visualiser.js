@@ -221,7 +221,7 @@ Visualiser.prototype = {
 			console.log('spectrogram: done');
 			// console.log(soundFFT); // noOfFrames * (windowSize/2 + 1)
 
-			this.drawEdges();
+			// this.drawEdges();
 
 		} else {
 			console.log ("Error: canvasSpecCtx not defined.");
@@ -229,6 +229,7 @@ Visualiser.prototype = {
 		}
 	},
 
+	// TODO: expose parameters
 	drawEdges: function() {
 		// code adapted from: https://github.com/inspirit/jsfeat/blob/gh-pages/sample_canny_edge.html
 		
@@ -250,6 +251,30 @@ Visualiser.prototype = {
 		
 		this.canvasVisualCtx.putImageData(spect_data, 0, 0);
 
-		console.log("edges: done")
+		console.log("edges: done");
+	},
+
+	// TODO: expose parameters
+	blurImage: function() {
+		// code adapted from: https://github.com/inspirit/jsfeat/blob/gh-pages/sample_canny_edge.html
+		
+		var spect_data = this.canvasSpecCtx.getImageData(0, 0, this.windowWidth, this.canvasSpecHeight);
+		var edged_img = new jsfeat.matrix_t(this.windowWidth, this.canvasSpecHeight, jsfeat.F32_t | jsfeat.C1_t);
+
+		jsfeat.imgproc.grayscale(spect_data.data, this.windowWidth, this.canvasSpecHeight, edged_img);
+		jsfeat.imgproc.gaussian_blur(edged_img, edged_img, 4, 0);
+
+		var data_u32 = new Uint32Array(spect_data.data.buffer);
+		var alpha = (0xff << 24);
+		var i = edged_img.cols*edged_img.rows, pix = 0;
+		
+		while(--i >= 0) {
+			pix = edged_img.data[i];
+			data_u32[i] = alpha | (pix << 16) | (pix << 8) | pix;
+		}
+		
+		this.canvasVisualCtx.putImageData(spect_data, 0, 0);
+
+		console.log("blur: done");
 	}
 }

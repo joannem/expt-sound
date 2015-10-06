@@ -64,9 +64,18 @@ document.addEventListener('DOMContentLoaded', function () {
 	});
 
 	$('.edge-btn').click(function() {
+		// TODO: don't call drawEdges() every time you want to toggle
+		gVisualiser.drawEdges();
 		$('#visualSpect-canvas').toggle();
 
 	});
+
+	$('.blur-btn').click(function() {
+		// TODO: don't call blurImage() every time you want to toggle
+		gVisualiser.blurImage();
+		$('#visualSpect-canvas').toggle();
+	})
+
 });
 
 // call back triggered when sound is stopped normally
@@ -80,9 +89,6 @@ function resetSoundAndSlider() {
 		$('.play-pause-btn').text('play'); 
 	}
 }
-
-// setupBlankWaveformCanvases();
-// setupBlankSpectrogramCanvas();
 
 function prepareSound(soundData) {
 	gSound = new Sound(soundData, false, resetSoundAndSlider);

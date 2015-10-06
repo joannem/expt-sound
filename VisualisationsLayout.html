@@ -1,11 +1,11 @@
 <html>
 <head>
 	<title>Test Animation</title>
-	<link rel="stylesheet" type="text/css" href="visualisations-layout.css">
-	<link rel="stylesheet" type="text/css" href="spectrogram.css">
-	<link rel="stylesheet" type="text/css" href="waveform.css">
-	<link rel="stylesheet" type="text/css" href="slider.css">
-	<link rel="stylesheet" type="text/css" href="drag-and-drop.css">
+	<link rel="stylesheet" type="text/css" href="css/visualisations-layout.css">
+	<link rel="stylesheet" type="text/css" href="css/spectrogram.css">
+	<link rel="stylesheet" type="text/css" href="css/waveform.css">
+	<link rel="stylesheet" type="text/css" href="css/slider.css">
+	<link rel="stylesheet" type="text/css" href="css/drag-and-drop.css">
 </head>
 <body>
 	<div class="drop-container">
@@ -26,18 +26,19 @@
 		<div id="controls">
 			<button class="play-pause-btn">play</button>
 			<button class="stop-btn">stop</button>
-			<button class="edge-btn">show edges</button>
 		</div>
+			<button class="edge-btn">show edges</button>
+			<button class="blur-btn">apply blur</button>
 	</div>
 
 </body>
 
-<script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
-<script type="text/javascript" src="js/jsfeat-min.js"></script>
+<script type="text/javascript" src="js/vendor/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="js/vendor/jsfeat-min.js"></script>
 <script type="text/javascript" src="js/dragAndDropFileLoader.js"></script>
 <script type="text/javascript" src="js/sound.js"></script>
 <script type="text/javascript" src="js/slider.js"></script>
-<script type="text/javascript" src="js/chroma.js"></script>
+<script type="text/javascript" src="js/vendor/chroma.js"></script>
 <script type="text/javascript" src="js/visualiser.js"></script>
 <script type="text/javascript" src="js/fft.js"></script>
 <script type="text/javascript" src ="js/visualisationsLayout.js"></script>
