@@ -1,4 +1,6 @@
 var gDDFileLoader = null;
+var gVisualiser = null;
+
 var gPlaying = false;
 var gSound = null;
 // TODO: var gIsLoop = false;
@@ -9,9 +11,9 @@ var soundFFT = [];		// TODO: change to localised variable
 var fft = null; 		// TODO: change to localised variable
 
 document.addEventListener('DOMContentLoaded', function () {
-	// console.log(document.querySelector('.drop-container'));
-	// console.log($('.drop-container').addClass('dragover'));
+
 	gDDFileLoader = new DDFileLoader($('.drop-container'));
+	gVisualiser = new Visualiser();
 
 	$('.play-pause-btn').click(function() {
 		if (!gPlaying && gslider != null && gSound != null) {
@@ -79,8 +81,8 @@ function resetSoundAndSlider() {
 	}
 }
 
-setupBlankWaveformCanvases();
-setupBlankSpectrogramCanvas();
+// setupBlankWaveformCanvases();
+// setupBlankSpectrogramCanvas();
 
 function prepareSound(soundData) {
 	gSound = new Sound(soundData, false, resetSoundAndSlider);
@@ -89,7 +91,7 @@ function prepareSound(soundData) {
 
 function setupVisualisations() {
 
-	drawWaveform(gSound.getSoundData());
+	gVisualiser.drawWaveform(gSound.getSoundData());
 
 	// FFT values:
 	var logN = 10;
@@ -102,7 +104,7 @@ function setupVisualisations() {
 
 	// set up FFT
 	var noOfFrames = Math.floor(gSound.getSoundData().length / (overlap * windowSize)) - 1;	// discard the last frame
-	var maxMagnitude = calculateFft(gSound.getSoundData(), windowSize, noOfFrames);
+	var maxMagnitude = gVisualiser.calculateFft(gSound.getSoundData(), windowSize, noOfFrames);
 
-	drawSpectrogram(noOfFrames, (windowSize/2 + 1), maxMagnitude);
+	gVisualiser.drawSpectrogram(noOfFrames, (windowSize/2 + 1), maxMagnitude);
 }
