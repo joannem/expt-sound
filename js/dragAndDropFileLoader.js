@@ -7,17 +7,10 @@ function DDFileLoader(dropTarget) {
 	var that = (this === window) ? {} : this;
 
 	that.dropTarget = dropTarget;
-
-	var toggleActive = function (e, toggle) {
-		e.stopPropagation();
-		e.preventDefault();
-		toggle ? dropTarget.addClass('dragover') :
-			dropTarget.removeClass('dragover');
-	};
 	
-	var handlers = {
+	that.handlers = {
 		drop: function (e) {
-			toggleActive(e, false);
+			that.toggleActive(e, false);
 
 			// Load the file
 			if (e.dataTransfer.files.length) {
@@ -30,17 +23,17 @@ function DDFileLoader(dropTarget) {
 
 		dragover: function (e) {
 			// console.log(e.target.classList, "dragover");
-			toggleActive(e, true);
+			that.toggleActive(e, true);
 		},
 
 		dragleave: function (e) {
 			// console.log(e.target.classList, "dragleave");
-			toggleActive(e, false);
+			that.toggleActive(e, false);
 		}
 	};
 
-	Object.keys(handlers).forEach(function (event) {
-		that.dropTarget[0].addEventListener(event, handlers[event]);
+	Object.keys(that.handlers).forEach(function (event) {
+		that.dropTarget[0].addEventListener(event, that.handlers[event]);
 	});
 
 	return that;
@@ -48,6 +41,13 @@ function DDFileLoader(dropTarget) {
 
 DDFileLoader.prototype = {
 	constructor: DDFileLoader,
+
+	toggleActive: function (e, toggle) {
+		e.stopPropagation();
+		e.preventDefault();
+		toggle ? this.dropTarget.addClass('dragover') :
+			this.dropTarget.removeClass('dragover');
+	},
 
 	/**
 	 * Loads audio data from a Blob or File object.
