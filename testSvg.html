@@ -1,0 +1,94 @@
+<html>
+<head>
+	<title>Test SVG</title>
+</head>
+
+<body>
+	<table>
+		<tr>
+			<td style="padding: 5px;">
+				<!-- original svg image -->
+				Original SVG image:
+				<br>
+				<svg id="svg" version="1.1"
+					baseProfile="full"
+					width="300" height="150"
+					xmlns="http://www.w3.org/2000/svg">
+						<rect id="rect-1" width="100%" height="100%" fill="#669ACC" />
+						<circle id="circle-1" cx="50%" cy="50%" r="30%" fill="#C8EBB1" />
+						<polyline id="polyline-1" points="10 10 65 120 70 115 75 130 80 125 85 140 90 135 95 150 100 145" stroke="orange" fill="transparent" stroke-width="5"/>
+						<path id="path-1" d="M20,10 Q40,190 150,130 T90,130" fill="none" stroke="blue" stroke-width="5"/>
+				</svg>
+
+				<br>
+				<br>
+
+				<!-- viewBox to zoom into an area -->
+				SVG image magnified 2x:
+				<br>
+				<svg id="svg-magnified" version="1.1"
+					baseProfile="full"
+					width="600" height="300"
+					viewBox="0 0 300 150"
+					xmlns="http://www.w3.org/2000/svg">
+
+					<use xlink:href="#svg" />
+
+				</svg>
+
+				<br>
+				<br>
+
+				<!-- rasterised image -->
+				Raster of magnified image:
+				<br>
+				<canvas id="canvas-1" width="600" height="300"></canvas>
+			</td>
+
+			<td style="padding: 5px;">
+				draw SVG here: 
+				<br>
+				<svg id="svg-draw"
+				style="border-style:solid;border-width: 1px;"
+				version="1.1"
+				baseProfile="full"
+				width="300" height="150"
+				xmlns="http://www.w3.org/2000/svg"
+				>
+				</svg>
+
+				<br>
+				<br>
+
+				<!-- viewBox to zoom into an area -->
+				SVG image magnified 2x:
+				<br>
+				<svg id="svg-draw-magnified" version="1.1"
+				style="border-style:solid;border-width: 1px;"
+				baseProfile="full"
+				width="600" height="300"
+				viewBox="0 0 300 150"
+				xmlns="http://www.w3.org/2000/svg">
+
+					<use xlink:href="#svg-draw" />
+
+				</svg>
+
+				<br>
+				<br>
+
+
+				<!-- rasterised image -->
+				Raster of magnified image:
+				<br>
+				<canvas id="canvas-2" width="600" height="300" style="border-style:solid;border-width: 1px;"></canvas>
+			</td>
+		</tr>
+	</table>
+
+</body>
+
+<script type="text/javascript" src="js/vendor/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="js/testSvg.js"></script>
+
+</html>
