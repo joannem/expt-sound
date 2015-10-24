@@ -1,8 +1,25 @@
 var DOMURL = window.URL || window.webkitURL || window;
 
+var before;
+var timeTakenForOriginal = 0;
+var timeTakenForSlice = 0;
+var timeTakenForCorner = 0;
+
+before = Date.now();
 drawOriginal();
+timeTakenForOriginal = Date.now() - before;
+
+before = Date.now();
 drawClippedSlice();
+timeTakenForSlice = Date.now() - before;
+
+before = Date.now();
 drawClippedCorner();
+timeTakenForCorner = Date.now() - before;
+
+console.lod("Original: " + timeTakenForOriginal);
+console.lod("Slice: " + timeTakenForSlice);
+console.lod("Corner: " + timeTakenForCorner);
 
 //--------- Original Image ---------//
 function drawOriginal() {
