@@ -1,0 +1,46 @@
+ <html>
+
+<head>
+	<title>Partial Raster</title>
+</head>
+
+<body>
+	Original SVG image:
+	<br>
+	<svg id="svg" version="1.1"
+		baseProfile="full"
+		width="300" height="150"
+		xmlns="http://www.w3.org/2000/svg">
+			<rect id="rect-1" width="300" height="150" fill="#669ACC" />
+			<circle id="circle-1" cx="150" cy="75" r="60" fill="#C8EBB1" />
+			<polyline id="polyline-1" points="10 10 65 120 70 115 75 130 80 125 85 140 90 135 95 150 100 145" stroke="orange" fill="transparent" stroke-width="5"/>
+			<path id="path-1" d="M20,10 Q40,190 150,130 T90,130" fill="none" stroke="blue" stroke-width="5"/>
+	</svg>
+	
+	<br>
+
+	<table>
+		<tr>
+			<td>original</td>
+			<td>slice</td>
+			<td>corner</td>
+		</tr>
+		<tr>
+			<td>
+				<canvas id="canvas-original" style="border-style:solid;border-width: 1px;" width="300" height="150" ></canvas>
+			</td>
+			<td>
+				<canvas id="canvas-clipping-slice" style="border-style:solid;border-width: 1px;" width="300" height="150" ></canvas>
+			</td>
+			<td>
+				<canvas id="canvas-clipping-corner" style="border-style:solid;border-width: 1px;" width="300" height="150" ></canvas>
+			</td>
+		</tr>
+	</table>
+
+</body>
+
+<script type="text/javascript" src="js/vendor/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="js/testSvgPartialRaster.js"></script>
+
+</html>

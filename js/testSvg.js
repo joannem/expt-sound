@@ -7,7 +7,7 @@ svg_obj.setAttribute("height", 300);
 svg_obj.setAttribute("viewBox", "0 0 300 150");
 
 var data = new XMLSerializer().serializeToString(svg_obj);
-var svg = new Blob([data], {type: 'image/svg+xml;charset=utf-8'});;
+var svg = new Blob([data], {type: 'image/svg+xml;charset=utf-8'});
 var DOMURL = window.URL || window.webkitURL || window;
 var url = DOMURL.createObjectURL(svg);
 
