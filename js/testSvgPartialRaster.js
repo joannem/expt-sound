@@ -17,9 +17,9 @@ before = Date.now();
 drawClippedCorner();
 timeTakenForCorner = Date.now() - before;
 
-console.lod("Original: " + timeTakenForOriginal);
-console.lod("Slice: " + timeTakenForSlice);
-console.lod("Corner: " + timeTakenForCorner);
+console.log("Original: " + timeTakenForOriginal);
+console.log("Slice: " + timeTakenForSlice);
+console.log("Corner: " + timeTakenForCorner);
 
 //--------- Original Image ---------//
 function drawOriginal() {
