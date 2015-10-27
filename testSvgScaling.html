@@ -1,0 +1,60 @@
+<html>
+<head>
+	<title>Test SVG</title>
+</head>
+
+<body>
+	<table>
+		<tr>
+			<td style="padding: 5px;">
+				<!-- original svg image -->
+				Original SVG image:
+				<br>
+				<svg id="svg" version="1.1"
+					baseProfile="full"
+					width="300" height="150"
+					xmlns="http://www.w3.org/2000/svg">
+						<rect id="rect-1" width="300" height="150" fill="#669ACC" />
+						<circle id="circle-1" cx="150" cy="75" r="60" fill="#C8EBB1" />
+						<polyline id="polyline-1" points="10 10 65 120 70 115 75 130 80 125 85 140 90 135 95 150 100 145" stroke="orange" fill="transparent" stroke-width="5"/>
+						<path id="path-1" vector-effect="non-scaling-stroke" d="M20,10 Q40,190 150,130 T90,130" fill="none" stroke="blue" stroke-width="2"/>
+				</svg>
+
+				<br>
+				<br>
+
+				<!-- viewBox to zoom into an area -->
+				SVG image magnified 2x with viewBox:
+				<br>
+				<svg id="svg-magnified" version="1.1"
+					baseProfile="full"
+					width="600" height="300"
+					viewBox="0 0 300 150"
+					xmlns="http://www.w3.org/2000/svg">
+
+					<use xlink:href="#svg" />
+
+				</svg>
+
+				<br>
+				<br>
+
+				<!-- viewBox to zoom into an area -->
+				SVG image magnified 2x with scale(2):
+				<br>
+				<svg id="svg-draw-magnified" version="1.1"
+				baseProfile="full"
+				width="600" height="300"
+				viewBox="0 0 600 300"
+				xmlns="http://www.w3.org/2000/svg">
+
+					<use xlink:href="#svg" transform="scale(2)"/>
+
+				</svg>
+			</td>
+		</tr>
+	</table>
+
+</body>
+
+</html>
