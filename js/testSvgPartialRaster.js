@@ -4,6 +4,7 @@ var before;
 var timeTakenForOriginal = 0;
 var timeTakenForSlice = 0;
 var timeTakenForCorner = 0;
+var timeTakenForOriginalAgain = 0;
 
 before = Date.now();
 drawOriginal();
@@ -17,9 +18,15 @@ before = Date.now();
 drawClippedCorner();
 timeTakenForCorner = Date.now() - before;
 
+before = Date.now();
+drawOriginalAgain();
+timeTakenForOriginalAgain = Date.now() - before;
+
+
 console.log("Original: " + timeTakenForOriginal);
 console.log("Slice: " + timeTakenForSlice);
 console.log("Corner: " + timeTakenForCorner);
+console.log("Original again: " + timeTakenForOriginalAgain);
 
 //--------- Original Image ---------//
 function drawOriginal() {
@@ -40,6 +47,31 @@ function drawOriginal() {
 
 	img_original.src = url_original;
 }
+
+//--------- Original Again Image ---------//
+function drawOriginalAgain() {
+	var ctx_original = document.getElementById('canvas-original-again').getContext('2d');
+
+	var svg_obj_original = $('#svg').clone()[0];
+
+	svg_obj_original.setAttribute("width", 600);
+	svg_obj_original.setAttribute("height", 300);
+	svg_obj_original.setAttribute("viewBox", "0 0 300 150");
+
+	var data_original = new XMLSerializer().serializeToString(svg_obj_original);
+	var svg_original = new Blob([data_original], {type: 'image/svg+xml;charset=utf-8'});
+	var url_original = DOMURL.createObjectURL(svg_original);
+
+	var img_original = new Image();
+
+	img_original.onload = function () {
+		ctx_original.drawImage(img_original, 0, 0);
+		DOMURL.revokeObjectURL(url_original);
+	}
+
+	img_original.src = url_original;
+}
+
 
 //--------- Clipped Slice ---------//
 function drawClippedSlice() {
