@@ -34,18 +34,7 @@ function drawOriginal() {
 
 	var svg_obj_original = $('#svg').clone()[0];
 
-	var data_original = new XMLSerializer().serializeToString(svg_obj_original);
-	var svg_original = new Blob([data_original], {type: 'image/svg+xml;charset=utf-8'});
-	var url_original = DOMURL.createObjectURL(svg_original);
-
-	var img_original = new Image();
-
-	img_original.onload = function () {
-		ctx_original.drawImage(img_original, 0, 0);
-		DOMURL.revokeObjectURL(url_original);
-	}
-
-	img_original.src = url_original;
+	createRaster(ctx_original, svg_obj_original);
 }
 
 //--------- Original Again Image ---------//
@@ -58,18 +47,7 @@ function drawOriginalAgain() {
 	svg_obj_original.setAttribute("height", 300);
 	svg_obj_original.setAttribute("viewBox", "0 0 300 150");
 
-	var data_original = new XMLSerializer().serializeToString(svg_obj_original);
-	var svg_original = new Blob([data_original], {type: 'image/svg+xml;charset=utf-8'});
-	var url_original = DOMURL.createObjectURL(svg_original);
-
-	var img_original = new Image();
-
-	img_original.onload = function () {
-		ctx_original.drawImage(img_original, 0, 0);
-		DOMURL.revokeObjectURL(url_original);
-	}
-
-	img_original.src = url_original;
+	createRaster(ctx_original, svg_obj_original);
 }
 
 
@@ -96,18 +74,7 @@ function drawClippedSlice() {
 
 	svg_obj_clipping_slice.setAttribute("clip-path", "url(#clip)");
 
-	var data_clipping_slice = new XMLSerializer().serializeToString(svg_obj_clipping_slice);
-	var svg_clipping_slice = new Blob([data_clipping_slice], {type: 'image/svg+xml;charset=utf-8'});
-	var url_clipping_slice = DOMURL.createObjectURL(svg_clipping_slice);
-
-	var img_clipping_slice = new Image();
-
-	img_clipping_slice.onload = function () {
-		ctx_clipping_slice.drawImage(img_clipping_slice, 0, 0);
-		DOMURL.revokeObjectURL(url_clipping_slice);
-	}
-
-	img_clipping_slice.src = url_clipping_slice;
+	createRaster(ctx_clipping_slice, svg_obj_clipping_slice);
 }
 
 //--------- Clipped Corner ---------//
@@ -133,16 +100,22 @@ function drawClippedCorner() {
 
 	svg_obj_clipping_corner.setAttribute("clip-path", "url(#clip)");
 
-	var data_clipping_corner = new XMLSerializer().serializeToString(svg_obj_clipping_corner);
-	var svg_clipping_corner = new Blob([data_clipping_corner], {type: 'image/svg+xml;charset=utf-8'});
-	var url_clipping_corner = DOMURL.createObjectURL(svg_clipping_corner);
+	createRaster(ctx_clipping_corner, svg_obj_clipping_corner);
+}
 
-	var img_clipping_corner = new Image();
+function createRaster(canvasCtx, svgObj) {
+	var svgXmlData = new XMLSerializer().serializeToString(svgObj);
+	var svgData = new Blob([svgXmlData], {type: 'image/svg+xml;charset=utf-8'});
+	var domUrl = window.URL || window.webkitURL || window;
+	var svgUrl = domUrl.createObjectURL(svgData);
 
-	img_clipping_corner.onload = function () {
-		ctx_clipping_corner.drawImage(img_clipping_corner, 0, 0);
-		DOMURL.revokeObjectURL(url_clipping_corner);
+
+	var img = new Image();
+	img.onload = function () {
+		canvasCtx.drawImage(img, 0, 0);
+		domUrl.revokeObjectURL(svgUrl);
+
 	}
 
-	img_clipping_corner.src = url_clipping_corner;
+	img.src = svgUrl;
 }
