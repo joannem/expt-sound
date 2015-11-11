@@ -1,4 +1,4 @@
-#waveform {
+#waveform, #reconstructed-waveform {
 	position: relative;
 	height: 28%;
 }
@@ -12,17 +12,17 @@
 	z-index: 0;
 }
 
-#waveform-canvas-left {
+#waveform-canvas-left, #reconstructed-waveform-canvas-left {
 	top: 0px;
 	position: absolute;
 }
 
-#waveform-canvas-right {
+#waveform-canvas-right, #reconstructed-waveform-canvas-right {
 	bottom: 0px;
 	position: absolute;
 }
 
-#controls {
+#controls, #reconstructed-controls {
 	padding: 10px;
 	text-align: center;
 }

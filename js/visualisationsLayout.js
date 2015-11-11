@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		gOffset = this.value;
 
 		if (gPlaying && gslider != null && gSound != null) {
-			gSound.playSound(gOffset / 1000.0)
+			gSound.playSound(gOffset / 1000.0);
 			gslider.startSlider(gOffset);
 		}
 	});
@@ -92,25 +92,26 @@ function resetSoundAndSlider() {
 
 function prepareSound(soundData) {
 	gSound = new Sound(soundData, false, resetSoundAndSlider);
-	gslider = new Slider($('.waveform-slider'), Math.abs(gSound.getSoundData().duration * 1000), true);
+	gslider = new Slider($('.waveform-slider'), (gSound.getSoundData().duration * 1000), true);
 }
 
 function setupVisualisations() {
-
-	gVisualiser.drawWaveform(gSound.getSoundData());
-
-	// FFT values:
+	//--- DSP values:
 	var logN = 10;
 	var overlap = 0.5;
 	var windowSize = 1 << logN;
+	var noOfFrames = Math.floor(gSound.getSoundData().length / (overlap * windowSize)) - 1;	// discard the last frame
 
-	// set up FFT calculator
+	//--- draw waveform
+	gVisualiser.drawWaveform(gSound.getSoundData());
+
+	//--- set up FFT calculator
 	fft = new FFT();
 	fft.init(logN);
 
-	// set up FFT
-	var noOfFrames = Math.floor(gSound.getSoundData().length / (overlap * windowSize)) - 1;	// discard the last frame
+	//--- calculate FFT
 	var maxMagnitude = gVisualiser.calculateFft(gSound.getSoundData(), windowSize, noOfFrames);
 
-	gVisualiser.drawSpectrogram(noOfFrames, (windowSize/2 + 1), maxMagnitude);
+	//--- draw spectrogram
+	gVisualiser.drawSpectrogram(gSound.getSoundData().length, windowSize, overlap, noOfFrames, (windowSize/2 + 1), maxMagnitude);
 }

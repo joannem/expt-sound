@@ -69,11 +69,11 @@ Visualiser.prototype = {
 				var maxR = 0;
 
 				var bufferLen = buffer.length;
-				var jump = Math.floor(bufferLen / this.windowWidth);
+				var jump = Math.floor(bufferLen / this.windowWidth);// > 1 ? Math.floor(bufferLen / this.windowWidth) : 1;
 
 				// note: nominal range of PCM data is [-1.0, 1.0]
 				// TODO: decide on whether to fix maxL and maxR to 1.0
-				for (var i = 0; i < bufferLen; i = i + jump) {
+				for (var i = 0; i < bufferLen; i += jump) {
 					maxL = Math.abs(pcmL[i]) > maxL ? Math.abs(pcmL[i]) : maxL;
 					maxR = Math.abs(pcmR[i]) > maxR ? Math.abs(pcmR[i]) : maxR;
 
@@ -86,7 +86,7 @@ Visualiser.prototype = {
 				this.canvasLeftCtx.fillStyle = '#0FF000';
 				this.canvasRightCtx.fillStyle = '#0FF000';
 
-				for(var i = 0; i < bufferLen; i = i + jump) {
+				for(var i = 0; i < bufferLen; i += jump) {
 					// -5 translation to leave a 2.5px gap between waveform and border of canvas
 					heightL = Math.abs(pcmL[i] / maxL * ((this.canvasWaveformHeight / 2) - 5));
 					heightR = Math.abs(pcmR[i] / maxR * ((this.canvasWaveformHeight / 2) - 5));
@@ -156,8 +156,6 @@ Visualiser.prototype = {
 				pos += (windowSize / 2);
 			}
 
-			// console.log(soundFFT); // noOfFrames * (windowSize/2 + 1)
-
 			return maxMagnitude;
 
 		} else {
@@ -192,7 +190,7 @@ Visualiser.prototype = {
 	 * @param  {float} maxMagnitude	Maximum magnitude recorded from the FFT. Used for
 	 *                              scaling the colours of the spectrogram.
 	 */
-	drawSpectrogram: function(noOfFrames, maxFreq, maxMagnitude) {
+	drawSpectrogram: function(bufferLen, windowSize, overlap, noOfFrames, maxFreq, maxMagnitude) {
 		if (this.canvasSpecCtx != null) {
 			// reset canvas
 			this.canvasSpecCtx.fillStyle = '#000000';
@@ -210,24 +208,25 @@ Visualiser.prototype = {
 
 			var x = 0;
 			for(var i = 0; i < noOfFrames; i += jump) {
+				x = Math.round((windowSize * overlap) * i * (this.windowWidth/bufferLen));
+
 				for (var freq = 0; freq < maxFreq; ++freq) {
 					this.canvasSpecCtx.fillStyle = hot.getColor(soundFFT[i][freq]).hex();
 					this.canvasSpecCtx.fillRect(x, (maxFreq - freq), 1, 1);
 
 				}
-				++x;
+				// ++x;
 
 			}
 			console.log('spectrogram: done');
-			// console.log(soundFFT); // noOfFrames * (windowSize/2 + 1)
-
-			// this.drawEdges();
 
 		} else {
 			console.log ("Error: canvasSpecCtx not defined.");
 
 		}
 	},
+
+	// TODO: create own image processing scripts
 
 	// TODO: expose parameters
 	drawEdges: function() {

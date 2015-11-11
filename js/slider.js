@@ -10,9 +10,9 @@ function Slider (sliderDom, soundDurationInMs, isLoop) {
 	that.animationFrameRequestID = null;
 	
 	that.sliderOffset = 0;
-	that.justNow = Date.now();
-	that.now = Date.now();
-	
+	that.justNow = performance.now();
+	that.now = performance.now();
+
 	$(sliderDom).attr('max', soundDurationInMs);
 
 	return that;
@@ -24,17 +24,19 @@ Slider.prototype = {
 	startSlider: function (sliderOffset) {
 		this.sliderOffset = parseInt(sliderOffset);
 		(this.sliderDom).val(sliderOffset);
-		this.justNow = Date.now();
+		this.justNow = performance.now();
 
 		this.advanceSlider();
 	},
 
 	advanceSlider: function () {
 		this.animationFrameRequestID = requestAnimationFrame(this.advanceSlider.bind(this));
-		this.now = Date.now();
+		this.now = performance.now();
 		this.sliderOffset += (this.now - this.justNow);
 		this.justNow = this.now;
 
+		$(this.sliderDom).val(this.sliderOffset);
+		
 		// check if end of range is reached
 		if (this.sliderOffset - this.soundDurationInMs > 0) {
 			this.sliderOffset = 0;
@@ -43,8 +45,6 @@ Slider.prototype = {
 				this.stopSlider();
 			}
 		}
-
-		$(this.sliderDom).val(this.sliderOffset);
 	},
 	
 	pauseSlider: function () {
