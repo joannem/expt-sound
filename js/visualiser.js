@@ -69,7 +69,7 @@ Visualiser.prototype = {
 				var maxR = 0;
 
 				var bufferLen = buffer.length;
-				var jump = Math.floor(bufferLen / this.windowWidth);// > 1 ? Math.floor(bufferLen / this.windowWidth) : 1;
+				var jump = Math.floor(bufferLen / this.windowWidth) > 1 ? Math.floor(bufferLen / this.windowWidth) : 1;
 
 				// note: nominal range of PCM data is [-1.0, 1.0]
 				// TODO: decide on whether to fix maxL and maxR to 1.0
