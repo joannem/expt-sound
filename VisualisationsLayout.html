@@ -15,6 +15,7 @@
 			<canvas id="spectrogram-canvas"></canvas>
 		</div>
 		<br>
+		
 		<div id="waveform">
 			<input type="range" class="waveform-slider" value="0">
 			<canvas class="waveform-canvas" id="waveform-canvas-left"></canvas>
@@ -24,11 +25,26 @@
 		<br>
 
 		<div id="controls">
-			<button class="play-pause-btn">play</button>
-			<button class="stop-btn">stop</button>
+			<button class="play-pause-btn" id="play-pause-btn-original">play</button>
+			<button class="stop-btn" id="stop-btn-original">stop</button>
 		</div>
-			<button class="edge-btn">show edges</button>
-			<button class="blur-btn">apply blur</button>
+
+		<button class="edge-btn">show edges</button>
+		<button class="blur-btn">apply blur</button>
+		<button class="inverse-spect-btn">Create SPSI signal</button>
+
+		<br><br>
+		
+		Reconstructed waveform:
+		<div id="reconstructed-waveform">
+			<canvas id="reconstructed-waveform-canvas"></canvas>
+		</div>
+		<br>
+		<div id="reconstructed-controls">
+			<button class="play-pause-btn" id="play-pause-btn-spsi">play</button>
+			<button class="stop-btn" id="stop-btn-spsi">stop</button>
+		</div>
+
 	</div>
 
 </body>

@@ -17,7 +17,7 @@ Sound.prototype = {
 	constructor: Sound,
 
 	playSound: function(soundOffsetInSecs) {
-		this.loadBufferSrc((Date.now() / 1000.0) - soundOffsetInSecs);
+		this.loadBufferSrc((performance.now() / 1000.0) - soundOffsetInSecs);
 		this.bufferSrc.start(0, (soundOffsetInSecs % this.soundData.duration), this.soundData.duration);
 
 		this.setupOnendedEvents();
@@ -26,6 +26,7 @@ Sound.prototype = {
 	loadBufferSrc: function (relativePlayStartTimeInSecs) {
 		this.bufferSrc = this.audioCtx.createBufferSource();
 		this.bufferSrc.buffer = this.soundData;
+		console.log(this.soundData);
 		this.bufferSrc.loop = this.isLoop;
 		this.bufferSrc.connect(this.audioCtx.destination);
 		this.bufferSrc.relativePlayStartTimeInSecs = relativePlayStartTimeInSecs;
@@ -39,7 +40,7 @@ Sound.prototype = {
 		if (this.bufferSrc != null) {
 			this.bufferSrc.onended = function () {
 				// bufferSrc will be garbage-collected 
-				if ((Date.now() / 1000.0 - this.relativePlayStartTimeInSecs) > this.buffer.duration) {
+				if ((performance.now() / 1000.0 - this.relativePlayStartTimeInSecs) > this.buffer.duration) {
 					// console.log("sound reached the end");
 					this.onededCallback();
 				} else {

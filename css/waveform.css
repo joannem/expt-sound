@@ -22,7 +22,7 @@
 	position: absolute;
 }
 
-#controls {
+#controls, #reconstructed-controls {
 	padding: 10px;
 	text-align: center;
 }

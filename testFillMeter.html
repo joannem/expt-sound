@@ -1,0 +1,179 @@
+<html>
+<head>
+	<title>Test Fill Meter</title>
+	<link rel="stylesheet" type="text/css" href="css/testSvgCanvas.css">
+</head>
+
+<body>
+	<div style="float: left; margin-right: 20px">
+		<svg id="svg-canvas" version="1.1" baseProfile="full" width="900" height="450">	
+			<g>
+				<defs>
+					<linearGradient id="Gradient-1" x1="0" y1="0" x2="0" y2="100%">
+						<stop offset="0%" stop-color="lightblue" />
+						<stop offset="100%" stop-color="#ef5b2b" />
+					</linearGradient>
+				</defs>
+				<path id="path-1" 
+					d="m 20,10 50,30 90,13" 
+					fill="none"
+					stroke="url(#Gradient-1)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-linejoin="round"
+				/>
+
+				<path id="path-2" 
+					d="M 20,40 60,40 60,60" 
+					fill="none"
+					stroke="url(#Gradient-1)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-linejoin="round"
+				/>
+
+				<use xlink:href="#path-2" transform="translate(32,32) rotate(45 50 50)" />
+			</g>
+
+			<g>
+				<defs>
+					<linearGradient id="Gradient-2" x1="0" y1="0" x2="0" y2="100%">
+						<stop offset="0%" stop-color="blue" />
+						<stop offset="50%" stop-color="orange" />
+						<stop offset="100%" stop-color="blue" />
+					</linearGradient>
+				</defs>
+				<path id="path-3" 
+					d="m 100,200 60,50 90,13 0,20 -90,-13 -60,-50 0,-20" 
+					fill="url(#Gradient-2)"
+					stroke="black"
+					stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-linejoin="round"
+				/>
+				<path id="path-4" 
+					d="m 400,200 50,0 0,20 -50,0 0,-20" 
+					fill="url(#Gradient-2)"
+					stroke="url(#Gradient-2)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-linejoin="round"
+				/>
+				<path id="path-5" 
+					d="m 400,250 50,0 0,20 -50,0 0,-20" 
+					fill="url(#Gradient-2)"
+					stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-linejoin="round"
+				/>
+
+				<path id="path-6a" 
+					d="m 600,200 78,0 0,20 -78,0 0,-20" 
+					fill="url(#Gradient-2)"
+					stroke="url(#Gradient-2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-linejoin="round"
+					transform="rotate(39.8 600 200)"
+				/>
+				<path id="path-6b" 
+					d="m 650,245 91,0 0,20 -91,0 0,-20" 
+					fill="url(#Gradient-2)"
+					stroke="url(#Gradient-2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-linejoin="round"
+					transform="rotate(10 650 245)"
+				/>
+			</g>
+		</svg>
+	</div>
+
+	<div style="float:left; width:350px; height: 420px; border: solid black 1px; padding: 15px;">
+		Fill: <br><br>
+		<div style="width:100%; height: 350px; border: solid black 1px">
+			<svg id="svg-fill" version="1.1" baseProfile="full" width="100%" height="100%">	
+				<g>
+					<defs>
+						<linearGradient id="Gradient-fill" x1="0" y1="0" x2="100%" y2="0">
+							<stop offset="0%" stop-color="lightblue" />
+							<stop offset="100%" stop-color="#ef5b2b" />
+						</linearGradient>
+					</defs>
+					<rect id="rect"  
+						x="0" y="0" width="100%" height="100%" 
+						fill="url(#Gradient-fill)"
+					/>
+
+					<line x1="25%" x2="25%" y1="0" y2="100%" stroke="black" fill="transparent" stroke-width="2"/>
+					<line x1="50%" x2="50%" y1="0" y2="100%" stroke="black" fill="transparent" stroke-width="1"/>
+					<line x1="75%" x2="75%" y1="0" y2="100%" stroke="black" fill="transparent" stroke-width="2"/>
+
+					<line x1="0" x2="100%" y1="25%" y2="25%" stroke="black" fill="transparent" stroke-width="2"/>
+					<line x1="0" x2="100%" y1="50%" y2="50%" stroke="black" fill="transparent" stroke-width="1"/>
+					<line x1="0" x2="100%" y1="75%" y2="75%" stroke="black" fill="transparent" stroke-width="2"/>
+
+					<circle id="circle-1" cx="87.5" cy="87.5" r="10" stroke="black" fill="lightblue" stroke-width="1"/>
+					<circle id="circle-2" cx="75%" cy="25%" r="10" stroke="black" fill="#ef5b2b" stroke-width="1"/>
+				</g>
+			</svg>
+		</div>
+	</div>
+
+</body>
+
+<script type="text/javascript" src="js/vendor/jquery-2.1.4.min.js"></script>
+<script type="text/javascript">
+
+var fillBoxWidth = 350;
+
+$('#circle-1').mousedown(function() {
+	$(this).mousemove(function(evt) {
+		moveGroup("circle-1", evt.offsetX, evt.offsetY);
+	}).mouseup(function() {
+		$(this).off('mousemove');
+		$(this).off('mouseup');
+	}).mouseout(function() {
+		$(this).off('mousemove');
+		$(this).off('mouseup');
+	});
+});
+
+$('#circle-2').mousedown(function() {
+	$(this).mousemove(function(evt) {
+		moveGroup("circle-2", evt.offsetX, evt.offsetY);
+	}).mouseup(function() {
+		$(this).off('mousemove');
+		$(this).off('mouseup');
+	}).mouseout(function() {
+		$(this).off('mousemove');
+		$(this).off('mouseup');
+	});
+});
+
+var currentX_1 = 87.5;
+var currentY_1 = 87.5;
+var currentX_2 = 262.5;
+var currentY_2 = 87.5;
+var transformMatrix_1 = [1, 0, 0, 1, 0, 0];
+var transformMatrix_2 = [1, 0, 0, 1, 0, 0];
+
+function moveGroup(id, offsetX, offsetY) {
+	if (id == "circle-1") {
+		var dx = offsetX - currentX_1;
+		var dy = offsetY - currentY_1;
+
+		transformMatrix_1[4] += dx;
+		transformMatrix_1[5] += dy;
+
+		var newMatrixStr = "matrix(" + this.transformMatrix_1.join(' ') + ")";
+		document.getElementById(id).setAttributeNS(null, "transform", newMatrixStr);
+		// TODO : FIND WAY TO SCALE IT!
+		document.getElementById("Gradient-fill").setAttributeNS(null, "x1", ((offsetX-87.5)/350 * 100) + "%");
+		// document.getElementById("Gradient-fill").setAttributeNS(null, "y1", (offsetY-87.5/350 * 100) + "%");
+
+		currentX_1 = offsetX;
+		currentY_1 = offsetY;
+	} else {
+		var dx = offsetX - currentX_2;
+		var dy = offsetY - currentY_2;
+
+		transformMatrix_2[4] += dx;
+		transformMatrix_2[5] += dy;
+
+		var newMatrixStr = "matrix(" + this.transformMatrix_2.join(' ') + ")";
+		document.getElementById(id).setAttributeNS(null, "transform", newMatrixStr);
+
+		document.getElementById("Gradient-fill").setAttributeNS(null, "x2", ((offsetX-87.5)/350 * 100) + "%");
+		// document.getElementById("Gradient-fill").setAttributeNS(null, "y2", (offsetY/350 * 100) + "%");
+
+		currentX_2 = offsetX;
+		currentY_2 = offsetY;
+	}
+	
+}
+
+</script>
+
+</html>

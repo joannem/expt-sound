@@ -9,7 +9,7 @@ function Visualiser() {
 	that.canvasWaveformHeight = 150;
 	that.canvasSpecHeight = 513;
 
-	// setup blank waveform canvases
+	//-- setup blank waveform canvases
 	that.canvasLeftCtx = $("#waveform-canvas-left").get()[0].getContext("2d");
 	that.canvasRightCtx = $("#waveform-canvas-right").get()[0].getContext("2d");
 	that.canvasLeft = document.getElementById('waveform-canvas-left');
@@ -23,7 +23,7 @@ function Visualiser() {
 	that.canvasLeftCtx.fillRect(0, 0, that.windowWidth, that.canvasWaveformHeight);
 	that.canvasRightCtx.fillRect(0, 0, that.windowWidth, that.canvasWaveformHeight);
 
-	// setup blank spectrogram canvas
+	//-- setup blank spectrogram canvas
 	that.canvasSpecCtx = $("#spectrogram-canvas").get()[0].getContext("2d");
 	that.canvasVisualCtx = $("#visualSpect-canvas").get()[0].getContext("2d");
 	that.canvasSpec = document.getElementById('spectrogram-canvas');
@@ -35,7 +35,7 @@ function Visualiser() {
 	that.canvasSpecCtx.fillRect(0, 0, that.windowWidth, that.canvasSpecHeight);
 	that.canvasSpecCtx.translate(0, -1);	// leave a 1 px gap below
 
-	// setup blank spectrogram visualiser canvas
+	//-- setup blank spectrogram visualiser canvas
 	that.canvasVisual.setAttribute('width', that.windowWidth);
 	that.canvasVisual.setAttribute('height', that.canvasSpecHeight);
 
@@ -56,6 +56,8 @@ Visualiser.prototype = {
 	drawWaveform: function(buffer) {
 		if (buffer != null) {
 			if (this.canvasLeftCtx != null && this.canvasRightCtx != null) {
+
+				// TODO: next time just do canvas.150clear()
 				// clean canvases
 				this.canvasLeftCtx.fillStyle = '#000000';
 				this.canvasRightCtx.fillStyle = '#000000';
@@ -69,11 +71,12 @@ Visualiser.prototype = {
 				var maxR = 0;
 
 				var bufferLen = buffer.length;
-				var jump = Math.floor(bufferLen / this.windowWidth);
+				console.log("buffer length: " + bufferLen);
+				var jump = Math.floor(bufferLen / this.windowWidth) > 1 ? Math.floor(bufferLen / this.windowWidth) : 1;
 
 				// note: nominal range of PCM data is [-1.0, 1.0]
 				// TODO: decide on whether to fix maxL and maxR to 1.0
-				for (var i = 0; i < bufferLen; i = i + jump) {
+				for (var i = 0; i < bufferLen; i += jump) {
 					maxL = Math.abs(pcmL[i]) > maxL ? Math.abs(pcmL[i]) : maxL;
 					maxR = Math.abs(pcmR[i]) > maxR ? Math.abs(pcmR[i]) : maxR;
 
@@ -86,7 +89,7 @@ Visualiser.prototype = {
 				this.canvasLeftCtx.fillStyle = '#0FF000';
 				this.canvasRightCtx.fillStyle = '#0FF000';
 
-				for(var i = 0; i < bufferLen; i = i + jump) {
+				for(var i = 0; i < bufferLen; i += jump) {
 					// -5 translation to leave a 2.5px gap between waveform and border of canvas
 					heightL = Math.abs(pcmL[i] / maxL * ((this.canvasWaveformHeight / 2) - 5));
 					heightR = Math.abs(pcmR[i] / maxR * ((this.canvasWaveformHeight / 2) - 5));
@@ -147,7 +150,7 @@ Visualiser.prototype = {
 				// calculate the magnitude from real and imaginary parts
 				for (var j = 0; j < (windowSize/2 + 1); j++) {
 					// addtional sqrt() to scale magnitude
-					magnitude[j] = Math.sqrt(Math.sqrt((specRe[j] * specRe[j]) + (specIm[j] * specIm[j])));
+					magnitude[j] = Math.sqrt((specRe[j] * specRe[j]) + (specIm[j] * specIm[j]));
 					maxMagnitude = maxMagnitude > magnitude[j] ? maxMagnitude : magnitude[j];
 
 				}
@@ -155,8 +158,6 @@ Visualiser.prototype = {
 
 				pos += (windowSize / 2);
 			}
-
-			// console.log(soundFFT); // noOfFrames * (windowSize/2 + 1)
 
 			return maxMagnitude;
 
@@ -192,13 +193,15 @@ Visualiser.prototype = {
 	 * @param  {float} maxMagnitude	Maximum magnitude recorded from the FFT. Used for
 	 *                              scaling the colours of the spectrogram.
 	 */
-	drawSpectrogram: function(noOfFrames, maxFreq, maxMagnitude) {
+	drawSpectrogram: function(bufferLen, windowSize, overlap, noOfFrames, maxFreq, maxMagnitude) {
 		if (this.canvasSpecCtx != null) {
-			// reset canvas
+			//-- reset canvas
 			this.canvasSpecCtx.fillStyle = '#000000';
 			this.canvasSpecCtx.fillRect(0, 1, this.windowWidth, this.canvasSpecHeight);
+			this.canvasVisual.setAttribute('width', noOfFrames);
+			this.canvasVisual.setAttribute('height', windowSize/2 + 1);
 
-			// determine spectrogram colours
+			//-- determine spectrogram colours
 			var hot = new chroma.ColorScale({
 				colors:['#000000', '#FF0000', '#FFFF00', '#FFFFFF'],
 				positions:[0, .25, .75, 1],
@@ -210,24 +213,25 @@ Visualiser.prototype = {
 
 			var x = 0;
 			for(var i = 0; i < noOfFrames; i += jump) {
+			// for(var i = 0; i < noOfFrames; i++) {
+				x = Math.round((windowSize * overlap) * i * (this.windowWidth/bufferLen));
+
 				for (var freq = 0; freq < maxFreq; ++freq) {
 					this.canvasSpecCtx.fillStyle = hot.getColor(soundFFT[i][freq]).hex();
 					this.canvasSpecCtx.fillRect(x, (maxFreq - freq), 1, 1);
 
 				}
-				++x;
 
 			}
 			console.log('spectrogram: done');
-			// console.log(soundFFT); // noOfFrames * (windowSize/2 + 1)
-
-			// this.drawEdges();
 
 		} else {
 			console.log ("Error: canvasSpecCtx not defined.");
 
 		}
 	},
+
+	// TODO: create own image processing scripts
 
 	// TODO: expose parameters
 	drawEdges: function() {
