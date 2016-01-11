@@ -69,3 +69,19 @@ function drawPixel(SVGRoot, x, y) {
 
 	SVGRoot.childNodes[1].appendChild(pixel);
 }
+
+
+// Canvas to SVG
+// code obtained from: http://svgopen.org/2009/papers/54-SVG_vs_Canvas_on_Trivial_Drawing_Application/
+// function importCanvas(sourceCanvas, targetSVG) {
+
+// 	// get base64 encoded png from Canvas
+// 	var image = sourceCanvas.toDataURL("image/png");
+
+// 	// Create new SVG Image element.  Must also be careful with the namespaces.
+// 	var svgimg = document.createElementNS("http://www.w3.org/2000/svg", "image");
+// 	svgimg.setAttributeNS("http://www.w3.org/1999/xlink", 'xlink:href', image);
+
+// 	// Append image to SVG
+// 	targetSVG.appendChild(svgimg);
+// }

@@ -26,6 +26,7 @@ Sound.prototype = {
 	loadBufferSrc: function (relativePlayStartTimeInSecs) {
 		this.bufferSrc = this.audioCtx.createBufferSource();
 		this.bufferSrc.buffer = this.soundData;
+		console.log(this.soundData);
 		this.bufferSrc.loop = this.isLoop;
 		this.bufferSrc.connect(this.audioCtx.destination);
 		this.bufferSrc.relativePlayStartTimeInSecs = relativePlayStartTimeInSecs;

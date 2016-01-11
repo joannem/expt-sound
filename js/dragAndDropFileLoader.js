@@ -72,9 +72,10 @@ DDFileLoader.prototype = {
 	 *                                   an AudioBuffer for playback
 	 */
 	decodeArrayBuffer: function (arraybuffer) {
-		var offlineAc = new OfflineAudioContext(2, 44100*40, 44100);
-
+		// var offlineAc = new OfflineAudioContext(2, 44100*40, 44100);
+		var offlineAc = new OfflineAudioContext(5, 44100*40, 44100);
 		offlineAc.decodeAudioData(arraybuffer, (function (soundData) {
+			console.log(soundData);
 			prepareSound(soundData);
 			setupVisualisations();
 			$('.waveform-slider').attr('max', soundData.duration * 1000);

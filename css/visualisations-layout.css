@@ -6,6 +6,12 @@
 	color: #5C5C5C;
 }
 
+#reconstructed-waveform-canvas {
+	background-color: #000000;
+	height: 150;
+	width: 100%;
+}
+
 #controls {
 	padding: 10px;
 	text-align: center;
