@@ -1,0 +1,32 @@
+.container {
+	margin: 3%;
+}
+
+.control {
+	float: left;
+}
+
+.control-button {
+	width: 80px;
+	padding: 10px;
+	font-size: 14pt;
+	margin: 10px;
+}
+
+#svg-canvas {
+	background-color: #FFFFFF;
+	border-width: 1px;
+	border-color: black;
+	border-style: solid;
+}
+
+#svg-canvas-2 {
+	background-color: #FFFFFF;
+	border-width: 1px;
+	border-color: black;
+	border-style: solid;
+}
+
+.svg-editable-obj {
+	cursor: move;
+}

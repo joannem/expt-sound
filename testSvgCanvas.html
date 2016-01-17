@@ -1,0 +1,71 @@
+<html>
+<head>
+	<title>Test SVG Canvas</title>
+	<link rel="stylesheet" type="text/css" href="css/testSvgCanvas.css">
+</head>
+
+<body>
+	<div class="container">
+		<!-- <div class="control">
+			<button class="control-button">draw</button> 
+			<br>
+			<button class="control-button">move</button>
+		</div> -->
+
+		<svg
+			id="svg-canvas"  
+			version="1.1"
+			baseProfile="full"
+			width="900" height="450"
+			onmousedown="addNewPath(evt, this)"
+		>	
+
+			<defs>
+				<linearGradient id="Gradient-2" x1="0" y1="0" x2="0" y2="100%">
+					<stop offset="0%" stop-color="blue" />
+					<stop offset="50%" stop-color="orange" />
+					<stop offset="100%" stop-color="blue" />
+				</linearGradient>
+			</defs>
+
+			<g class="svg-editable-obj" 
+				onmouseover="showBox('path-1-rect')"
+				onmouseout="deselectElement(evt, 'path-1-rect')"
+				onmousedown="testTranslation(evt, this)"
+				transform="matrix(1 0 0 1 0 0)" >
+
+				<path id="path-1" 
+					d="m 20,10 50,30 90,13" 
+					fill="none" 
+					stroke="url(#Gradient-2)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"stroke-linejoin="round"
+					/>
+
+				<rect id="path-1-rect"
+					x="17.5" y="7.5"
+					width="145" height="48" currentMatrix
+					stroke="green" stroke-width="1" stroke-opacity="0"
+					fill="transparent" />
+			</g>
+
+			<g></g>
+		</svg>
+
+		<br>
+
+		<svg
+			id="svg-canvas-2"  
+			version="1.1"
+			baseProfile="full"
+			width="900" height="450"
+		>	
+
+		<g></g>
+		</svg>
+	</div>
+</body>
+<script type="text/javascript" src="js/vendor/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="js/SvgPath.js"></script>
+<script type="text/javascript" src="js/SvgCanvas.js"></script>
+<script type="text/javascript" src="js/testSvgCanvas.js"></script>
+
+</html>

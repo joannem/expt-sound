@@ -38,64 +38,79 @@
 					</linearGradient>
 				</defs>
 				<path id="path-3" 
-					d="m 100,200 60,50 90,13 0,20 -90,-13 -60,-50 0,-20" 
+					d="m 200,50 60,50 90,13 0,20 -90,-13 -60,-50 0,-20" 
 					fill="url(#Gradient-2)"
 					stroke="black"
 					stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-linejoin="round"
 				/>
 				<path id="path-4" 
-					d="m 400,200 50,0 0,20 -50,0 0,-20" 
+					d="m 500,50 50,0 0,20 -50,0 0,-20" 
 					fill="url(#Gradient-2)"
 					stroke="url(#Gradient-2)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-linejoin="round"
 				/>
 				<path id="path-5" 
-					d="m 400,250 50,0 0,20 -50,0 0,-20" 
+					d="m 500,100 50,0 0,20 -50,0 0,-20" 
 					fill="url(#Gradient-2)"
 					stroke-width="5" stroke-linecap="round" stroke-linejoin="round" stroke-linejoin="round"
 				/>
 
 				<path id="path-6a" 
-					d="m 600,200 78,0 0,20 -78,0 0,-20" 
+					d="m 700,50 78,0 0,20 -78,0 0,-20" 
 					fill="url(#Gradient-2)"
 					stroke="url(#Gradient-2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-linejoin="round"
-					transform="rotate(39.8 600 200)"
+					transform="rotate(39.8 700 50)"
 				/>
 				<path id="path-6b" 
-					d="m 650,245 91,0 0,20 -91,0 0,-20" 
+					d="m 750,95 91,0 0,20 -91,0 0,-20" 
 					fill="url(#Gradient-2)"
 					stroke="url(#Gradient-2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-linejoin="round"
-					transform="rotate(10 650 245)"
+					transform="rotate(10 750 95)"
 				/>
+
+				<path id="path-to-fill" d="M20,230 Q40,205 50,220 T70,225 T290,230" fill="none" stroke="url(#Gradient-fill)" stroke-width="5"/>
 			</g>
 		</svg>
 	</div>
 
 	<div style="float:left; width:350px; height: 420px; border: solid black 1px; padding: 15px;">
 		Fill: <br><br>
-		<div style="width:100%; height: 350px; border: solid black 1px">
+		<div style="width:100%; height: 13%; border: solid black 1px">
 			<svg id="svg-fill" version="1.1" baseProfile="full" width="100%" height="100%">	
 				<g>
 					<defs>
-						<linearGradient id="Gradient-fill" x1="0" y1="0" x2="100%" y2="0">
-							<stop offset="0%" stop-color="lightblue" />
-							<stop offset="100%" stop-color="#ef5b2b" />
-						</linearGradient>
+						<pattern id="Background-pattern" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">
+							<rect x="0" y="0" width="5" height="5" fill="white"/>
+							<rect x="5" y="0" width="5" height="5" fill="grey"/>
+							<rect x="0" y="5" width="5" height="5" fill="grey"/>
+							<rect x="5" y="5" width="5" height="5" fill="white"/>
+						</pattern>
+
+	 					<!-- <linearGradient id="Gradient-fill" x1="0" y1="0" x2="100%" y2="0"> -->
+						<radialGradient id="Gradient-fill" cx="25%" cy="25%" fx="5%" fy="15%" r="2">
+							<stop id="Gradient-fill-red" offset="25%" stop-color="red" />
+							<stop id="Gradient-fill-yellow" offset="50%" stop-color="yellow" stop-opacity="0.9" />
+							<stop id="Gradient-fill-white" offset="75%" stop-color="white" stop-opacity="0.75" />
+						</radialGradient>
+						<!-- </linearGradient> -->
 					</defs>
+
+					<rect id="rect-background"  
+						x="0" y="0" width="100%" height="100%" 
+						fill="url(#Background-pattern)"
+					/>
+
 					<rect id="rect"  
 						x="0" y="0" width="100%" height="100%" 
 						fill="url(#Gradient-fill)"
 					/>
 
-					<line x1="25%" x2="25%" y1="0" y2="100%" stroke="black" fill="transparent" stroke-width="2"/>
-					<line x1="50%" x2="50%" y1="0" y2="100%" stroke="black" fill="transparent" stroke-width="1"/>
-					<line x1="75%" x2="75%" y1="0" y2="100%" stroke="black" fill="transparent" stroke-width="2"/>
+					<line stroke-dasharray="2,2" x1="25%" x2="25%" y1="0" y2="100%" stroke="black" fill="transparent" stroke-width="2" opacity="0.4"/>
+					<line stroke-dasharray="2,2" x1="50%" x2="50%" y1="0" y2="100%" stroke="black" fill="transparent" stroke-width="2" opacity="0.4"/>
+					<line stroke-dasharray="2,2" x1="75%" x2="75%" y1="0" y2="100%" stroke="black" fill="transparent" stroke-width="2" opacity="0.4"/>
 
-					<line x1="0" x2="100%" y1="25%" y2="25%" stroke="black" fill="transparent" stroke-width="2"/>
-					<line x1="0" x2="100%" y1="50%" y2="50%" stroke="black" fill="transparent" stroke-width="1"/>
-					<line x1="0" x2="100%" y1="75%" y2="75%" stroke="black" fill="transparent" stroke-width="2"/>
-
-					<circle id="circle-1" cx="87.5" cy="87.5" r="10" stroke="black" fill="lightblue" stroke-width="1"/>
-					<circle id="circle-2" cx="75%" cy="25%" r="10" stroke="black" fill="#ef5b2b" stroke-width="1"/>
+					<circle id="circle-1" cx="25%" cy="50%" r="10" stroke="black" fill="red" stroke-width="1"/>
+					<circle id="circle-2" cx="50%" cy="50%" r="10" stroke="black" fill="yellow" stroke-width="1"/>
+					<circle id="circle-3" cx="75%" cy="50%" r="10" stroke="black" fill="white" stroke-width="1"/>
 				</g>
 			</svg>
 		</div>
@@ -132,44 +147,65 @@ $('#circle-2').mousedown(function() {
 	});
 });
 
-var currentX_1 = 87.5;
-var currentY_1 = 87.5;
-var currentX_2 = 262.5;
-var currentY_2 = 87.5;
+$('#circle-3').mousedown(function() {
+	$(this).mousemove(function(evt) {
+		moveGroup("circle-3", evt.offsetX, evt.offsetY);
+	}).mouseup(function() {
+		$(this).off('mousemove');
+		$(this).off('mouseup');
+	}).mouseout(function() {
+		$(this).off('mousemove');
+		$(this).off('mouseup');
+	});
+});
+
+var currentX_1 = 0.25;
+var currentY_1 = 0.50;
+var currentX_2 = 0.50;
+var currentX_3 = 0.75;
 var transformMatrix_1 = [1, 0, 0, 1, 0, 0];
 var transformMatrix_2 = [1, 0, 0, 1, 0, 0];
+var transformMatrix_3 = [1, 0, 0, 1, 0, 0];
 
 function moveGroup(id, offsetX, offsetY) {
 	if (id == "circle-1") {
-		var dx = offsetX - currentX_1;
-		var dy = offsetY - currentY_1;
+		var dx = offsetX - currentX_1 * 350;
+		var dy = offsetY - currentY_1 * 45.5;
 
 		transformMatrix_1[4] += dx;
 		transformMatrix_1[5] += dy;
 
 		var newMatrixStr = "matrix(" + this.transformMatrix_1.join(' ') + ")";
 		document.getElementById(id).setAttributeNS(null, "transform", newMatrixStr);
-		// TODO : FIND WAY TO SCALE IT!
-		document.getElementById("Gradient-fill").setAttributeNS(null, "x1", ((offsetX-87.5)/350 * 100) + "%");
-		// document.getElementById("Gradient-fill").setAttributeNS(null, "y1", (offsetY-87.5/350 * 100) + "%");
-
-		currentX_1 = offsetX;
-		currentY_1 = offsetY;
-	} else {
-		var dx = offsetX - currentX_2;
-		var dy = offsetY - currentY_2;
+	
+		document.getElementById("Gradient-fill-red").setAttributeNS(null, "offset", ((offsetX)/350 * 100) + "%");
+		document.getElementById("Gradient-fill-red").setAttributeNS(null, "fx", ((offsetX)/350 * 100) + "%");
+		document.getElementById("Gradient-fill-red").setAttributeNS(null, "fy", ((offsetY)/45.5 * 100) + "%");
+	
+		currentX_1 = offsetX/350;
+		currentY_1 = offsetY/45.5;
+	} else if (id == "circle-2") {
+		var dx = offsetX - currentX_2 * 350;
 
 		transformMatrix_2[4] += dx;
-		transformMatrix_2[5] += dy;
 
 		var newMatrixStr = "matrix(" + this.transformMatrix_2.join(' ') + ")";
 		document.getElementById(id).setAttributeNS(null, "transform", newMatrixStr);
 
-		document.getElementById("Gradient-fill").setAttributeNS(null, "x2", ((offsetX-87.5)/350 * 100) + "%");
-		// document.getElementById("Gradient-fill").setAttributeNS(null, "y2", (offsetY/350 * 100) + "%");
+		document.getElementById("Gradient-fill-yellow").setAttributeNS(null, "offset", ((offsetX)/350 * 100) + "%");
 
-		currentX_2 = offsetX;
-		currentY_2 = offsetY;
+		currentX_2 = offsetX/350;
+	} else {
+		var dx = offsetX - currentX_3 * 350;
+
+		transformMatrix_3[4] += dx;
+
+		var newMatrixStr = "matrix(" + this.transformMatrix_3.join(' ') + ")";
+		document.getElementById(id).setAttributeNS(null, "transform", newMatrixStr);
+
+		document.getElementById("Gradient-fill-white").setAttributeNS(null, "offset", ((offsetX)/350 * 100) + "%");
+
+		currentX_3 = offsetX/350;
 	}
 	
 }
