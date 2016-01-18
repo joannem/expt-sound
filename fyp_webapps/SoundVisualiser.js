@@ -42,7 +42,6 @@ function SoundVisualiser(waveformCanvasObj, spectrogramCanvasObj, spectHeight, w
 	function setupBlankWaveformCanvas() {
 		waveformCanvasObj.attr('width', width);
 		waveformCanvasObj.attr('height', waveformHeight);	
-		// TODO: check if these were set correctly
 
 		waveformCanvasCtx.fillRect(0, 0, width, waveformHeight);
 	}
@@ -74,13 +73,16 @@ function SoundVisualiser(waveformCanvasObj, spectrogramCanvasObj, spectHeight, w
 	 * @param  {AudioBuffer} audioBuffer AudioBuffer containing sound data
 	 */
 	this.drawWaveform = function(audioBuffer) {
-		waveformCanvasCtx.clearRect(0, 0, waveformCanvasCtx.width, waveformCanvasCtx.height);
+		waveformCanvasCtx.clearRect(0, 0, width, waveformHeight);
+		waveformCanvasCtx.fillStyle = '#000000';
+		waveformCanvasCtx.fillRect(0, 0, width, waveformHeight);
+
 		waveformCanvasCtx.fillStyle = '#0FF000';
 		
 		//--- calculate waveform dimensions from audio data
 		var bufferLen = audioBuffer.length;
 		var jump = Math.floor(bufferLen / width) > 1 ? Math.floor(bufferLen / width) : 1;
-		
+
 		//--- retrieve stereo PCM data from audioBuffer
 		var pcmL = audioBuffer.getChannelData(0);
 		var pcmR = audioBuffer.getChannelData(1);
@@ -105,8 +107,10 @@ function SoundVisualiser(waveformCanvasObj, spectrogramCanvasObj, spectHeight, w
 	};
 
 	this.drawSpectrogram = function(audioBuffer) {
-		console.log("begin drawing spectrogram...")
-		spectrogramCanvasCtx.clearRect(0, 0, spectrogramCanvasCtx.width, spectrogramCanvasCtx.height);
+		console.log("Begin drawing spectrogram...")
+		spectrogramCanvasCtx.clearRect(0, 0, width, spectHeight);
+		spectrogramCanvasCtx.fillStyle = '#000000';
+		spectrogramCanvasCtx.fillRect(0, 0, width, spectHeight);
 
 		//--- retrieve stereo PCM data from audioBuffer
 		var pcmL = audioBuffer.getChannelData(0);
@@ -138,40 +142,50 @@ function SoundVisualiser(waveformCanvasObj, spectrogramCanvasObj, spectHeight, w
 		var maxFreq = (windowSize/2 + 1);
 		var windowedFrame = [];
 		var magnitude = [];
+		
 		var pos = 0;
 
 		for (var i = 0; i < noOfFrames; i++) {	
 
-			// slice the next frame apply hanning window to the frame
+			//--- slice the next frame apply hanning window to the frame
 			windowedFrame = hanningWindow(monoAudio.slice(pos, pos + windowSize), windowSize);
 
-			// fft values of the frame
+			//--- fft values of the frame
 			fft.forwardReal(windowedFrame, specRe, specIm);
-			
-			// calculate the magnitude from real and imaginary parts
+
+			//--- calculate the magnitude from real and imaginary parts
 			for (var j = 0; j < maxFreq; j++) {
-				magnitude[j] = Math.sqrt((specRe[j] * specRe[j]) + (specIm[j] * specIm[j]));
+				// NOTE: added additional sqrt for clarity
+				magnitude[j] = Math.sqrt(Math.sqrt((specRe[j] * specRe[j]) + (specIm[j] * specIm[j])));
 				maxSpecAmp = maxSpecAmp > magnitude[j] ? maxSpecAmp : magnitude[j];
 
 			}
 
 			soundFFT.push(magnitude);
 
-			pos += (windowSize / 2);
-		}
+			//--- reset everything
+			magnitude = [];
+			specRe = [];
+			specIm = [];
 
+			pos += (windowSize * overlap);
+		}
+		
+		// TODO: find proper way to colour spectrogram
 		//--- determine spectrogram colours
 		var hot = new chroma.ColorScale({
-			colors:['#000000', '#FFFF00', '#FF0000'],
-			positions:[0, 0.50, 1.0],
+			colors:['#000000', '#FF0000', '#FFFF00', '#FFFFFF'],
+			positions:[0, .15, .20, .25],
 			mode:'rgb',
 			limits:[0, maxSpecAmp]
 		});
 
 		//--- paint the canvas
 		var jump = Math.floor(noOfFrames / width) > 1 ? Math.floor(noOfFrames / width) : 1;
+
+		// console.log(soundFFT[0]);
+
 		var x = 0;
-		
 		for(var i = 0; i < noOfFrames; i += jump) {
 			x = Math.round((windowSize * overlap) * i * (width/audioBuffer.length));
 

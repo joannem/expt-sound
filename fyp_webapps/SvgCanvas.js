@@ -88,6 +88,7 @@ function SvgCanvas(canvasObj) {
 
 		//--- insert group onto canvas
 		newSvgPathObj.offsetPosition();
+		newSvgPathObj.updateGuideBox();
 		canvasObj[0].appendChild(newSvgPathObj.getGroupedSvgObj());
 
 		//--- update list of objects in SvgCanvas

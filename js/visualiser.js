@@ -72,6 +72,7 @@ Visualiser.prototype = {
 
 				var bufferLen = buffer.length;
 				console.log("buffer length: " + bufferLen);
+				console.log(this.windowWidth);
 				var jump = Math.floor(bufferLen / this.windowWidth) > 1 ? Math.floor(bufferLen / this.windowWidth) : 1;
 
 				// note: nominal range of PCM data is [-1.0, 1.0]
@@ -135,6 +136,7 @@ Visualiser.prototype = {
 			var maxMagnitude = 0; 	// for scaling later
 
 			var pos = 0;
+			// console.log(buffer.getChannelData(0));
 			for (var i = 0; i < noOfFrames; i++) {
 				// reset all arrays
 				specRe = [];
@@ -149,11 +151,11 @@ Visualiser.prototype = {
 				
 				// calculate the magnitude from real and imaginary parts
 				for (var j = 0; j < (windowSize/2 + 1); j++) {
-					// addtional sqrt() to scale magnitude
 					magnitude[j] = Math.sqrt((specRe[j] * specRe[j]) + (specIm[j] * specIm[j]));
 					maxMagnitude = maxMagnitude > magnitude[j] ? maxMagnitude : magnitude[j];
 
 				}
+
 				soundFFT.push(magnitude);
 
 				pos += (windowSize / 2);
@@ -213,7 +215,6 @@ Visualiser.prototype = {
 
 			var x = 0;
 			for(var i = 0; i < noOfFrames; i += jump) {
-			// for(var i = 0; i < noOfFrames; i++) {
 				x = Math.round((windowSize * overlap) * i * (this.windowWidth/bufferLen));
 
 				for (var freq = 0; freq < maxFreq; ++freq) {

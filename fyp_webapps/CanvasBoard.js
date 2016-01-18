@@ -7,7 +7,7 @@
 
 var gDragNDropFileLoader = new DragNDropFileLoader($("#sound-space"), onFileDecode);
 var gSvgCanvas = new SvgCanvas($("#svg-canvas"));
-var gSoundVisualiser = new SoundVisualiser($("#waveform-canvas"), $("#spectrogram-canvas"), 746, 120, 1050);	// TODO: values are dummy values
+var gSoundVisualiser = new SoundVisualiser($("#waveform-canvas"), $("#spectrogram-canvas"), 513, 150, 1050);	// TODO: values are dummy values
 var gSvgPathContextMenu = new SvgPathContextMenu();
 var gCurrTool = "pencilTool";
 
