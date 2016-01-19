@@ -14,27 +14,44 @@
 	</div>
 
 	<div id="sound-space">
+
+		<!-- spectrogram -->
+
 		<div id="canvas-board">
-			<canvas id="spectrogram-canvas"></canvas>
 			<svg
 				id="svg-canvas"
 				version="1.1"
-				width="1050" height="746"
+				width="1050" height="700"
 			>
 			</svg>
+			<canvas id="spectrogram-canvas"></canvas>
 		</div>
 
-		<div id="waveform">
+		<!-- waveform reconstructed by SPSI -->
+
+		Reconstructed waveform:
+		<div class="waveform">
+			<canvas id="spsi-waveform-canvas"></canvas>
+			<div class="playback-buttons">
+				<button id="spsi-play-pause-btn">Play</button>
+				<button id="spsi-stop-btn">Stop</button>
+			</div>
+		</div>
+
+		<!-- original waveform -->
+
+		Original waveform:
+		<div class="waveform">
 			<canvas id="waveform-canvas"></canvas>
+			<div class="playback-buttons">
+				<button id="play-pause-btn">Play</button>
+				<button id="stop-btn">Stop</button>
+			</div>
 		</div>
 
-		<div id="playback-buttons">
-			<button id="play-pause-btn">Play</button>
-			<button id="stop-btn">Stop</button>
-		</div>
 	</div>
 
-	<div id="left-sidebar">
+	<div id="right-sidebar">
 		<div id="tool-used">
 			Tool: Pencil
 		</div>
