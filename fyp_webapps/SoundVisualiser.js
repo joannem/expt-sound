@@ -50,84 +50,66 @@ function SoundVisualiser(waveformCanvasObj, spectrogramCanvasObj, spectHeight, w
 	 * Does a Hanning window on a given frame.
 	 * Code adapted from: http://stackoverflow.com/questions/
 	 * 11600515/hanning-von-hann-window
-	 * @param  {Array} 	frame  Values from a frame of from a signal
-	 * @param  {int} 	size   Size of frame
-	 * @return {Array}	       Windowed frame
+	 * @param {Array} frame  			Values from a frame of from a signal
+	 * @param {int} size 				Size of frame
+	 * @param {Array} windowedFrame		Windowed frame
 	 */
-	function hanningWindow(frame, size) {
-		var windowedFrame = [];
-
+	function hanningWindow(frame, size, windowedFrame) {
 		for (var i = 0; i < size; i++) {
 			windowedFrame.push(frame[i] * 0.5 * (1.0 - Math.cos(2.0 * Math.PI * i / size)));
 		}
-
-		return windowedFrame;
 	}
 
 
 	//----- privileged methods -----//
 	
 	/**
-	 * (Re)draws the waveform of the sound onto the waveform canvas.
+	 * (Re)draws the original waveform of the sound onto the waveform canvas.
 	 * 
-	 * @param  {AudioBuffer} audioBuffer AudioBuffer containing sound data
+	 * @param {Array} monoPcmData	PCM of sound in mono form
+	 * @param {int} pcmDataLen		Length of monoPcmData
+	 * @param {int} maxAmp 			Maximum amplitude of all values in monoPcmData
 	 */
-	this.drawWaveform = function(audioBuffer) {
+	this.drawWaveform = function(monoPcmData, pcmDataLen, maxAmp) {
 		waveformCanvasCtx.clearRect(0, 0, width, waveformHeight);
 		waveformCanvasCtx.fillStyle = '#000000';
 		waveformCanvasCtx.fillRect(0, 0, width, waveformHeight);
 
-		waveformCanvasCtx.fillStyle = '#0FF000';
-		
 		//--- calculate waveform dimensions from audio data
-		var bufferLen = audioBuffer.length;
-		var jump = Math.floor(bufferLen / width) > 1 ? Math.floor(bufferLen / width) : 1;
-
-		//--- retrieve stereo PCM data from audioBuffer
-		var pcmL = audioBuffer.getChannelData(0);
-		var pcmR = audioBuffer.getChannelData(1);
-
-		//--- calculate max amplitude for scaling later
-		var maxAmp = 0;
-		for (var i = 0; i < bufferLen; i += jump) {
-			maxAmp = Math.abs(pcmL[i]) > maxAmp ? Math.abs(pcmL[i]) : maxAmp;
-			maxAmp = Math.abs(pcmR[i]) > maxAmp ? Math.abs(pcmR[i]) : maxAmp;
-		}
+		var jump = Math.floor(pcmDataLen / width) > 1 ? Math.floor(pcmDataLen / width) : 1;
 		
 		//--- draw scaled waveform
-		var x = 0;
-		var monoAmplitude = 0; var waveHeight = 0;
-		for(var i = 0; i < bufferLen; i += jump) {
-			monoAmplitude = Math.abs( (pcmL[i] + pcmR[i]) / 2 ); // convert stereo to mono
-			waveHeight = monoAmplitude / maxAmp * waveformHeight;
+		console.log("Begin drawing waveform...");
+		
+		waveformCanvasCtx.fillStyle = '#0FF000';
+		var x = 0; var waveHeight = 0;
+		for(var i = 0; i < pcmDataLen; i += jump) {
+			waveHeight = monoPcmData[i] / maxAmp * waveformHeight;
 			waveformCanvasCtx.fillRect(x, (waveformHeight / 2) - waveHeight, 1, (waveHeight * 2));
 
 			x++;
 		}
+
+		console.log("Waveform: done.");
 	};
 
-	this.drawSpectrogram = function(audioBuffer) {
+	/**
+	 * (Re)draws the spectrogram of the sound onto the spectrogram canvas.
+	 * 
+	 * @param {Array} monoPcmData	PCM of sound in mono form
+	 * @param {int} pcmDataLen		Length of monoPcmData
+	 */
+	this.drawSpectrogram = function(monoPcmData, pcmDataLen) {
 		console.log("Begin drawing spectrogram...")
 		spectrogramCanvasCtx.clearRect(0, 0, width, spectHeight);
 		spectrogramCanvasCtx.fillStyle = '#000000';
 		spectrogramCanvasCtx.fillRect(0, 0, width, spectHeight);
 
-		//--- retrieve stereo PCM data from audioBuffer
-		var pcmL = audioBuffer.getChannelData(0);
-		var pcmR = audioBuffer.getChannelData(1);
-
-		// TODO: take out stereo to mono convertion from this class
-		//--- convert stereo to mono
-		var monoAudio = [];
-		for(var i = 0; i < audioBuffer.length; i++) {
-			monoAudio[i] = Math.abs( (pcmL[i] + pcmR[i]) / 2 ); // convert stereo to mono
-		}
-
 		//--- values for calculating FFT:
 		var logN = 10;
 		var overlap = 0.5;
 		var windowSize = 1 << logN;
-		var noOfFrames = Math.floor(audioBuffer.length / (overlap * windowSize)) - 1;	// discard the last frame
+		var noOfFrames = Math.floor(pcmDataLen / (overlap * windowSize)) - 1;	// discard the last frame
 
 		//--- set-up FFT calculator
 		var specRe = [];
@@ -141,30 +123,30 @@ function SoundVisualiser(waveformCanvasObj, spectrogramCanvasObj, spectHeight, w
 		
 		var maxFreq = (windowSize/2 + 1);
 		var windowedFrame = [];
-		var magnitude = [];
 		
 		var pos = 0;
 
 		for (var i = 0; i < noOfFrames; i++) {	
 
 			//--- slice the next frame apply hanning window to the frame
-			windowedFrame = hanningWindow(monoAudio.slice(pos, pos + windowSize), windowSize);
+			windowedFrame = [];
+			hanningWindow(monoPcmData.slice(pos, pos + windowSize), windowSize, windowedFrame);
 
-			//--- fft values of the frame
+			//--- calculate fft values of each frame
 			fft.forwardReal(windowedFrame, specRe, specIm);
 
 			//--- calculate the magnitude from real and imaginary parts
 			for (var j = 0; j < maxFreq; j++) {
 				// NOTE: added additional sqrt for clarity
-				magnitude[j] = Math.sqrt(Math.sqrt((specRe[j] * specRe[j]) + (specIm[j] * specIm[j])));
-				maxSpecAmp = maxSpecAmp > magnitude[j] ? maxSpecAmp : magnitude[j];
+				specMagnitude[j] = Math.sqrt(Math.sqrt((specRe[j] * specRe[j]) + (specIm[j] * specIm[j])));
+				maxSpecAmp = maxSpecAmp > specMagnitude[j] ? maxSpecAmp : specMagnitude[j];
 
 			}
 
-			soundFFT.push(magnitude);
+			soundFFT.push(specMagnitude);
 
 			//--- reset everything
-			magnitude = [];
+			specMagnitude = [];
 			specRe = [];
 			specIm = [];
 
@@ -183,11 +165,9 @@ function SoundVisualiser(waveformCanvasObj, spectrogramCanvasObj, spectHeight, w
 		//--- paint the canvas
 		var jump = Math.floor(noOfFrames / width) > 1 ? Math.floor(noOfFrames / width) : 1;
 
-		// console.log(soundFFT[0]);
-
 		var x = 0;
 		for(var i = 0; i < noOfFrames; i += jump) {
-			x = Math.round((windowSize * overlap) * i * (width/audioBuffer.length));
+			x = Math.round((windowSize * overlap) * i * (width/pcmDataLen));
 
 			for (var freq = 0; freq < maxFreq; ++freq) {
 				spectrogramCanvasCtx.fillStyle = hot.getColor(soundFFT[i][freq]);
@@ -201,10 +181,6 @@ function SoundVisualiser(waveformCanvasObj, spectrogramCanvasObj, spectHeight, w
 
 	return that;
 }
-
-
-// TODO: make a function that redraws spectrogram based on new
-// rasterised data.
 
 // TODO: make a function that returns the pixel data to allow 
 // edge detection.

@@ -59,6 +59,7 @@ $("#copy-button").click(function() {
 /**  playback buttons **/
 
 $('#play-pause-btn').click(function() {
+	event.stopPropagation();
 	if (gSound == null) {
 		console.log ("No sound data found.");
 	} else if (!gSound.isPlaying()) {
@@ -78,6 +79,7 @@ $('#play-pause-btn').click(function() {
 });
 
 $('#stop-btn').click(function() {
+	event.stopPropagation();
 	if (gSound == null) {
 		console.log("No sound data found.");
 	} else {
@@ -93,8 +95,11 @@ $('#stop-btn').click(function() {
 /** call-back function once sound file is decoded **/
 function onFileDecode(soundData) {
 	gSound = new Sound(gAudioCtx, soundData , onSoundStop);
-	gSoundVisualiser.drawWaveform(soundData);
-	gSoundVisualiser.drawSpectrogram(soundData);
+
+	var monoSoundData = gSound.getMonoSoundData();
+
+	gSoundVisualiser.drawWaveform(monoSoundData.monoPcmData, monoSoundData.pcmDataLen, monoSoundData.maxAmp);
+	gSoundVisualiser.drawSpectrogram(monoSoundData.monoPcmData, monoSoundData.pcmDataLen);
 	
 	// $('.waveform-slider').attr('max', soundData.duration * 1000);
 }
