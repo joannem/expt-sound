@@ -7,6 +7,8 @@ html, body {
 	float: left;
 	height: 100%;
 	background-color: #D2D2D2;
+	min-width: 85px;
+	max-width: 5%;
 }
 
 #tools-panel > button {
@@ -19,7 +21,7 @@ html, body {
 
 #sound-space {
 	float: left;
-	width: 1050px;
+	width: 80%;
 	margin: 0 10px 0 10px;
 	border: transparent dashed 2px;
 }
@@ -27,47 +29,67 @@ html, body {
 /* TODO: find for ways to replace hard px values **/
 #canvas-board {    
 	border: solid 1px;
-	height: 746px;
+	height: 700px;
 	width: 100%;
+	margin-bottom: 15px;
 }
 
 #spectrogram-canvas {
 	position: absolute;
 	z-index: 0;
-	height: 746px;
-	width: 1050px;
+	height: inherit;
+	width: 80%;
+}
+
+#hidden-spectrogram-canvas {
+	position: absolute;
+	z-index: -1;
+	height: inherit;
+	width: 80%;
+	display: none;
 }
 
 #svg-canvas {
 	position: absolute;
 	z-index: 1;
+	width: 80%;
 }
 
-#waveform {
+.waveform {
 	border: solid 1px;
-	height: 120px;
+	height: 107px;
 	width: 100%;
-	margin: 10px 0 10px 0;
+	margin: 5px 0 5px 0;
+	position: relative;
+	z-index: 0;
 }
 
 #waveform-canvas {
-	height: 100%;
-	width: 100%;
+	height: inherit;
+	width: inherit;
 }
 
-#playback-buttons {
-	width: 10%;
-	margin: auto;
+#spsi-waveform-canvas {
+	height: inherit;
+	width: inherit;
 }
 
-#playback-buttons > button {
-	height: 50px;
+.playback-buttons {
+	position: absolute;
+	z-index: 1;
+	bottom: 0;
+	right: 0;
+}
+
+.playback-buttons > button {
+	height: 25px;
 	width: 50px;
 }
 
 #right-sidebar {
 	float: left;
-	width: 200px;
+	width: 10%;
+	height: 100%;
 }
 
 #svg-path-context-menu {

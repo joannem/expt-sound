@@ -12,7 +12,8 @@ function Sound (audioCtx, soundData, onendedCallbackFunction) {
 
 	//----- variables -----//
 	
-	var currPcmData = [];	// TODO: consider if want to save old PCM data
+	var maxAmp = 0;
+	var monoPcmData = [];
 	var bufferSrc = null;
 	
 	var isPlaying = false;
@@ -21,8 +22,34 @@ function Sound (audioCtx, soundData, onendedCallbackFunction) {
 	var playedFrom = 0;
 	var pausedAt = 0;
 
+
+	createMonoPcmData();
 	
 	//----- private methods -----//
+	
+	function createMonoPcmData() {
+		//--- retrieve stereo PCM data from audioBuffer
+
+		if (soundData.numberOfChannels == 1) {
+			monoPcmData = [];
+			monoPcmData = soundData.getChannelData(0);
+			console.log(monoPcmData);
+			for(var i = 0; i < soundData.length; i++) {
+				maxAmp = Math.abs(monoPcmData[i]) > maxAmp ? Math.abs(monoPcmData[i]) : maxAmp;
+			}
+		} else {
+			var pcmL = soundData.getChannelData(0);
+			var pcmR = soundData.getChannelData(1);
+			
+			//--- convert stereo to mono
+			monoPcmData = [];
+			for(var i = 0; i < soundData.length; i++) {
+				monoPcmData[i] = Math.abs( (pcmL[i] + pcmR[i]) / 2 ); // convert stereo to mono
+
+				maxAmp = Math.abs(monoPcmData[i]) > maxAmp ? Math.abs(monoPcmData[i]) : maxAmp;
+			}
+		}
+	}
 	
 	function loadBufferSrc(relativePlayStartTimeInSecs) {
 		bufferSrc = audioCtx.createBufferSource();
@@ -72,6 +99,14 @@ function Sound (audioCtx, soundData, onendedCallbackFunction) {
 
 	this.getSoundData = function() {
 		return soundData;
+	};
+
+	this.getMonoSoundData = function() {
+		return {
+			monoPcmData: monoPcmData,
+			pcmDataLen: soundData.length,
+			maxAmp: maxAmp
+		}
 	};
 
 

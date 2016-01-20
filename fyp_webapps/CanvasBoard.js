@@ -7,14 +7,16 @@
 
 var gDragNDropFileLoader = new DragNDropFileLoader($("#sound-space"), onFileDecode);
 var gSvgCanvas = new SvgCanvas($("#svg-canvas"));
-var gSoundVisualiser = new SoundVisualiser($("#waveform-canvas"), $("#spectrogram-canvas"), 513, 150, 1050);	// TODO: values are dummy values
+var gSoundVisualiser = new SoundVisualiser($("#waveform-canvas"), $("#spsi-waveform-canvas"), $("#spectrogram-canvas"), $('#hidden-spectrogram-canvas'), 513, 150, 1050);	// TODO: values are dummy values
 var gSvgPathContextMenu = new SvgPathContextMenu();
-var gCurrTool = "pencilTool";
 
+var gWaveSpect = new WaveSpect(10, 0.5);
 var gAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); 
 var gSound = null;
+var gReconSound = null;
 var gOffset = 0;	//--- offset value of sound and slider in microsecs 
 
+var gCurrTool = "pencilTool";
 var gSelectedSvgPaths = [];
 var gSelectedSvgPathId = 0;
 
@@ -59,42 +61,109 @@ $("#copy-button").click(function() {
 /**  playback buttons **/
 
 $('#play-pause-btn').click(function() {
+	event.stopPropagation();
 	if (gSound == null) {
 		console.log ("No sound data found.");
 	} else if (!gSound.isPlaying()) {
 		gSound.play(gOffset / 1000.0);
-		// gslider.startSlider(gOffset);
-		
 		gSound.setIsPlaying(true);
-		$('#play-pause-btn').text('pause'); 
+		$('#play-pause-btn').text('Pause'); 
 	} else {
 		gSound.pause();
-		// TODO: find way to grab offset from both slider and sound (a more accurate one)
-		// gOffset = gslider.pauseSlider();
-		
 		gSound.setIsPlaying(false);
 		$('#play-pause-btn').text('play'); 
 	}
 });
 
 $('#stop-btn').click(function() {
+	event.stopPropagation();
 	if (gSound == null) {
 		console.log("No sound data found.");
 	} else {
 		gSound.stopPlaying();
-		// gslider.stopSlider();
 		gOffset = 0;
 
 		gSound.setIsPlaying(false);
-		$('#play-pause-btn').text('play'); 
+		$('#play-pause-btn').text('Play'); 
 	}
+});
+
+$('#spsi-play-pause-btn').click(function() {
+	event.stopPropagation();
+	if (gReconSound == null) {
+		console.log ("No sound data found.");
+	} else if (!gReconSound.isPlaying()) {
+		gReconSound.play(gOffset / 1000.0);
+		gReconSound.setIsPlaying(true);
+		$('#spsi-play-pause-btn').text('Pause'); 
+	} else {
+		gReconSound.pause();
+		gReconSound.setIsPlaying(false);
+		$('#spsi-play-pause-btn').text('Play'); 
+	}
+});
+
+$('#spsi-stop-btn').click(function() {
+	event.stopPropagation();
+	if (gReconSound == null) {
+		console.log("No sound data found.");
+	} else {
+		gReconSound.stopPlaying();
+		gOffset = 0;
+
+		gReconSound.setIsPlaying(false);
+		$('#spspi-play-pause-btn').text('play'); 
+	}
+});
+
+
+/** right sidebar **/
+
+$('#svg-display-button').click(function(){
+	event.stopPropagation();
+	$("#svg-canvas").toggle();
+});
+
+$('#recon-sound-button').click(function() {
+	event.stopPropagation();
+	
+	// TODO: clear all the guide box first
+
+	//--- create spectrogram matrix from SVG canvas
+	var extractedSpectrogram = [];
+	gSoundVisualiser.spectrogramFromSvg($('#svg-canvas'), extractedSpectrogram);
+
+	$('#hidden-spectrogram-canvas').on("imgLoaded", function() {
+		
+		//--- perform SPSI to reconstruct PCM data from spectrogram
+		var reconPcm = gWaveSpect.spectToWave(extractedSpectrogram);
+		// console.log(reconPcm);
+			
+		//--- replace gReconSound with new sound
+		var reconSoundBuffer = gAudioCtx.createBuffer(1, reconPcm.length, 44100);
+		var nowBuffering = reconSoundBuffer.getChannelData(0);
+		for(var i = 0; i < reconPcm.length; i++){
+			nowBuffering[i] = reconPcm[i];
+		}
+
+		gReconSound = new Sound (gAudioCtx, reconSoundBuffer, onSoundStop);
+		
+		//--- draw waveform of new sound
+		var monoSoundData = gReconSound.getMonoSoundData();
+		console.log(monoSoundData);
+		gSoundVisualiser.drawReconWaveform(monoSoundData.monoPcmData, monoSoundData.pcmDataLen, monoSoundData.maxAmp);
+
+	});
 });
 
 /** call-back function once sound file is decoded **/
 function onFileDecode(soundData) {
 	gSound = new Sound(gAudioCtx, soundData , onSoundStop);
-	gSoundVisualiser.drawWaveform(soundData);
-	gSoundVisualiser.drawSpectrogram(soundData);
+
+	var monoSoundData = gSound.getMonoSoundData();
+
+	gSoundVisualiser.drawWaveform(monoSoundData.monoPcmData, monoSoundData.pcmDataLen, monoSoundData.maxAmp);
+	gSoundVisualiser.drawSpectrogram(monoSoundData.monoPcmData, monoSoundData.pcmDataLen);
 	
 	// $('.waveform-slider').attr('max', soundData.duration * 1000);
 }

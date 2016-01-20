@@ -14,30 +14,63 @@
 	</div>
 
 	<div id="sound-space">
+
+		<!-- spectrogram -->
+
 		<div id="canvas-board">
-			<canvas id="spectrogram-canvas"></canvas>
 			<svg
 				id="svg-canvas"
 				version="1.1"
-				width="1050" height="746"
+				width="1050" height="700"
 			>
 			</svg>
+			<canvas id="spectrogram-canvas"></canvas>
+			<canvas id="hidden-spectrogram-canvas"></canvas>
 		</div>
 
-		<div id="waveform">
+		<!-- waveform reconstructed by SPSI -->
+
+		Reconstructed waveform:
+		<div class="waveform">
+			<canvas id="spsi-waveform-canvas"></canvas>
+			<div class="playback-buttons">
+				<button id="spsi-play-pause-btn">Play</button>
+				<button id="spsi-stop-btn">Stop</button>
+			</div>
+		</div>
+
+		<!-- original waveform -->
+
+		Original waveform:
+		<div class="waveform">
 			<canvas id="waveform-canvas"></canvas>
+			<div class="playback-buttons">
+				<button id="play-pause-btn">Play</button>
+				<button id="stop-btn">Stop</button>
+			</div>
 		</div>
 
-		<div id="playback-buttons">
-			<button id="play-pause-btn">Play</button>
-			<button id="stop-btn">Stop</button>
-		</div>
 	</div>
 
-	<div id="left-sidebar">
+	<div id="right-sidebar">
+		<hr>
+		
 		<div id="tool-used">
-			Tool: Pencil
+			Current tool: Pencil
 		</div>
+		
+		<hr>
+		
+		<button id="svg-display-button">Show/Hide SVG layer</button>
+		<br>
+		SVG layer opacity:
+		<input type="range"></input>
+		
+		<hr>
+		
+		<button id="recon-sound-button">Reconstruct sound</button>
+		
+		<hr>
 	</div>
 
 	<div id="svg-path-context-menu">
@@ -115,13 +148,14 @@
 </body>
 
 <script type="text/javascript" src="jquery-2.2.0.min.js"></script>
+<script type="text/javascript" src="chroma.js"></script>
+<script type="text/javascript" src="fft.js"></script>
 <script type="text/javascript" src="SvgCanvas.js"></script>
 <script type="text/javascript" src="StrokeGradient.js"></script>
 <script type="text/javascript" src="SvgPathContextMenu.js"></script>
 <script type="text/javascript" src="SvgPathObject.js"></script>
 <script type="text/javascript" src="DragNDropFileLoader.js"></script>
-<script type="text/javascript" src="chroma.js"></script>
-<script type="text/javascript" src="fft.js"></script>
+<script type="text/javascript" src="WaveSpect.js"></script>
 <script type="text/javascript" src="SoundVisualiser.js"></script>
 <script type="text/javascript" src="Sound.js"></script>
 <script type="text/javascript" src="CanvasBoard.js"></script>
