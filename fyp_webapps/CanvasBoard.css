@@ -41,6 +41,14 @@ html, body {
 	width: 80%;
 }
 
+#hidden-spectrogram-canvas {
+	position: absolute;
+	z-index: -1;
+	height: inherit;
+	width: 80%;
+	display: none;
+}
+
 #svg-canvas {
 	position: absolute;
 	z-index: 1;

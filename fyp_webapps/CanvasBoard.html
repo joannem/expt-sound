@@ -25,6 +25,7 @@
 			>
 			</svg>
 			<canvas id="spectrogram-canvas"></canvas>
+			<canvas id="hidden-spectrogram-canvas"></canvas>
 		</div>
 
 		<!-- waveform reconstructed by SPSI -->
@@ -52,9 +53,24 @@
 	</div>
 
 	<div id="right-sidebar">
+		<hr>
+		
 		<div id="tool-used">
-			Tool: Pencil
+			Current tool: Pencil
 		</div>
+		
+		<hr>
+		
+		<button id="svg-display-button">Show/Hide SVG layer</button>
+		<br>
+		SVG layer opacity:
+		<input type="range"></input>
+		
+		<hr>
+		
+		<button id="recon-sound-button">Reconstruct sound</button>
+		
+		<hr>
 	</div>
 
 	<div id="svg-path-context-menu">
@@ -132,13 +148,14 @@
 </body>
 
 <script type="text/javascript" src="jquery-2.2.0.min.js"></script>
+<script type="text/javascript" src="chroma.js"></script>
+<script type="text/javascript" src="fft.js"></script>
 <script type="text/javascript" src="SvgCanvas.js"></script>
 <script type="text/javascript" src="StrokeGradient.js"></script>
 <script type="text/javascript" src="SvgPathContextMenu.js"></script>
 <script type="text/javascript" src="SvgPathObject.js"></script>
 <script type="text/javascript" src="DragNDropFileLoader.js"></script>
-<script type="text/javascript" src="chroma.js"></script>
-<script type="text/javascript" src="fft.js"></script>
+<script type="text/javascript" src="WaveSpect.js"></script>
 <script type="text/javascript" src="SoundVisualiser.js"></script>
 <script type="text/javascript" src="Sound.js"></script>
 <script type="text/javascript" src="CanvasBoard.js"></script>

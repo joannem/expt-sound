@@ -22,21 +22,32 @@ function Sound (audioCtx, soundData, onendedCallbackFunction) {
 	var playedFrom = 0;
 	var pausedAt = 0;
 
+
 	createMonoPcmData();
 	
 	//----- private methods -----//
 	
 	function createMonoPcmData() {
 		//--- retrieve stereo PCM data from audioBuffer
-		var pcmL = soundData.getChannelData(0);
-		var pcmR = soundData.getChannelData(1);
 
-		//--- convert stereo to mono
-		monoPcmData = [];
-		for(var i = 0; i < soundData.length; i++) {
-			monoPcmData[i] = Math.abs( (pcmL[i] + pcmR[i]) / 2 ); // convert stereo to mono
+		if (soundData.numberOfChannels == 1) {
+			monoPcmData = [];
+			monoPcmData = soundData.getChannelData(0);
+			console.log(monoPcmData);
+			for(var i = 0; i < soundData.length; i++) {
+				maxAmp = Math.abs(monoPcmData[i]) > maxAmp ? Math.abs(monoPcmData[i]) : maxAmp;
+			}
+		} else {
+			var pcmL = soundData.getChannelData(0);
+			var pcmR = soundData.getChannelData(1);
+			
+			//--- convert stereo to mono
+			monoPcmData = [];
+			for(var i = 0; i < soundData.length; i++) {
+				monoPcmData[i] = Math.abs( (pcmL[i] + pcmR[i]) / 2 ); // convert stereo to mono
 
-			maxAmp = Math.abs(monoPcmData[i]) > maxAmp ? Math.abs(monoPcmData[i]) : maxAmp;
+				maxAmp = Math.abs(monoPcmData[i]) > maxAmp ? Math.abs(monoPcmData[i]) : maxAmp;
+			}
 		}
 	}
 	
