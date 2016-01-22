@@ -20,7 +20,6 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr, strokeWidth) {
 	var strokeGradient;
 
 	//--- for drawing guide box
-	//var minX, minY, maxX, maxY;
 
 	//--- for dragging
 	var transformMatrix = [1, 0, 0, 1, 0, 0];
@@ -55,10 +54,11 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr, strokeWidth) {
 					event.stopPropagation();
 					$(this).off('mousemove');
 					$(this).off('mouseup');
+					
 					if (!moved) {
 						toggleSelection();
 					} else {
-						select();
+						that.select();
 					}
 				});
 			}
@@ -66,7 +66,6 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr, strokeWidth) {
 	};
 
 	//--- show context menu of SVG path object
-	// TODO: find way to separate
 	groupedSvgObj.addEventListener("contextmenu", function(e) {
 		e.stopPropagation();
 		e.preventDefault();
@@ -115,21 +114,10 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr, strokeWidth) {
 
 	function toggleSelection() {
 		if (selected) {
-			deselect();
+			that.deselect();
 		} else {
-			select();
+			that.select();
 		}
-	}
-
-	function select() {
-		selected = true;
-		guideBoxSvgObj.setAttribute('stroke-opacity', 1);
-		gSelectedSvgPathId = id;
-	}
-
-	function deselect() {
-		selected = false;
-		guideBoxSvgObj.setAttribute('stroke-opacity', 0);
 	}
 
 	function moveGroup(evt) {
@@ -221,6 +209,18 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr, strokeWidth) {
 
 	this.getStrokeGradient = function() {
 		return strokeGradient;
+	};
+
+
+	this.select = function() {
+		selected = true;
+		guideBoxSvgObj.setAttribute('stroke-opacity', 1);
+		gSelectedSvgPathId = id;
+	};
+
+	this.deselect = function() {
+		selected = false;
+		guideBoxSvgObj.setAttribute('stroke-opacity', 0);
 	};
 
 	return that;

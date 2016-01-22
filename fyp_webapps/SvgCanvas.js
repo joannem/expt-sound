@@ -15,6 +15,7 @@ function SvgCanvas(canvasObj) {
 
 	canvasObj.mousedown(function(evt) {
 		evt.stopPropagation();
+		that.deselectAllPaths();
 		if (evt.which == gLeftMouseButton) {
 			gSvgPathContextMenu.hideContextMenu();
 
@@ -114,6 +115,12 @@ function SvgCanvas(canvasObj) {
 				svgPathObjs[currId].updateId(currId);
 				currId++;
 			}
+		}
+	};
+
+	this.deselectAllPaths = function() {
+		for (var i = 0; i < svgPathObjs.length; i++) {
+			svgPathObjs[i].deselect();
 		}
 	};
 
