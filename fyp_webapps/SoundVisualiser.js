@@ -31,15 +31,9 @@ function SoundVisualiser(waveformCanvasObj, spsiWaveformCanvasObj, spectrogramCa
 	var waveformCanvasCtx = waveformCanvasObj[0].getContext("2d");
 	
 	//--- values for calculating FFT:
-	var logN = 10;
-	var overlap = 0.5;
-	var windowSize = 1 << logN;
-	var maxFreq = (windowSize / 2) + 1;
-	var noOfFrames = 1050;	// unknown until length of PCM data is known
-	var fft = new FFT();
+	var noOfFrames = 1050;	// default value (unknown until length of PCM data is known)
 
 	setupBlankCanvas(width, spectHeight, spectrogramCanvasObj, spectrogramCanvasCtx);
-	// setupBlankCanvas(width, spectHeight, hiddenCanvasObj, hiddenCanvasCtx);	// not necessary
 	setupBlankCanvas(width, waveformHeight, spsiWaveformCanvasObj, spsiWaveformCanvaCtx);
 	setupBlankCanvas(width, waveformHeight, waveformCanvasObj, waveformCanvasCtx);
 
@@ -51,20 +45,6 @@ function SoundVisualiser(waveformCanvasObj, spsiWaveformCanvasObj, spectrogramCa
 		canvasObj.attr('height', height);	
 
 		canvasCtx.fillRect(0, 0, width, height);
-	}
-
-	/**
-	 * Does a Hanning window on a given frame.
-	 * Code adapted from: http://stackoverflow.com/questions/
-	 * 11600515/hanning-von-hann-window
-	 * @param {Array} frame  			Values from a frame of from a signal
-	 * @param {int} size 				Size of frame
-	 * @param {Array} windowedFrame		Windowed frame
-	 */
-	function hanningWindow(frame, size, windowedFrame) {
-		for (var i = 0; i < size; i++) {
-			windowedFrame.push(frame[i] * 0.5 * (1.0 - Math.cos(2.0 * Math.PI * i / size)));
-		}
 	}
 
 	//https://en.wikipedia.org/wiki/Grayscale
@@ -124,7 +104,6 @@ function SoundVisualiser(waveformCanvasObj, spsiWaveformCanvasObj, spectrogramCa
 		
 		//--- draw scaled waveform
 		console.log("Begin drawing SPSI waveform...");
-		console.log(monoPcmData, pcmDataLen, maxAmp);
 		spsiWaveformCanvaCtx.fillStyle = '#000FF0';
 		var x = 0; var waveHeight = 0;
 		for(var i = 0; i < pcmDataLen; i += jump) {
@@ -149,46 +128,14 @@ function SoundVisualiser(waveformCanvasObj, spsiWaveformCanvasObj, spectrogramCa
 		spectrogramCanvasCtx.fillStyle = '#000000';
 		spectrogramCanvasCtx.fillRect(0, 0, width, spectHeight);
 
-		//--- set-up FFT calculator
-		var specRe = [];
-		var specIm = [];
+		var soundSpectValuess = gWaveSpect.waveToSpect(monoPcmData, pcmDataLen);
+		var soundFFT = soundSpectValuess.spectrogram;
+		var maxSpecAmp = soundSpectValuess.maxSpecAmp;
+
+		var overlap = gWaveSpect.getOverlap();
+		var windowSize = gWaveSpect.getWindowSize();
+		var maxFreq = gWaveSpect.getMaxFreq();
 		noOfFrames = Math.floor(pcmDataLen / (overlap * windowSize)) - 1;	// discard the last frame
-		fft.init(logN);
-
-		var specMagnitude = [];
-		var soundFFT = [];
-
-		var maxSpecAmp = 0; 	// for scaling later
-
-		var windowedFrame = [];
-		
-		var pos = 0;
-		for (var i = 0; i < noOfFrames; i++) {	
-
-			//--- slice the next frame apply hanning window to the frame
-			windowedFrame = [];
-			hanningWindow(monoPcmData.slice(pos, pos + windowSize), windowSize, windowedFrame);
-
-			//--- calculate fft values of each frame
-			fft.forwardReal(windowedFrame, specRe, specIm);
-
-			//--- calculate the magnitude from real and imaginary parts
-			for (var j = 0; j < maxFreq; j++) {
-				// NOTE: added additional sqrt for clarity
-				specMagnitude[j] = Math.sqrt(Math.sqrt((specRe[j] * specRe[j]) + (specIm[j] * specIm[j])));
-				maxSpecAmp = maxSpecAmp > specMagnitude[j] ? maxSpecAmp : specMagnitude[j];
-
-			}
-
-			soundFFT.push(specMagnitude);
-
-			//--- reset everything
-			specMagnitude = [];
-			specRe = [];
-			specIm = [];
-
-			pos += (windowSize * overlap);
-		}
 		
 		// TODO: find proper way to colour spectrogram
 		//--- determine spectrogram colours
@@ -224,6 +171,7 @@ function SoundVisualiser(waveformCanvasObj, spsiWaveformCanvasObj, spectrogramCa
 		clonedSvgObj.attr('width', noOfFrames);
 		clonedSvgObj.attr('height', maxFreq);
 
+		var maxFreq = gWaveSpect.getMaxFreq();
 		setupBlankCanvas(noOfFrames, maxFreq, hiddenCanvasObj, hiddenCanvasCtx);
 		hiddenCanvasCtx.fillStyle = '#000000';
 		hiddenCanvasCtx.fillRect(0, 0, noOfFrames, maxFreq);
@@ -267,6 +215,3 @@ function SoundVisualiser(waveformCanvasObj, spsiWaveformCanvasObj, spectrogramCa
 
 	return that;
 }
-
-// TODO: make a function that returns the pixel data to allow 
-// edge detection.

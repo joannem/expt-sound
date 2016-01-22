@@ -127,12 +127,14 @@ $('#svg-display-button').click(function(){
 $('#recon-sound-button').click(function() {
 	event.stopPropagation();
 	
-	// TODO: clear all the guide box first
+	//--- clear all the guideboxes
+	gSvgCanvas.deselectAllPaths();
 
 	//--- create spectrogram matrix from SVG canvas
 	var extractedSpectrogram = [];
 	gSoundVisualiser.spectrogramFromSvg($('#svg-canvas'), extractedSpectrogram);
 
+	//--- wait for rasterised image to finish loading
 	$('#hidden-spectrogram-canvas').on("imgLoaded", function() {
 		
 		//--- perform SPSI to reconstruct PCM data from spectrogram
@@ -150,7 +152,6 @@ $('#recon-sound-button').click(function() {
 		
 		//--- draw waveform of new sound
 		var monoSoundData = gReconSound.getMonoSoundData();
-		console.log(monoSoundData);
 		gSoundVisualiser.drawReconWaveform(monoSoundData.monoPcmData, monoSoundData.pcmDataLen, monoSoundData.maxAmp);
 
 	});

@@ -33,7 +33,7 @@ function Sound (audioCtx, soundData, onendedCallbackFunction) {
 		if (soundData.numberOfChannels == 1) {
 			monoPcmData = [];
 			monoPcmData = soundData.getChannelData(0);
-			console.log(monoPcmData);
+
 			for(var i = 0; i < soundData.length; i++) {
 				maxAmp = Math.abs(monoPcmData[i]) > maxAmp ? Math.abs(monoPcmData[i]) : maxAmp;
 			}
