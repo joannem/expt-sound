@@ -150,7 +150,6 @@ $('#recon-sound-button').click(function() {
 		
 		//--- draw waveform of new sound
 		var monoSoundData = gReconSound.getMonoSoundData();
-		console.log(monoSoundData);
 		gSoundVisualiser.drawReconWaveform(monoSoundData.monoPcmData, monoSoundData.pcmDataLen, monoSoundData.maxAmp);
 
 	});

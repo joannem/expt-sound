@@ -22,6 +22,20 @@ function WaveSpect (logN, overlap) {
 
 
 	//----- Private methods -----//
+	
+	/**
+	 * Does a Hanning window on a given frame.
+	 * Code adapted from: http://stackoverflow.com/questions/
+	 * 11600515/hanning-von-hann-window
+	 * @param {Array} frame  			Values from a frame of from a signal
+	 * @param {int} size 				Size of frame
+	 * @param {Array} windowedFrame		Windowed frame
+	 */
+	function hanningWindow(frame, size, windowedFrame) {
+		for (var i = 0; i < size; i++) {
+			windowedFrame.push(frame[i] * 0.5 * (1.0 - Math.cos(2.0 * Math.PI * i / size)));
+		}
+	}
 
 	function onReconstruct(sgram) {
 		// console.log("sgram.length: " + sgram.length);
@@ -245,13 +259,71 @@ function WaveSpect (logN, overlap) {
 
 
 	//----- Privileged methods -----//
+
+	this.waveToSpect = function(monoPcmData, pcmDataLen) {
+		//--- variables used for FFT calculator
+		var specRe = [];
+		var specIm = [];
+		noOfFrames = Math.floor(pcmDataLen / (overlap * windowSize)) - 1;	// discard the last frame
+		fft.init(logN);
+
+		var specMagnitude = [];
+		var spectrogram = [];
+
+		var maxSpecAmp = 0; 	// for scaling later
+
+		var windowedFrame = [];
+		
+		var pos = 0;
+		for (var i = 0; i < noOfFrames; i++) {	
+
+			//--- slice the next frame apply hanning window to the frame
+			windowedFrame = [];
+			hanningWindow(monoPcmData.slice(pos, pos + windowSize), windowSize, windowedFrame);
+
+			//--- calculate fft values of each frame
+			fft.forwardReal(windowedFrame, specRe, specIm);
+
+			//--- calculate the magnitude from real and imaginary parts
+			for (var j = 0; j < maxFreq; j++) {
+				// NOTE: added additional sqrt for clarity
+				specMagnitude[j] = Math.sqrt(Math.sqrt((specRe[j] * specRe[j]) + (specIm[j] * specIm[j])));
+				maxSpecAmp = maxSpecAmp > specMagnitude[j] ? maxSpecAmp : specMagnitude[j];
+
+			}
+
+			spectrogram.push(specMagnitude);
+
+			//--- reset everything
+			specMagnitude = [];
+			specRe = [];
+			specIm = [];
+
+			pos += (windowSize * overlap);
+		}
+
+		return {
+			spectrogram: spectrogram,
+			maxSpecAmp: maxSpecAmp
+		};
+	};
 	
 	this.spectToWave = function(srcSpect) {
 		var reconPcm = onReconstruct(srcSpect);
 		return reconPcm;
-	}
+	};
 
-	//TODO: waveToSpect
+	this.getWindowSize = function() {
+		return windowSize;
+	};
+	
+	this.getOverlap = function() {
+		return overlap;
+	};
+
+	this.getMaxFreq = function() {
+		return maxFreq;
+	};
 
 	return that;
 }
