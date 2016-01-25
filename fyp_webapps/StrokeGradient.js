@@ -14,7 +14,7 @@ function StrokeGradient(pathId) {
 	var id = "gradient-fill-" + pathId;
 
 	var gradientDefObj;
-	var radialGradientObj;
+	var linearGradientObj;
 	var redStopObj;
 	var yellowStopObj;
 	var whiteStopObj;
@@ -37,20 +37,20 @@ function StrokeGradient(pathId) {
 	function createGradientDefObj() {
 		gradientDefObj = document.createElementNS("http://www.w3.org/2000/svg", 'defs');
 
-		radialGradientObj = document.createElementNS("http://www.w3.org/2000/svg", 'radialGradient');
-		radialGradientObj.setAttribute('id', id);
-		radialGradientObj.setAttribute('fx', redOffset + "%");
-		radialGradientObj.setAttribute('fy', verticalPos + "%");
-		radialGradientObj.setAttribute('r', "0.8");
+		linearGradientObj = document.createElementNS("http://www.w3.org/2000/svg", 'linearGradient');
+		linearGradientObj.setAttribute('id', id);
+		linearGradientObj.setAttribute('fx', redOffset + "%");
+		linearGradientObj.setAttribute('fy', verticalPos + "%");
+		linearGradientObj.setAttribute('r', "0.8");
 
 		redStopObj = createStopObj("red", redOffset);
 		yellowStopObj = createStopObj("yellow", yellowOffset);
 		whiteStopObj = createStopObj("white", whiteOffset);
 
-		radialGradientObj.appendChild(redStopObj);
-		radialGradientObj.appendChild(yellowStopObj);
-		radialGradientObj.appendChild(whiteStopObj);
-		gradientDefObj.appendChild(radialGradientObj);
+		linearGradientObj.appendChild(redStopObj);
+		linearGradientObj.appendChild(yellowStopObj);
+		linearGradientObj.appendChild(whiteStopObj);
+		gradientDefObj.appendChild(linearGradientObj);
 	}
 
 	function createStopObj(stopColor, offsetVal) {
@@ -65,7 +65,7 @@ function StrokeGradient(pathId) {
 	function setRedOffset(newOffsetVal) {
 		redOffset = newOffsetVal;
 		redStopObj.setAttribute('offset', newOffsetVal + "%");
-		radialGradientObj.setAttribute('fx', newOffsetVal + "%");
+		linearGradientObj.setAttribute('fx', newOffsetVal + "%");
 	};
 
 	function setYellowOffset(newOffsetVal) {
