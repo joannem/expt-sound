@@ -180,7 +180,7 @@ function SoundVisualiser(waveformCanvasObj, spsiWaveformCanvasObj, spectrogramCa
 		tempSvgObj.setAttribute('width', noOfFrames);
 		tempSvgObj.setAttribute('height', maxFreq);
 		tempSvgObj.setAttribute('preserveAspectRatio', "none");
-		tempSvgObj.setAttribute('viewBox', "0 0 1195.190 700");
+		tempSvgObj.setAttribute('viewBox', "0 0 " + svgObj.width() + " " + svgObj.height());
 
 
 		//--- scale canvas according to FFT dimensions

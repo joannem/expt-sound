@@ -46,7 +46,7 @@ html, body {
 	z-index: -1;
 	height: inherit;
 	width: 80%;
-	display: none;
+	display: none;	/* comment out to check if scaling is correct */
 }
 
 #svg-canvas {
