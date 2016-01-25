@@ -165,20 +165,34 @@ function SoundVisualiser(waveformCanvasObj, spsiWaveformCanvasObj, spectrogramCa
 
 	this.spectrogramFromSvg = function(svgObj, extractedSpectrogram) {
 		
-		//--- scale canvas and SVG to appropriate dimensions
-
-		var clonedSvgObj = svgObj.clone();
-		clonedSvgObj.attr('width', noOfFrames);
-		clonedSvgObj.attr('height', maxFreq);
+		//--- scale SVG to according to FFT dimensions
 
 		var maxFreq = gWaveSpect.getMaxFreq();
+		
+		var tempSvgObj = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+		var clonedChildren = svgObj.children().clone();
+
+		for (var i = 0; i < clonedChildren.length; i++) {
+			tempSvgObj.appendChild(clonedChildren[i]);
+		}
+		
+		tempSvgObj.setAttribute('id', "svg-canvas-2");
+		tempSvgObj.setAttribute('width', noOfFrames);
+		tempSvgObj.setAttribute('height', maxFreq);
+		tempSvgObj.setAttribute('preserveAspectRatio', "none");
+		tempSvgObj.setAttribute('viewBox', "0 0 1195.190 700");
+
+
+		//--- scale canvas according to FFT dimensions
+
 		setupBlankCanvas(noOfFrames, maxFreq, hiddenCanvasObj, hiddenCanvasCtx);
 		hiddenCanvasCtx.fillStyle = '#000000';
 		hiddenCanvasCtx.fillRect(0, 0, noOfFrames, maxFreq);
 
+
 		//--- create rasterised canvas of SVG
 		
-		var svgXmlData = new XMLSerializer().serializeToString(clonedSvgObj[0]);
+		var svgXmlData = new XMLSerializer().serializeToString(tempSvgObj);
 		var svgData = new Blob([svgXmlData], {type: 'image/svg+xml;charset=utf-8'});
 		
 		var domUrl = window.URL || window.webkitURL || window;
@@ -190,6 +204,7 @@ function SoundVisualiser(waveformCanvasObj, spsiWaveformCanvasObj, spectrogramCa
 		img.onload = function () {
 			hiddenCanvasCtx.drawImage(img, 0, 0);
 			var pixelData = hiddenCanvasCtx.getImageData(0, 0, noOfFrames, maxFreq);
+			
 			domUrl.revokeObjectURL(svgUrl);
 
 			//--- extract pixels from canvas to form spectrogram
