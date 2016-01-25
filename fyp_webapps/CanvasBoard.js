@@ -122,6 +122,8 @@ $('#spsi-stop-btn').click(function() {
 $('#svg-display-button').click(function(){
 	event.stopPropagation();
 	$("#svg-canvas").toggle();
+	var originalText = $(this).text();
+    $(this).text(originalText == 'Show SVG layer' ? 'Hide SVG layer' : 'Show SVG layer');
 });
 
 $('#recon-sound-button').click(function() {
