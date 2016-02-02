@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<style type="text/css">
+		table {
+			border-collapse: collapse;
+			margin: 20px 0px 0px 20px;
+		}
+		table tr td {
+			border: black solid 1px;
+			padding: 0px;
+		}
+	</style>
+	<title>Test Evelope</title>
+</head>
+
+<body>
+	<table id="display-table">
+		<tr>
+			<td>
+				<svg id="svg-canvas" version="1.1" width="600" height="450">
+					<path id="level-path-2" d="M 80 80 c 40 10, 65 10, 95 80 s 150 150, 180 80" stroke="black" stroke-width="3" stroke-opacity="0.25" fill="transparent"/>
+					<path id="level-path-1" d="M 80 130 c 40 10, 65 10, 95 80 s 150 150, 180 80" stroke="black" stroke-width="3" stroke-opacity="0.5" fill="transparent"/>
+					<path id="level-path-0" d="M 80 200 c 40 10, 65 10, 95 80 s 150 150, 180 80" stroke="black" stroke-width="3" stroke-opacity="1" fill="transparent"/>
+				</svg>
+			</td>
+			<td>
+				<svg id="envelope" version="1.1" width="300" height="450">
+
+					<!-- guidelines -->
+					<g id="guidelines-group">
+						<path d="M 75 0, 75 450" stroke="black" stroke-dasharray="5,5" fill="black"></path>
+						<path d="M 150 0, 150 450" stroke="black" stroke-dasharray="5,5" fill="black"></path>
+						<path d="M 225 0, 225 450" stroke="black" stroke-dasharray="5,5" fill="black"></path>
+					</g>
+					
+					<!-- harmonic levels background -->
+					<g transform="matrix(1 0 0 1 0 50)">
+						<rect class="level-meter" id="level-background-2" x="0" y="80" width="300" height="20" stroke="grey" fill="grey"></rect>
+						<rect class="level-meter" id="level-background-1" x="0" y="130" width="300" height="20" stroke="grey" fill="grey"></rect>grey
+						<rect class="level-meter" id="level-background-0" x="0" y="200" width="300" height="20" stroke="grey" fill="grey"></rect>
+					</g>
+
+					<!-- harmonic levels -->
+					<g transform="matrix(1 0 0 1 0 50)">
+						<rect class="level-meter" id="level-value-2" x="0" y="80" width="75" height="20" stroke="black" fill="black"></rect>
+						<rect class="level-meter" id="level-value-1" x="0" y="130" width="150" height="20" stroke="black" fill="black"></rect>
+						<rect class="level-meter" id="level-value-0" x="0" y="200" width="300" height="20" stroke="black" fill="black"></rect>
+					</g>
+
+				</svg>
+			</td>
+		</tr>
+	</table>
+		
+</body>
+<script type="text/javascript" src="js/vendor/jquery-2.1.4.min.js"></script>
+<script type="text/javascript">
+$(".level-meter").mousedown(function(evt) {
+	evt.stopPropagation();
+	var tmpIdValue = $(this)[0].id.split("-");
+	
+	if (tmpIdValue[1] == "background") {
+		tmpIdValue[1] = "value";
+	}
+	var newLevelId = tmpIdValue.join("-");
+
+	tmpIdValue[1] = "path";
+	var newPathId = tmpIdValue.join("-");
+
+	$("#" + newLevelId).attr('width', evt.offsetX);
+	$("#" + newPathId).attr('stroke-opacity', evt.offsetX/300);
+
+	$("#envelope").mousemove(function(evt) {
+		evt.stopPropagation();
+		$("#" + newLevelId).attr('width', evt.offsetX);
+		$("#" + newPathId).attr('stroke-opacity', evt.offsetX/300);
+	}).mouseup(function(){
+		event.stopPropagation();
+		$(this).off('mousedown');
+		$(this).off('mousemove');
+		$(this).off('mouseup');
+	})
+
+});</script>
