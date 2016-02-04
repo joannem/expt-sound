@@ -11,7 +11,9 @@ function SvgCanvas(canvasObj) {
 	var that = (this === window) ? {} : this;
 
 	var svgPathObjs = [];
+	var svgHarmonicObjs = [];
 	var noOfSvgPathObjs = 0;
+	var noOfSvgHarmonicObjs = 0;
 
 	canvasObj.mousedown(function(evt) {
 		evt.stopPropagation();
@@ -21,6 +23,10 @@ function SvgCanvas(canvasObj) {
 
 			if (gCurrTool == "pencilTool") {
 				drawNewPath(evt);
+			} 
+
+			if (gCurrTool == "harmonicPencilTool") {
+				drawNewHarmonic(evt);
 			}
 		}
 	});
@@ -46,6 +52,31 @@ function SvgCanvas(canvasObj) {
 			//--- update list of objects in SvgCanvas
 			noOfSvgPathObjs++;
 			svgPathObjs.push(newSvgPathObj);
+
+			$(this).off('mouseup');
+		});
+	}
+
+	function drawNewHarmonic(evt) {
+		var newSvgHarmonicObj = new SvgHarmonic(noOfSvgHarmonicObjs, noOfSvgPathObjs, 
+			evt.offsetX, evt.offsetY, evt.offsetX, evt.offsetY, "3");
+		
+		canvasObj.mousemove(function(evt) {
+			event.stopPropagation();
+			newSvgHarmonicObj.drawHarmonics(evt.offsetX, evt.offsetY);
+
+			//--- insert group onto canvas
+			canvasObj[0].appendChild(newSvgHarmonicObj.getGroupedSvgHarmonicObj());
+
+		}).mouseup(function(){
+			event.stopPropagation();
+			$(this).off('mousemove');
+			newSvgHarmonicObj.updateGuideBox();
+
+			//--- update list of objects in SvgCanvas
+			noOfSvgPathObjs += 3;
+			noOfSvgHarmonicObjs++;
+			svgHarmonicObjs.push(newSvgHarmonicObj);
 
 			$(this).off('mouseup');
 		});

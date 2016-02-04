@@ -17,8 +17,8 @@ var gReconSound = null;
 var gOffset = 0;	//--- offset value of sound and slider in microsecs 
 
 var gCurrTool = "pencilTool";
-var gSelectedSvgPaths = [];
 var gSelectedSvgPathId = 0;
+var gSelectedSvgHarmonicId = 0;
 
 var gLeftMouseButton = 1;
 
@@ -30,6 +30,13 @@ $("#pencil-tool-button").click(function() {
 	gCurrTool = "pencilTool";
 	$("body").css('cursor', 'initial');
 	$("#tool-used").text("Tool: Pencil");
+});
+
+$("#harmonic-pencil-tool-button").click(function() {
+	event.stopPropagation();
+	gCurrTool = "harmonicPencilTool";
+	$("body").css('cursor', 'initial');
+	$("#tool-used").text("Tool: Harmonic Pencil");
 });
 
 $("#select-tool-button").click(function() {

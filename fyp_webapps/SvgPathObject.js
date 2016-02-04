@@ -1,11 +1,12 @@
 /**
  * An editable SVG path object that is drawn by the mouse.
  * Requires: jQuery, StrokeGradient.js
+ * 
  * Created by joanne on 17/12/15.
  */
 
 function SvgPathObject(id, minX, minY, maxX, maxY, pathStr, strokeWidth) {
-"use strict";
+	"use strict";
 	var that = (this === window) ? {} : this;
 
 	//var id = id;
@@ -46,11 +47,11 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr, strokeWidth) {
 				var moved = false;
 
 				// TODO: move multiple objects at one time
-				$(document).mousemove(function (evt) {
+				$(document).mousemove(function(evt) {
 					event.stopPropagation();
 					moveGroup(evt);
 					moved = true;
-				}).mouseup(function () {
+				}).mouseup(function() {
 					event.stopPropagation();
 					$(this).off('mousemove');
 					$(this).off('mouseup');
