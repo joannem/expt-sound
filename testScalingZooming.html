@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>SVG Harmonic context menu</title>
+	<style type="text/css">
+		#svg-space {
+			width: 830px;
+			height: 630px;
+			border: black solid 1px;
+		}
+		#svg-space svg {
+			float: left;
+		}
+	</style>
+</head>
+<body>
+	<div id="svg-space">
+		<svg id="svg-freq-scale" width="30px" height="600px">
+			<rect x="0" y="0" width="100%" height="100%" fill="grey"></rect>
+			<g id="freq-ticks" transform="matrix(1 0 0 1 0 0)"></g>
+		</svg>
+		<svg id="svg-canvas" width="800px" height="600px">
+			<g id="svg-canvas-group" transform="matrix(1 0 0 1 0 0)">
+				<rect x="0" y="0" width="50%" height="50%" fill="#ADB7DA"></rect>
+				<rect x="50%" y="0" width="50%" height="50%" fill="#FF6501"></rect>
+				<rect x="0" y="50%" width="50%" height="50%" fill="#993303"></rect>
+				<rect x="50%" y="50%" width="50%" height="50%" fill="#673303"></rect>
+			</g>
+		</svg>
+		<svg id="svg-blank" width="30px" height="30px"></svg>
+		<svg id="svg-time-scale" width="800px" height="30px">
+			<rect x="0" y="0" width="100%" height="100%" fill="grey"></rect>
+			<g id="time-ticks" transform="matrix(1 0 0 1 0 0)"></g>
+		</svg>
+	</div>
+	<br>
+	<button id="reset-button">Reset zoom</button>
+	<br>
+	<br>
+	Scale:
+	<br>
+	<input id="radio-linear" type="radio"  name="scale" value="linear" checked="checked"> 
+	<label for="radio-linear">Linear</label>
+	<input id="radio-log" type="radio" name="scale" value="log" > 
+	<label for="radio-log">Log</label>
+</body>
+<script type="text/javascript" src="fyp_webapps/jquery-2.2.0.min.js"></script>
+<script type="text/javascript">
+	// TODO: add new ticks when zoomed more
+
+	drawFreqTicks();
+	drawTimeTicks();
+
+	var zoomVal = 1.0;
+	var canvasTransformMatrix = [1, 0, 0, 1, 0, 0];
+	var freqTicksTransformMatrix = [1, 0, 0, 1, 0, 0];
+	var timeTicksTransformMatrix = [1, 0, 0, 1, 0, 0];
+
+	$("#svg-canvas").bind('mousewheel', function(evt) {
+		evt.stopPropagation();
+		if(evt.originalEvent.wheelDelta < 0) {
+			//--- scroll down
+			zoomVal = +(zoomVal - 0.1).toFixed(2);
+		}else {
+			//--- scroll up
+			zoomVal = +(zoomVal + 0.1).toFixed(2);
+		}
+
+		if (zoomVal > 0) {
+			canvasTransformMatrix[0] = zoomVal;
+			canvasTransformMatrix[3] = zoomVal;
+
+			canvasTransformMatrix[4] = +((1 - zoomVal) * evt.offsetX).toFixed(2);
+			canvasTransformMatrix[5] = +((1 - zoomVal) * evt.offsetY).toFixed(2);
+
+			timeTicksTransformMatrix[0] = zoomVal;
+			freqTicksTransformMatrix[3] = zoomVal;
+
+			timeTicksTransformMatrix[4] = +((1 - zoomVal) * evt.offsetX).toFixed(2);
+			freqTicksTransformMatrix[5] = +((1 - zoomVal) * evt.offsetY).toFixed(2);
+		}
+
+		$("#svg-canvas-group").attr('transform', "matrix(" + canvasTransformMatrix.join(' ') + ")");
+		$("#time-ticks").attr('transform', "matrix(" + timeTicksTransformMatrix.join(' ') + ")");
+		$("#freq-ticks").attr('transform', "matrix(" + freqTicksTransformMatrix.join(' ') + ")");
+
+		//--- prevent page fom scrolling
+		return false;
+	});
+
+	$("#svg-canvas").mousedown(function(evt) {
+		evt.stopPropagation();
+		var currX = evt.clientX;
+		var currY = evt.clientY;
+
+		$(document).mousemove(function(evt) {
+			evt.stopPropagation();
+			canvasTransformMatrix[4] += evt.clientX - currX;
+			canvasTransformMatrix[5] += evt.clientY - currY;
+
+			timeTicksTransformMatrix[4] += evt.clientX - currX;
+			freqTicksTransformMatrix[5] += evt.clientY - currY;
+
+			$("#svg-canvas-group").attr('transform', "matrix(" + canvasTransformMatrix.join(' ') + ")");
+			$("#time-ticks").attr('transform', "matrix(" + timeTicksTransformMatrix.join(' ') + ")");
+			$("#freq-ticks").attr('transform', "matrix(" + freqTicksTransformMatrix.join(' ') + ")");
+
+			currX = evt.clientX;
+			currY = evt.clientY;
+		}).mouseup(function() {
+			event.stopPropagation();
+			$(this).off('mousemove');
+			$(this).off('mouseup');
+		});
+	});
+
+	$("#reset-button").click(function() {
+		event.stopPropagation();
+		$("#svg-canvas-group").attr('transform', "matrix(1 0 0 1 0 0)");
+		$("#time-ticks").attr('transform', "matrix(1 0 0 1 0 0)");
+		$("#freq-ticks").attr('transform', "matrix(1 0 0 1 0 0)");
+	});
+
+	$("#svg-freq-scale").bind('mousewheel', function(evt) {
+		evt.stopPropagation();
+		if(evt.originalEvent.wheelDelta < 0) {
+			//--- scroll down
+			canvasTransformMatrix[5] -= 20;
+			freqTicksTransformMatrix[5] -= 20;
+		}else {
+			//--- scroll up
+			canvasTransformMatrix[5] += 20;
+			freqTicksTransformMatrix[5] += 20;
+		}
+
+		$("#svg-canvas-group").attr('transform', "matrix(" + canvasTransformMatrix.join(' ') + ")");
+		$("#freq-ticks").attr('transform', "matrix(" + freqTicksTransformMatrix.join(' ') + ")");
+	});
+
+	$("#svg-freq-scale").mousedown(function(evt) {
+		evt.stopPropagation();
+		var currX = evt.clientX;
+		var currY = evt.clientY;
+		var dx = 0; var dy = 0;
+
+		$(document).mousemove(function(evt) {
+			evt.stopPropagation();
+
+			dx = evt.clientX - currX;
+			dy = evt.clientY - currY;
+
+			if (Math.abs(dx) > Math.abs(dy)) {
+				if (dx > 0) {
+					zoomVal = +(zoomVal - 0.03).toFixed(2);
+				} else {
+					zoomVal = +(zoomVal + 0.03).toFixed(2);
+				}
+
+				if (zoomVal > 0) {
+					canvasTransformMatrix[3] = zoomVal;
+					canvasTransformMatrix[5] = +((1 - zoomVal) * evt.offsetY).toFixed(2);
+
+					freqTicksTransformMatrix[3] = zoomVal;
+					freqTicksTransformMatrix[5] = +((1 - zoomVal) * evt.offsetY).toFixed(2);
+				}
+			} else {
+				canvasTransformMatrix[5] += dy;
+				freqTicksTransformMatrix[5] += dy;
+			}
+
+			$("#svg-canvas-group").attr('transform', "matrix(" + canvasTransformMatrix.join(' ') + ")");
+			$("#freq-ticks").attr('transform', "matrix(" + freqTicksTransformMatrix.join(' ') + ")");
+
+			currX = evt.clientX;
+			currY = evt.clientY;
+		}).mouseup(function() {
+			event.stopPropagation();
+			$(this).off('mousemove');
+			$(this).off('mouseup');
+		});
+	});
+
+	$("#svg-time-scale").bind('mousewheel', function(evt) {
+		evt.stopPropagation();
+		if(evt.originalEvent.wheelDelta < 0) {
+			//--- scroll down
+			canvasTransformMatrix[4] -= 20;
+			timeTicksTransformMatrix[4] -= 20;
+		}else {
+			//--- scroll up
+			canvasTransformMatrix[4] += 20;
+			timeTicksTransformMatrix[4] += 20;
+		}
+
+		$("#svg-canvas-group").attr('transform', "matrix(" + canvasTransformMatrix.join(' ') + ")");
+		$("#time-ticks").attr('transform', "matrix(" + timeTicksTransformMatrix.join(' ') + ")");
+	});
+
+	$("#svg-time-scale").mousedown(function(evt) {
+		evt.stopPropagation();
+		var currX = evt.clientX;
+		var currY = evt.clientY;
+		var dx = 0; var dy = 0;
+
+		$(document).mousemove(function(evt) {
+			evt.stopPropagation();
+
+			dx = evt.clientX - currX;
+			dy = evt.clientY - currY;
+
+			if (Math.abs(dy) > Math.abs(dx)) {
+				
+				//--- zoom more than scroll
+				if (dy > 0) {
+						zoomVal = +(zoomVal - 0.03).toFixed(2);
+				} else {
+						zoomVal = +(zoomVal + 0.03).toFixed(2);
+				}
+
+				if (zoomVal > 0) {
+					canvasTransformMatrix[0] = zoomVal;
+					canvasTransformMatrix[4] = +((1 - zoomVal) * evt.offsetX).toFixed(2);
+
+					timeTicksTransformMatrix[0] = zoomVal;
+					timeTicksTransformMatrix[4] = +((1 - zoomVal) * evt.offsetX).toFixed(2);
+				}
+			} else {
+				
+				//--- scroll more than zoom
+				canvasTransformMatrix[4] += dx;
+				timeTicksTransformMatrix[4] += dx;
+			}
+
+			$("#svg-canvas-group").attr('transform', "matrix(" + canvasTransformMatrix.join(' ') + ")");
+			$("#time-ticks").attr('transform', "matrix(" + timeTicksTransformMatrix.join(' ') + ")");
+
+			currX = evt.clientX;
+			currY = evt.clientY;
+		}).mouseup(function() {
+			event.stopPropagation();
+			$(this).off('mousemove');
+			$(this).off('mouseup');
+		});
+	});
+
+	function drawFreqTicks() {
+		var newPath = null;
+		var pathStr = "";
+
+		var newText = null;
+
+		for (var y = 0;  y < 601; y += 10) {
+			newPath = document.createElementNS("http://www.w3.org/2000/svg", 'path');
+			newPath.setAttribute('stroke', "black");
+			newPath.setAttribute('vector-effect', "non-scaling-stroke");
+			newPath.setAttribute('opacity', "0.5");
+			$("#freq-ticks")[0].appendChild(newPath);
+			
+			if (y%50 == 0) {
+				newPath.setAttribute('d', "M 19," + y + " 30," + y);
+				newPath.setAttribute('stroke-width', "4px");
+				
+				newText = document.createElementNS("http://www.w3.org/2000/svg", 'text');
+				newText.setAttribute('font-size', 14);
+				newText.setAttribute('text-anchor', "end");
+				newText.setAttribute('x', 28);
+				newText.setAttribute('y', y);
+				newText.innerHTML = (600 - y) * 5;
+				$("#freq-ticks")[0].appendChild(newText);
+			} else {
+				newPath.setAttribute('d', "M 23," + y + " 30," + y);
+				newPath.setAttribute('stroke-width', "2px");
+			}		
+		}
+	}
+
+	function drawTimeTicks() {
+		var newPath = null;
+		var pathStr = "";
+
+		var newText = null;
+		var noOfSecs = 0;
+
+		for (var x = 0;  x < 801; x += 10) {
+			newPath = document.createElementNS("http://www.w3.org/2000/svg", 'path');
+			newPath.setAttribute('stroke', "black");
+			newPath.setAttribute('vector-effect', "non-scaling-stroke");
+			newPath.setAttribute('opacity', "0.5");
+			$("#time-ticks")[0].appendChild(newPath);
+			
+			if (x%120 == 0) {
+				newPath.setAttribute('d', "M " + x + ", 0 " + x + ",11");
+				newPath.setAttribute('stroke-width', "4px");
+
+				newText = document.createElementNS("http://www.w3.org/2000/svg", 'text');
+				newText.setAttribute('font-size', 14);
+				newText.setAttribute('text-anchor', "middle");
+				newText.setAttribute('x', x);
+				newText.setAttribute('y', 25);
+				noOfSecs = x / 2;
+
+				newText.innerHTML = ("0" + parseInt(noOfSecs/60)).slice(-2) + ":" + ("0" + noOfSecs%60).slice(-2);
+				$("#time-ticks")[0].appendChild(newText);
+			} else {
+				if (x%60 == 0) {
+					newPath.setAttribute('d', "M " + x + ", 0 " + x + ",11");
+
+					newText = document.createElementNS("http://www.w3.org/2000/svg", 'text');
+					newText.setAttribute('font-size', 14);
+					newText.setAttribute('text-anchor', "middle");
+					newText.setAttribute('x', x);
+					newText.setAttribute('y', 25);
+					noOfSecs = x / 2;
+					
+					newText.innerHTML = ("0" + parseInt(noOfSecs/60)).slice(-2) + ":" + ("0" + noOfSecs%60).slice(-2);
+					$("#time-ticks")[0].appendChild(newText);
+				} else {
+					newPath.setAttribute('d', "M " + x + ", 0 " + x + ",7");
+				}
+				newPath.setAttribute('stroke-width', "2px");
+			}
+
+			
+		}
+	}
+
+</script>
