@@ -17,8 +17,8 @@ var gReconSound = null;
 var gOffset = 0;	//--- offset value of sound and slider in microsecs 
 
 var gCurrTool = "pencilTool";
-var gSelectedSvgPaths = [];
 var gSelectedSvgPathId = 0;
+var gSelectedSvgHarmonicId = 0;
 
 var gLeftMouseButton = 1;
 
@@ -32,11 +32,24 @@ $("#pencil-tool-button").click(function() {
 	$("#tool-used").text("Tool: Pencil");
 });
 
+$("#harmonic-pencil-tool-button").click(function() {
+	event.stopPropagation();
+	gCurrTool = "harmonicPencilTool";
+	$("body").css('cursor', 'initial');
+	$("#tool-used").text("Tool: Harmonic Pencil");
+});
+
 $("#select-tool-button").click(function() {
 	event.stopPropagation();
 	gCurrTool = "selectTool";
 	$("body").css('cursor', 'pointer');
 	$("#tool-used").text("Tool: Select");
+});
+
+$("#zoom-tool-button").click(function() {
+	event.stopPropagation();
+	gCurrTool = "zoomDragTool";
+	$("#tool-used").text("Tool: Zoom / Drag");
 });
 
 $("#duplicate-button").click(function() {
@@ -123,7 +136,14 @@ $('#svg-display-button').click(function(){
 	event.stopPropagation();
 	$("#svg-canvas").toggle();
 	var originalText = $(this).text();
-    $(this).text(originalText == 'Show SVG layer' ? 'Hide SVG layer' : 'Show SVG layer');
+    $(this).text(originalText == 'Show canvas' ? 'Hide canvas' : 'Show canvas');
+});
+
+$("#reset-zoom-button").click(function() {
+	event.stopPropagation();
+	$("#svg-canvas-group").attr('transform', "matrix(1 0 0 1 0 0)");
+	$("#time-ticks").attr('transform', "matrix(1 0 0 1 0 0)");
+	$("#freq-ticks").attr('transform', "matrix(1 0 0 1 0 0)");
 });
 
 $('#recon-sound-button').click(function() {
@@ -131,6 +151,12 @@ $('#recon-sound-button').click(function() {
 	
 	//--- clear all the guideboxes
 	gSvgCanvas.deselectAllPaths();
+
+	// TODO: temporary fix
+	//--- reset zoom
+	$("#svg-canvas-group").attr('transform', "matrix(1 0 0 1 0 0)");
+	$("#time-ticks").attr('transform', "matrix(1 0 0 1 0 0)");
+	$("#freq-ticks").attr('transform', "matrix(1 0 0 1 0 0)");
 
 	//--- create spectrogram matrix from SVG canvas
 	var extractedSpectrogram = [];

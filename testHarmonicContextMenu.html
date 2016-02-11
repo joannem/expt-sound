@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<style>
+		#svg-harmonics-context-menu {
+			background-color: #D2D2D2;
+			width: 200px;
+			position: absolute;
+		}
+
+		#svg-harmonics-context-menu-left {
+			width: 200px;
+			height: 270px;
+		}
+
+		#svg-harmonics-context-menu-right {
+			display: none;
+			width: 200px;
+			height: 270px;
+		}
+
+		#svg-harmonics-context-menu ul {
+			padding: 5px;
+			list-style: none;
+			margin: 0;
+		}
+
+		#svg-harmonics-context-menu li  {
+			margin: 5px 0 10px 0;
+		}
+
+		#svg-harmonics-context-menu input[type=text] {
+			width: 40px;
+			text-align: center;
+			margin-right: 2px;
+		}
+
+		#copy-button {
+			height: 35px;
+			width: 100%;
+			border: none transparent;
+			text-align: left;
+			font-size: 18px;
+		}
+
+		#copy-icon {
+			height: 25px;
+			width: 25px;
+			margin: 0 16px 0 13px;
+		}
+
+		#fill-slider {
+			width:100%;
+			height: 35px;
+			border: solid #8C8C8C 1.5px;
+		}
+
+		#context-menu-nav-buttons {
+			border-top: #8C8C8C 1px solid;
+		}
+
+		#context-menu-nav-buttons > center > button {
+			border-radius: 12px;
+			margin: 3px;
+			height: 12px;
+			border: none;
+		}
+
+		#left-nav-button {
+			background-color: grey;
+		}
+
+	</style>
+	<title>SVG Harmonic context menu</title>
+</head>
+<body>
+	<div id="svg-harmonics-context-menu">
+		<div id="svg-harmonics-context-menu-left">
+			<ul>
+				<li>
+					<button id="copy-button"><img id="copy-icon" src="fyp_webapps/img/copy-icon.ico">Copy</button>
+				</li>
+
+				<li>
+					Width: <br>
+					<input id="width-slider" type="range" value="3" min="1" max="50" step="1">
+					<input id="width-val" type="text" value="3">px
+				</li>
+
+				<li>
+					Fill: <br>
+					<div id="fill-slider">
+						<svg id="svg-fill" version="1.1" baseProfile="full" width="100%" height="100%">
+							<g>
+								<defs>
+									<pattern id="Background-pattern" x="0" y="0" width="10" height="10"
+											 patternUnits="userSpaceOnUse">
+										<rect x="0" y="0" width="5" height="5" fill="white"></rect>
+										<rect x="5" y="0" width="5" height="5" fill="grey"></rect>
+										<rect x="0" y="5" width="5" height="5" fill="grey"></rect>
+										<rect x="5" y="5" width="5" height="5" fill="white"></rect>
+									</pattern>
+
+									<linearGradient id="Gradient-fill" fx="25%" fy="50%" r="0.8">
+										<stop id="Gradient-fill-red" offset="25%" stop-color="red" stop-opacity="1"></stop>
+										<stop id="Gradient-fill-yellow" offset="50%" stop-color="yellow" stop-opacity="1"></stop>
+										<stop id="Gradient-fill-white" offset="75%" stop-color="white" stop-opacity="1"></stop>
+									</linearGradient>
+								</defs>
+
+								<rect id="rect-background"
+									  x="0" y="0" width="100%" height="100%"
+									  fill="url(#Background-pattern)"
+								></rect>
+
+								<rect id="rect-fill"
+									  x="0" y="0" width="100%" height="100%"
+									  fill="url(#Gradient-fill)"
+								></rect>
+
+								<!-- Guidelines for user at 25%, 50% and 75% marks -->
+								<line stroke-dasharray="2,2" x1="25%" x2="25%" y1="0" y2="100%"
+									  stroke="black" fill="transparent" stroke-width="2" opacity="0.4"></line>
+								<line stroke-dasharray="2,2" x1="50%" x2="50%" y1="0" y2="100%"
+									  stroke="black" fill="transparent" stroke-width="2" opacity="0.4"></line>
+								<line stroke-dasharray="2,2" x1="75%" x2="75%" y1="0" y2="100%"
+									  stroke="black" fill="transparent" stroke-width="2" opacity="0.4"></line>
+
+								<!-- Sliders -->
+								<rect id="slider-red" x="0" y="0" width="10px" height="100%" stroke="black"
+										fill="red" stroke-width="2" transform="translate(0)"></rect>
+								<rect id="slider-yellow" x="0" y="0" width="10px" height="100%" stroke="black"
+									  fill="yellow" stroke-width="2" transform="translate(0)"></rect>
+								<rect id="slider-white" x="0" y="0" width="10px" height="100%" stroke="black"
+									  fill="white" stroke-width="2" transform="translate(0)"></rect>
+							</g>
+						</svg>
+					</div>
+				</li>
+
+				<li>
+					Opacity: <br>
+					<input id="opacity-slider" type="range" value="1" min="0" max="1" step="0.01">
+					<input id="opacity-val" type="text" value="1">
+				</li>
+			</ul>
+		</div>
+		
+		<div id="svg-harmonics-context-menu-right">
+			<svg id="envelope" version="1.1" width="100%" height="100%">
+
+				<!-- guidelines -->
+				<g id="guidelines-group">
+					<path d="M 50 0, 50 450" stroke="black" stroke-dasharray="5,5" fill="black"></path>
+					<path d="M 100 0, 100 450" stroke="black" stroke-dasharray="5,5" fill="black"></path>
+					<path d="M 150 0, 150 450" stroke="black" stroke-dasharray="5,5" fill="black"></path>
+				</g>
+				
+				<!-- harmonic levels background -->
+				<g transform="matrix(1 0 0 1 0 1)">
+					<rect class="level-meter" id="level-background-2" x="0" y="80" width="200" height="15" stroke="grey" fill="grey"></rect>
+					<rect class="level-meter" id="level-background-1" x="0" y="130" width="200" height="15" stroke="grey" fill="grey"></rect>grey
+					<rect class="level-meter" id="level-background-0" x="0" y="200" width="200" height="15" stroke="grey" fill="grey"></rect>
+				</g>
+
+				<!-- harmonic levels -->
+				<g transform="matrix(1 0 0 1 0 1)">
+					<rect class="level-meter" id="level-value-2" x="0" y="80" width="75" height="15" stroke="black" fill="black"></rect>
+					<rect class="level-meter" id="level-value-1" x="0" y="130" width="150" height="15" stroke="black" fill="black"></rect>
+					<rect class="level-meter" id="level-value-0" x="0" y="200" width="200" height="15" stroke="black" fill="black"></rect>
+				</g>
+
+			</svg>
+		</div>
+
+		<div id="context-menu-nav-buttons">
+			<center><button id="left-nav-button"></button><button id="right-nav-button"></button></center>
+		</div>
+	</div>
+
+
+</body>
+
+<script type="text/javascript" src="fyp_webapps/jquery-2.2.0.min.js"></script>
+<script type="text/javascript" src="fyp_webapps/SvgPathContextMenu.js"></script>
+<script type="text/javascript">
+	$("#right-nav-button").click(function() {
+		event.stopPropagation();
+		$(this).css('background-color', "grey");
+		$("#left-nav-button").css('background-color', "#DDDDDD");
+		$("#svg-harmonics-context-menu-left").hide();
+		$("#svg-harmonics-context-menu-right").show();
+
+	});
+
+	$("#left-nav-button").click(function() {
+		event.stopPropagation();
+		$(this).css('background-color', "grey");
+		$("#right-nav-button").css('background-color', "#DDDDDD");
+		$("#svg-harmonics-context-menu-right").hide();
+		$("#svg-harmonics-context-menu-left").show();
+
+	});
+
+	$(".level-meter").mousedown(function(evt) {
+		evt.stopPropagation();
+		var tmpIdValue = $(this)[0].id.split("-");
+		
+		if (tmpIdValue[1] == "background") {
+			tmpIdValue[1] = "value";
+		}
+		var newLevelId = tmpIdValue.join("-");
+
+		tmpIdValue[1] = "path";
+		var newPathId = tmpIdValue.join("-");
+
+		$("#" + newLevelId).attr('width', evt.offsetX);
+		$("#" + newPathId).attr('stroke-opacity', evt.offsetX/300);
+
+		$("#envelope").mousemove(function(evt) {
+			evt.stopPropagation();
+			$("#" + newLevelId).attr('width', evt.offsetX);
+			$("#" + newPathId).attr('stroke-opacity', evt.offsetX/300);
+		}).mouseup(function(){
+			event.stopPropagation();
+			$(this).off('mousedown');
+			$(this).off('mousemove');
+			$(this).off('mouseup');
+		})
+
+	});
+</script>
+
+</html>
