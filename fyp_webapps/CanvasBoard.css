@@ -3,6 +3,8 @@ html, body {
 	margin: 0;
 }
 
+/** Left side: tool bar **/
+
 #tools-panel {
 	float: left;
 	height: 100%;
@@ -16,8 +18,10 @@ html, body {
 	height: 55px;
 	width: 65px;
 	background-color: #FFFFFF;
-	border: none transparent;
+	border: 0px;
 }
+
+/** Center: sound space - canvas **/
 
 #sound-space {
 	float: left;
@@ -26,7 +30,7 @@ html, body {
 	border: transparent dashed 2px;
 }
 
-/* TODO: find for ways to replace hard px values **/
+/* TODO: find for ways to replace hard px values */
 #canvas-board {    
 	border: solid 1px;
 	height: 700px;
@@ -70,6 +74,8 @@ html, body {
 	width: 80%;
 }
 
+/** Center: sound space - waveforms **/
+
 .waveform {
 	border: solid 1px;
 	height: 107px;
@@ -101,52 +107,10 @@ html, body {
 	width: 50px;
 }
 
+/** Left: information panel, misc. buttons**/
+
 #right-sidebar {
 	float: left;
 	width: 10%;
 	height: 100%;
-}
-
-#svg-path-context-menu {
-	background-color: #D2D2D2;
-	width: 200px;
-	position: absolute;
-	z-index: 10;
-	display: none;
-}
-
-#svg-path-context-menu > ul {
-	padding: 5px;
-	list-style: none;
-	margin: 0;
-}
-
-#svg-path-context-menu > ul > li  {
-	margin: 5px 0 10px 0;
-}
-
-#svg-path-context-menu > ul > li > input[type=text] {
-	width: 40px;
-	text-align: center;
-	margin-right: 2px;
-}
-
-#copy-button {
-	height: 35px;
-	width: 100%;
-	border: none transparent;
-	text-align: left;
-	font-size: 18px;
-}
-
-#copy-icon {
-	height: 25px;
-	width: 25px;
-	margin: 0 16px 0 13px;
-}
-
-#fill-slider {
-	width:100%;
-	height: 35px;
-	border: solid #595959 1.5px;
 }

@@ -130,8 +130,8 @@ function SvgPathContextMenu () {
 
 		//--- reposition context menu
 		$("#svg-path-context-menu").offset({
-			top: (e.offsetY),
-			left: (e.offsetX + 95)
+			top: (e.offsetY + 2),
+			left: (e.offsetX + 98)
 		});
 
 		//--- show menu

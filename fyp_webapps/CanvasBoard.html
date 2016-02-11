@@ -3,6 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<link rel="stylesheet" type="text/css" href="CanvasBoard.css">
+	<link rel="stylesheet" type="text/css" href="SvgContextMenu.css">
 	<title>SVG Canvas</title>
 </head>
 <body>
@@ -95,7 +96,7 @@
 	</div>
 
 	<div id="svg-path-context-menu">
-		<ul>
+		<ul id="path-context-menu">
 			<li>
 				<button id="copy-button"><img id="copy-icon" src="img/copy-icon.ico">Copy</button>
 			</li>
@@ -104,6 +105,12 @@
 				Width: <br>
 				<input id="width-slider" type="range" value="3" min="1" max="50" step="1">
 				<input id="width-val" type="text" value="3">px
+			</li>
+
+			<li>
+				Opacity: <br>
+				<input id="opacity-slider" type="range" value="1" min="0" max="1" step="0.01">
+				<input id="opacity-val" type="text" value="1">
 			</li>
 
 			<li>
@@ -135,15 +142,9 @@
 							<rect id="rect-fill"
 								  x="0" y="0" width="100%" height="100%"
 								  fill="url(#Gradient-fill)"
+								  stroke="#595959"
+								  stroke-width=1px;
 							></rect>
-
-							<!-- Guidelines for user at 25%, 50% and 75% marks -->
-							<line stroke-dasharray="2,2" x1="25%" x2="25%" y1="0" y2="100%"
-								  stroke="black" fill="transparent" stroke-width="2" opacity="0.4"></line>
-							<line stroke-dasharray="2,2" x1="50%" x2="50%" y1="0" y2="100%"
-								  stroke="black" fill="transparent" stroke-width="2" opacity="0.4"></line>
-							<line stroke-dasharray="2,2" x1="75%" x2="75%" y1="0" y2="100%"
-								  stroke="black" fill="transparent" stroke-width="2" opacity="0.4"></line>
 
 							<!-- Sliders -->
 							<rect id="slider-red" x="0" y="0" width="10px" height="100%" stroke="black"
@@ -156,13 +157,39 @@
 					</svg>
 				</div>
 			</li>
-
-			<li>
-				Opacity: <br>
-				<input id="opacity-slider" type="range" value="1" min="0" max="1" step="0.01">
-				<input id="opacity-val" type="text" value="1">
-			</li>
 		</ul>
+
+		<ul id="harmonic-context-menu">
+			<li id="harmonic-levels-container">
+				<svg id="harmonic-levels" width="100%" height="100%">
+					<rect x="0" y="0" width="100%" height="100%" fill="#F2F2F2"></rect>
+
+					<g id="harmonic-levels">
+						<rect class="level-meter" id="level-value-2" x="0" y="0" width="25%" height="33.33%" fill="#4D4D4D"></rect>
+						<rect class="level-meter" id="level-value-1" x="0" y="33.33%" width="50%" height="33.33%" fill="#4D4D4D"></rect>
+						<rect class="level-meter" id="level-value-0" x="0" y="66.66%" width="100%" height="33.33%" fill="#4D4D4D"></rect>
+					</g>
+
+					<g id="harmonic-dividers">
+						<line x1="0" y1="33.33%" x2="100%" y2="33.33%" stroke="#737373" stroke-width="1"></line>
+						<line x1="0" y1="66.66%" x2="100%" y2="66.66%" stroke="#737373" stroke-width="1"></line>
+					</g>
+
+				</svg>
+			</li>
+			<!-- no of harmonics -->
+			<li><table><tbody><tr>
+				<td><span id="minus-harmonics">-</span></td>
+				<td><input id="no-of-harmonics-input" type="text" value="3"></td><td><span id="add-harmonics">+</span></td>
+			</tr></tbody></table></li>
+		</ul>
+
+		<div id="svg-context-menu-tabs">
+			<table><tbody><tr>
+				<td class="selected" id="tab-path">path</td>
+				<td id="tab-harmonic">harmonic</td>
+			</tr></tbody></table>
+		</div>
 	</div>
 
 

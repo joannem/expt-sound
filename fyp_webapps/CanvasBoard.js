@@ -70,6 +70,21 @@ $("#copy-button").click(function() {
 	gSvgCanvas.duplicateSvgPath(gSelectedSvgPathId);
 });
 
+$("#tab-path").click(function() {
+	event.stopPropagation();
+	$(this).addClass("selected");
+	$("#tab-harmonic").removeClass("selected");
+	$("#harmonic-context-menu").hide();
+	$("#path-context-menu").show();
+});
+
+$("#tab-harmonic").click(function() {
+	event.stopPropagation();
+	$(this).addClass("selected");
+	$("#tab-path").removeClass("selected");
+	$("#path-context-menu").hide();
+	$("#harmonic-context-menu").show();
+});
 
 /**  playback buttons **/
 
