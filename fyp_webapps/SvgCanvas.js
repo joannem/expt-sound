@@ -15,6 +15,14 @@ function SvgCanvas(canvasObj) {
 	var noOfSvgPathObjs = 0;
 	var noOfSvgHarmonicObjs = 0;
 
+	var zoomVal = 1.0;
+	var canvasTransformMatrix = [1, 0, 0, 1, 0, 0];
+	var freqTicksTransformMatrix = [1, 0, 0, 1, 0, 0];
+	var timeTicksTransformMatrix = [1, 0, 0, 1, 0, 0];
+
+	drawFreqTicks();
+	drawTimeTicks();
+	
 	canvasObj.mousedown(function(evt) {
 		evt.stopPropagation();
 		that.deselectAllPaths();
@@ -23,15 +31,138 @@ function SvgCanvas(canvasObj) {
 
 			if (gCurrTool == "pencilTool") {
 				drawNewPath(evt);
-			} 
-
-			if (gCurrTool == "harmonicPencilTool") {
+			} else if (gCurrTool == "harmonicPencilTool") {
 				drawNewHarmonic(evt);
+			} else {
+				dragCanvas(evt);
 			}
 		}
 	});
 
-	//----- private methods -----//
+	canvasObj.bind('mousewheel', function(evt) {
+		evt.stopPropagation();
+		if(evt.originalEvent.wheelDelta < 0) {
+			//--- scroll down
+			zoomVal = +(zoomVal - 0.1).toFixed(2);
+		}else {
+			//--- scroll up
+			zoomVal = +(zoomVal + 0.1).toFixed(2);
+		}
+
+		if (zoomVal > 0) {
+			canvasTransformMatrix[0] = zoomVal;
+			canvasTransformMatrix[3] = zoomVal;
+
+			canvasTransformMatrix[4] = +((1 - zoomVal) * evt.offsetX).toFixed(2);
+			canvasTransformMatrix[5] = +((1 - zoomVal) * evt.offsetY).toFixed(2);
+
+			timeTicksTransformMatrix[0] = zoomVal;
+			freqTicksTransformMatrix[3] = zoomVal;
+
+			timeTicksTransformMatrix[4] = +((1 - zoomVal) * evt.offsetX).toFixed(2);
+			freqTicksTransformMatrix[5] = +((1 - zoomVal) * evt.offsetY).toFixed(2);
+		}
+
+		// TODO: if zoom > 5... reset font and scales
+
+		$("#svg-canvas-group").attr('transform', "matrix(" + canvasTransformMatrix.join(' ') + ")");
+		$("#time-ticks").attr('transform', "matrix(" + timeTicksTransformMatrix.join(' ') + ")");
+		$("#freq-ticks").attr('transform', "matrix(" + freqTicksTransformMatrix.join(' ') + ")");
+
+		//--- prevent page fom scrolling
+		return false;
+	});
+
+	//----- private methods called during initialisation -----//
+	
+	// TODO: change scale values 
+	// TODO: change scale values again after uploading new sound file 
+
+	function drawFreqTicks() {
+		var newPath = null;
+		var pathStr = "";
+
+		var newText = null;
+
+		for (var y = 0;  y <= canvasObj.height(); y += 10) {
+			newPath = document.createElementNS("http://www.w3.org/2000/svg", 'path');
+			newPath.setAttribute('stroke', "#FFFFFF");
+			newPath.setAttribute('vector-effect', "non-scaling-stroke");
+			// newPath.setAttribute('opacity', "0.5");
+			
+			$("#freq-ticks")[0].appendChild(newPath);
+			
+			if (y%50 == 0) {
+				newPath.setAttribute('d', "M 12," + y + " 36," + y);
+				newPath.setAttribute('stroke-width', "2px");
+				
+				newText = document.createElementNS("http://www.w3.org/2000/svg", 'text');
+				newText.setAttribute('font-size', 14);
+				newText.setAttribute('fill', "#00FF00");
+				newText.setAttribute('text-anchor', "middle");
+				newText.setAttribute('x', 24);
+				newText.setAttribute('y', y - 2);
+				newText.innerHTML = (canvasObj.height() - y) * 5;
+				$("#freq-ticks")[0].appendChild(newText);
+			} else {
+				newPath.setAttribute('d', "M 18," + y + " 30," + y);
+				newPath.setAttribute('stroke-width', "1px");
+			}		
+		}
+	}
+
+	function drawTimeTicks() {
+		var newPath = null;
+		var pathStr = "";
+
+		var newText = null;
+		var noOfSecs = 0;
+
+		for (var x = 0;  x <= canvasObj.width(); x += 10) {
+			newPath = document.createElementNS("http://www.w3.org/2000/svg", 'path');
+			newPath.setAttribute('stroke', "black");
+			newPath.setAttribute('vector-effect', "non-scaling-stroke");
+			newPath.setAttribute('opacity', "0.5");
+			$("#time-ticks")[0].appendChild(newPath);
+			
+			if (x%120 == 0) {
+				newPath.setAttribute('d', "M " + x + ", 0 " + x + ",11");
+				newPath.setAttribute('stroke-width', "4px");
+
+				newText = document.createElementNS("http://www.w3.org/2000/svg", 'text');
+				newText.setAttribute('font-size', 14);
+				newText.setAttribute('text-anchor', "middle");
+				newText.setAttribute('x', x);
+				newText.setAttribute('y', 25);
+				noOfSecs = x / 2;
+
+				newText.innerHTML = ("0" + parseInt(noOfSecs/60)).slice(-2) + ":" + ("0" + noOfSecs%60).slice(-2);
+				$("#time-ticks")[0].appendChild(newText);
+			} else {
+				if (x%60 == 0) {
+					newPath.setAttribute('d', "M " + x + ", 0 " + x + ",11");
+
+					newText = document.createElementNS("http://www.w3.org/2000/svg", 'text');
+					newText.setAttribute('font-size', 14);
+					newText.setAttribute('text-anchor', "middle");
+					newText.setAttribute('x', x);
+					newText.setAttribute('y', 25);
+					noOfSecs = x / 2;
+					
+					newText.innerHTML = ("0" + parseInt(noOfSecs/60)).slice(-2) + ":" + ("0" + noOfSecs%60).slice(-2);
+					$("#time-ticks")[0].appendChild(newText);
+				} else {
+					newPath.setAttribute('d', "M " + x + ", 0 " + x + ",7");
+				}
+				newPath.setAttribute('stroke-width', "2px");
+			}
+
+			
+		}
+	}
+
+	//----- private methods called after initialisation -----//
+
 	function drawNewPath(evt) {
 		var newSvgPathObj = new SvgPathObject(noOfSvgPathObjs,
 			evt.offsetX, evt.offsetY, evt.offsetX, evt.offsetY,
@@ -42,7 +173,7 @@ function SvgCanvas(canvasObj) {
 			newSvgPathObj.drawPath(evt.offsetX, evt.offsetY);
 
 			//--- insert group onto canvas
-			canvasObj[0].appendChild(newSvgPathObj.getGroupedSvgObj());
+			canvasObj[0].children[0].appendChild(newSvgPathObj.getGroupedSvgObj());
 
 		}).mouseup(function(){
 			event.stopPropagation();
@@ -78,6 +209,31 @@ function SvgCanvas(canvasObj) {
 			noOfSvgHarmonicObjs++;
 			svgHarmonicObjs.push(newSvgHarmonicObj);
 
+			$(this).off('mouseup');
+		});
+	}
+
+	function dragCanvas(evt) {
+		var currX = evt.clientX;
+		var currY = evt.clientY;
+
+		$(document).mousemove(function(evt) {
+			evt.stopPropagation();
+			canvasTransformMatrix[4] += evt.clientX - currX;
+			canvasTransformMatrix[5] += evt.clientY - currY;
+
+			timeTicksTransformMatrix[4] += evt.clientX - currX;
+			freqTicksTransformMatrix[5] += evt.clientY - currY;
+
+			$("#svg-canvas-group").attr('transform', "matrix(" + canvasTransformMatrix.join(' ') + ")");
+			$("#time-ticks").attr('transform', "matrix(" + timeTicksTransformMatrix.join(' ') + ")");
+			$("#freq-ticks").attr('transform', "matrix(" + freqTicksTransformMatrix.join(' ') + ")");
+
+			currX = evt.clientX;
+			currY = evt.clientY;
+		}).mouseup(function() {
+			event.stopPropagation();
+			$(this).off('mousemove');
 			$(this).off('mouseup');
 		});
 	}
@@ -121,7 +277,7 @@ function SvgCanvas(canvasObj) {
 		//--- insert group onto canvas
 		newSvgPathObj.offsetPosition();
 		newSvgPathObj.updateGuideBox();
-		canvasObj[0].appendChild(newSvgPathObj.getGroupedSvgObj());
+		canvasObj[0].children[0].appendChild(newSvgPathObj.getGroupedSvgObj());
 
 		//--- update list of objects in SvgCanvas
 		noOfSvgPathObjs++;
@@ -138,7 +294,7 @@ function SvgCanvas(canvasObj) {
 		while(currId < svgPathObjs.length) {
 			//--- delete from canvas and array
 			if (svgPathObjs[currId].isSelected()) {
-				canvasObj[0].removeChild(svgPathObjs[currId].getGroupedSvgObj());
+				canvasObj[0].children[0].removeChild(svgPathObjs[currId].getGroupedSvgObj());
 				svgPathObjs.splice(currId, 1);
 
 			} else {

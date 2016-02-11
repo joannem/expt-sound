@@ -10,6 +10,7 @@
 		<button id="pencil-tool-button"><b>Pencil</b></button><br>
 		<button id="harmonic-pencil-tool-button"><b>H. Pencil</b></button><br>
 		<button id="select-tool-button"><b>Select</b></button><br>
+		<button id="zoom-tool-button"><b>Zoom / Drag</b></button><br>
 		<button id="duplicate-button">Duplicate</button><br>
 		<button id="delete-button">Delete</button><br>
 	</div>
@@ -24,7 +25,18 @@
 				version="1.1"
 				width="1050" height="700"
 			>
+				<g id="svg-canvas-group" transform="matrix(1 0 0 1 0 0)"></g>
 			</svg>
+
+			<svg id="svg-freq-scale">
+				<g id="freq-ticks" transform="matrix(1 0 0 1 0 0)"></g>
+			</svg>
+
+			<svg id="svg-time-scale">
+				<rect x="0" y="0" width="100%" height="100%" fill="#FFFFFF" fill-opacity="0.5"></rect>
+				<g id="time-ticks" transform="matrix(1 0 0 1 0 0)"></g>
+			</svg>
+
 			<canvas id="spectrogram-canvas"></canvas>
 			<canvas id="hidden-spectrogram-canvas"></canvas>
 		</div>
@@ -57,13 +69,24 @@
 		<hr>
 		
 		<div id="tool-used">
-			Current tool: Pencil
+			Tool: Pencil
 		</div>
 		
 		<hr>
 		
-		<button id="svg-display-button">Hide SVG layer</button>
+		<button id="svg-display-button">Hide canvas</button>
 		
+		<hr>
+
+		<button id="reset-zoom-button">Reset Zoom</button>
+		<br><br>
+		Scale: 
+		<br>
+		<input id="radio-linear" type="radio"  name="scale" value="linear" checked="checked"> 
+		<label for="radio-linear">Linear</label>
+		<input id="radio-log" type="radio" name="scale" value="log" > 
+		<label for="radio-log">Log</label>	
+
 		<hr>
 		
 		<button id="recon-sound-button">Reconstruct sound</button>

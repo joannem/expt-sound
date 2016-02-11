@@ -36,15 +36,15 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr, strokeWidth) {
 
 	//--- to select and move SVG path object
 	groupedSvgObj.onmousedown = function(evt) {
-		evt.stopPropagation();
-		if (evt.which == gLeftMouseButton) {
-			gSvgPathContextMenu.hideContextMenu();
+		if (gCurrTool == "selectTool") {
+			evt.stopPropagation();
 			
-			if (gCurrTool == "selectTool") {
+			if (evt.which == gLeftMouseButton) {
+				gSvgPathContextMenu.hideContextMenu();
+			
+				var moved = false;
 				currX = evt.clientX;
 				currY = evt.clientY;
-
-				var moved = false;
 
 				// TODO: move multiple objects at one time
 				$(document).mousemove(function(evt) {

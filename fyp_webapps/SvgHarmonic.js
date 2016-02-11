@@ -58,9 +58,11 @@ function SvgHarmonic (id, pathId, minX, minY, maxX, maxY, strokeWidth) {
 			}
 
 		}
-	}
+	};
 	
 	//--- show context menu of SVG path object
+	
+
 	
 	function createIndividualHarmonics() {
 		// TODO: find a way to calculate hz and map it to px

@@ -49,9 +49,24 @@ html, body {
 	display: none;	/* comment out to check if scaling is correct */
 }
 
-#svg-canvas {
+#svg-freq-scale {
 	position: absolute;
 	z-index: 1;
+	height: inherit;
+	width: 48px;
+}
+
+#svg-time-scale {
+	position: absolute;
+	top: 670px;
+	z-index: 1;
+	height: 37px;
+	width: 80%;
+}
+
+#svg-canvas {
+	position: absolute;
+	z-index: 2;
 	width: 80%;
 }
 
