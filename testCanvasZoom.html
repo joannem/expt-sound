@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Canvas Zooming</title>
+	<style type="text/css">
+		#canvas {
+			border: 1px black solid;
+		}
+	</style>
+</head>
+<body>
+<div>
+	<canvas id="canvas" width="900px" height="600px"></canvas>
+	<br>
+	<button id="canvas-reset">Reset</button>
+</div>
+</body>
+</html>
+
+<script type="text/javascript" src="fyp_webapps/jquery-2.2.0.min.js"></script>
+<script type="text/javascript">
+var canvasCtx = $("#canvas")[0].getContext('2d');
+var img = new Image();
+img.addEventListener("load", function() {
+	canvasCtx.drawImage(img, 100, 200);
+}, false);
+img.src = "./fyp_webapps/img/copy-icon.ico";
+canvasCtx.fillStyle = '#ff0000';
+canvasCtx.rect(0, 0, 900, 600);
+drawOnCanvas();
+
+//--- scaling
+
+var dx = 0; var dy = 0;
+var zoomVal = 1.0;
+
+$('#canvas').mousedown(function(evt) {
+	evt.stopPropagation();
+	var currX = evt.clientX;
+	var currY = evt.clientY;
+	
+	$(document).mousemove(function(evt) {
+		evt.stopPropagation();
+		dx += evt.clientX - currX;
+		dy += evt.clientY - currY;
+
+		canvasCtx.clearRect(0, 0, 900, 600);
+		canvasCtx.translate(dx, dy);
+		canvasCtx.scale(zoomVal, zoomVal);
+		drawOnCanvas();
+		canvasCtx.scale(1.0/zoomVal, 1.0/zoomVal);
+		canvasCtx.translate(-dx, -dy);
+
+		currX = evt.clientX;
+		currY = evt.clientY;
+	}).mouseup(function() {
+		event.stopPropagation();
+		$(this).off('mousemove');
+		$(this).off('mouseup');
+	});
+});
+
+$("#canvas").bind('mousewheel', function(evt) {
+	evt.stopPropagation();
+	if(evt.originalEvent.wheelDelta < 0) {
+		//--- scroll down
+		zoomVal = +(zoomVal - 0.1).toFixed(2);
+	} else {
+		//--- scroll up
+		zoomVal = +(zoomVal + 0.1).toFixed(2);
+	}
+	
+	var prevX = dx; var prevY = dy;
+
+	dx = +((1 - zoomVal) * evt.offsetX).toFixed(2);
+	dy = +((1 - zoomVal) * evt.offsetY).toFixed(2);
+
+	if (zoomVal > 0) {
+		canvasCtx.clearRect(0, 0, 900, 600);
+		canvasCtx.translate(dx, dy);
+		canvasCtx.scale(zoomVal, zoomVal);
+		canvasCtx.translate(prevX, prevY);
+		drawOnCanvas();
+		canvasCtx.translate(-prevX, -prevY);
+		canvasCtx.scale(1.0/zoomVal, 1.0/zoomVal);
+		canvasCtx.translate(-dx, -dy);
+	}
+
+	dx = prevX; dy = prevY;
+
+	return false;
+});
+
+$('#canvas-reset').click(function() {
+	event.stopPropagation();
+	canvasCtx.clearRect(0, 0, 900, 600);
+	drawOnCanvas();
+	dx = 0;
+	dy = 0;
+	zoomVal = 1.0;
+});
+
+function drawOnCanvas() {
+	canvasCtx.fillRect(0, 0, 900, 600);
+	canvasCtx.drawImage(img, 100, 200);
+}
+
+</script>
