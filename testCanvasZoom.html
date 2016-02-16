@@ -33,26 +33,34 @@ drawOnCanvas();
 
 var dx = 0; var dy = 0;
 var zoomVal = 1.0;
+var zoomDx = 0; var zoomDy = 0;
 
 $('#canvas').mousedown(function(evt) {
 	evt.stopPropagation();
-	var currX = evt.clientX;
-	var currY = evt.clientY;
+
+	var prevX = evt.clientX; 
+	var prevY = evt.clientY;
 	
 	$(document).mousemove(function(evt) {
 		evt.stopPropagation();
-		dx += evt.clientX - currX;
-		dy += evt.clientY - currY;
-
+		
+		dx += evt.clientX - prevX;
+		dy += evt.clientY - prevY;
+		
 		canvasCtx.clearRect(0, 0, 900, 600);
-		canvasCtx.translate(dx, dy);
+		
+		canvasCtx.translate(zoomDx, zoomDy);
 		canvasCtx.scale(zoomVal, zoomVal);
+		canvasCtx.translate(dx * (1.0/zoomVal), dy * (1.0/zoomVal));
+		
 		drawOnCanvas();
+		
+		canvasCtx.translate(-dx * (1.0/zoomVal), -dy * (1.0/zoomVal));
 		canvasCtx.scale(1.0/zoomVal, 1.0/zoomVal);
-		canvasCtx.translate(-dx, -dy);
+		canvasCtx.translate(-zoomDx, -zoomDy);
 
-		currX = evt.clientX;
-		currY = evt.clientY;
+		prevX = evt.clientX;
+		prevY = evt.clientY;
 	}).mouseup(function() {
 		event.stopPropagation();
 		$(this).off('mousemove');
@@ -69,24 +77,23 @@ $("#canvas").bind('mousewheel', function(evt) {
 		//--- scroll up
 		zoomVal = +(zoomVal + 0.1).toFixed(2);
 	}
-	
-	var prevX = dx; var prevY = dy;
 
-	dx = +((1 - zoomVal) * evt.offsetX).toFixed(2);
-	dy = +((1 - zoomVal) * evt.offsetY).toFixed(2);
+	zoomDx = +((1 - zoomVal) * evt.offsetX).toFixed(2);
+	zoomDy = +((1 - zoomVal) * evt.offsetY).toFixed(2);
 
 	if (zoomVal > 0) {
 		canvasCtx.clearRect(0, 0, 900, 600);
-		canvasCtx.translate(dx, dy);
+		
+		canvasCtx.translate(zoomDx, zoomDy);
 		canvasCtx.scale(zoomVal, zoomVal);
-		canvasCtx.translate(prevX, prevY);
+		canvasCtx.translate(dx, dy);
+		
 		drawOnCanvas();
-		canvasCtx.translate(-prevX, -prevY);
-		canvasCtx.scale(1.0/zoomVal, 1.0/zoomVal);
+		
 		canvasCtx.translate(-dx, -dy);
+		canvasCtx.scale(1.0/zoomVal, 1.0/zoomVal);
+		canvasCtx.translate(-zoomDx, -zoomDy);
 	}
-
-	dx = prevX; dy = prevY;
 
 	return false;
 });
@@ -97,6 +104,8 @@ $('#canvas-reset').click(function() {
 	drawOnCanvas();
 	dx = 0;
 	dy = 0;
+	zoomDx = 0;
+	zoomDy = 0;
 	zoomVal = 1.0;
 });
 
