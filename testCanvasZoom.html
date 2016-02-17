@@ -20,6 +20,7 @@
 <script type="text/javascript" src="fyp_webapps/jquery-2.2.0.min.js"></script>
 <script type="text/javascript">
 var canvasCtx = $("#canvas")[0].getContext('2d');
+
 var img = new Image();
 img.addEventListener("load", function() {
 	canvasCtx.drawImage(img, 100, 200);
@@ -28,6 +29,7 @@ img.src = "./fyp_webapps/img/copy-icon.ico";
 canvasCtx.fillStyle = '#ff0000';
 canvasCtx.rect(0, 0, 900, 600);
 drawOnCanvas();
+canvasCtx.save();
 
 //--- scaling
 
@@ -47,17 +49,13 @@ $('#canvas').mousedown(function(evt) {
 		dx += evt.clientX - prevX;
 		dy += evt.clientY - prevY;
 		
+		canvasCtx.resetTransform();
 		canvasCtx.clearRect(0, 0, 900, 600);
+		canvasCtx.restore();
 		
-		canvasCtx.translate(zoomDx, zoomDy);
-		canvasCtx.scale(zoomVal, zoomVal);
-		canvasCtx.translate(dx * (1.0/zoomVal), dy * (1.0/zoomVal));
-		
+		canvasCtx.transform(1, 0, 0, 1, evt.clientX - prevX, evt.clientY - prevY);
 		drawOnCanvas();
-		
-		canvasCtx.translate(-dx * (1.0/zoomVal), -dy * (1.0/zoomVal));
-		canvasCtx.scale(1.0/zoomVal, 1.0/zoomVal);
-		canvasCtx.translate(-zoomDx, -zoomDy);
+		canvasCtx.save();
 
 		prevX = evt.clientX;
 		prevY = evt.clientY;
@@ -70,6 +68,8 @@ $('#canvas').mousedown(function(evt) {
 
 $("#canvas").bind('mousewheel', function(evt) {
 	evt.stopPropagation();
+	var prevZoom = zoomVal;
+
 	if(evt.originalEvent.wheelDelta < 0) {
 		//--- scroll down
 		zoomVal = +(zoomVal - 0.1).toFixed(2);
@@ -78,21 +78,17 @@ $("#canvas").bind('mousewheel', function(evt) {
 		zoomVal = +(zoomVal + 0.1).toFixed(2);
 	}
 
-	zoomDx = +((1 - zoomVal) * evt.offsetX).toFixed(2);
-	zoomDy = +((1 - zoomVal) * evt.offsetY).toFixed(2);
-
+	zoomDx = +((1 - zoomVal/prevZoom) * (evt.offsetX - dx)).toFixed(2);
+	zoomDy = +((1 - zoomVal/prevZoom) * (evt.offsetY - dy)).toFixed(2);
+	
 	if (zoomVal > 0) {
+		canvasCtx.resetTransform();
 		canvasCtx.clearRect(0, 0, 900, 600);
-		
-		canvasCtx.translate(zoomDx, zoomDy);
-		canvasCtx.scale(zoomVal, zoomVal);
-		canvasCtx.translate(dx, dy);
-		
+		canvasCtx.restore();
+
+		canvasCtx.transform(zoomVal/prevZoom, 0, 0, zoomVal/prevZoom, zoomDx, zoomDy);
 		drawOnCanvas();
-		
-		canvasCtx.translate(-dx, -dy);
-		canvasCtx.scale(1.0/zoomVal, 1.0/zoomVal);
-		canvasCtx.translate(-zoomDx, -zoomDy);
+		canvasCtx.save();
 	}
 
 	return false;
@@ -100,12 +96,12 @@ $("#canvas").bind('mousewheel', function(evt) {
 
 $('#canvas-reset').click(function() {
 	event.stopPropagation();
+	canvasCtx.resetTransform();
 	canvasCtx.clearRect(0, 0, 900, 600);
 	drawOnCanvas();
+	canvasCtx.save();
 	dx = 0;
 	dy = 0;
-	zoomDx = 0;
-	zoomDy = 0;
 	zoomVal = 1.0;
 });
 
