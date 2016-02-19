@@ -32,7 +32,7 @@ function SvgCanvas(canvasObj) {
 			gSvgPathContextMenu.hideContextMenu();
 
 			if (gCurrTool == "pencilTool") {
-				drawNewPath(evt);
+				drawNewPath(evt.offsetX, evt.offsetY);
 			} else if (gCurrTool == "harmonicPencilTool") {
 				drawNewHarmonic(evt);
 			} else {
@@ -140,17 +140,24 @@ function SvgCanvas(canvasObj) {
 
 	//----- private methods called after initialisation -----//
 
-	function drawNewPath(evt) {
+	function drawNewPath(x, y) {
+		x = (x - spectTransformMatrix[4]) / spectTransformMatrix[0];
+		y = (y - spectTransformMatrix[5]) / spectTransformMatrix[3];
+
 		var newSvgPathObj = new SvgPathObject(noOfSvgPathObjs,
-			evt.offsetX, evt.offsetY, evt.offsetX, evt.offsetY,
-			("M " + evt.offsetX + "," + evt.offsetY), "3");
+			x, y, x, y, ("M " + x + "," + y), "3");
 
 		$("#canvas-board").mousemove(function(evt) {
+			var x = (evt.offsetX - spectTransformMatrix[4]) / spectTransformMatrix[0];
+			var y = (evt.offsetY - spectTransformMatrix[5]) / spectTransformMatrix[3];
+
 			event.stopPropagation();
-			newSvgPathObj.drawPath(evt.offsetX, evt.offsetY);
+			newSvgPathObj.drawPath(x, y);
 
 			//--- insert group onto canvas
+			$("#svg-canvas").css({transform: "matrix(1 0 0 1 0 0)"});
 			canvasObj[0].children[0].appendChild(newSvgPathObj.getGroupedSvgObj());
+			$("#svg-canvas").css({transform: "matrix(" + spectTransformMatrix.join(',') + ")"});
 
 		}).mouseup(function(){
 			event.stopPropagation();
