@@ -1,16 +1,26 @@
 html, body {
 	height: 100%;
+	width: 100%;
 	margin: 0;
+	overflow: hidden;
+}
+
+table {
+	border-collapse: collapse;
+	height: 100%;
+}
+
+td {
+	vertical-align: top;
+	padding: 0px;
 }
 
 /** Left side: tool bar **/
 
 #tools-panel {
-	float: left;
 	height: 100%;
+	width: 5%;
 	background-color: #D2D2D2;
-	min-width: 85px;
-	max-width: 5%;
 }
 
 #tools-panel > button {
@@ -21,63 +31,87 @@ html, body {
 	border: 0px;
 }
 
+#tools-sound-space {
+	width: 5px;
+	background-color: white;
+}
+
 /** Center: sound space - canvas **/
 
 #sound-space {
-	float: left;
 	width: 80%;
-	margin: 0 10px 0 10px;
-	border: transparent dashed 2px;
+	height: 100%;
 }
 
 /* TODO: find for ways to replace hard px values */
-#canvas-board {    
-	border: solid 1px;
-	height: 700px;
-	width: 100%;
-	margin-bottom: 15px;
-}
-
-#spectrogram-canvas {
-	position: absolute;
+#canvas-board {
 	z-index: 0;
-	height: inherit;
-	width: 80%;
+	position: relative;
+	background-color: transparent;
+	height: 700px;
+	border-top: 5px solid white;
 }
 
-#hidden-spectrogram-canvas {
-	position: absolute;
+#sound-canvas {
 	z-index: -1;
-	height: inherit;
+	position: absolute;
+	top: 0;
+	height: 700px;
 	width: 80%;
-	display: none;	/* comment out to check if scaling is correct */
+	background-color: #808080;
+}
+
+#svg-canvas {
+	position: absolute;
+	z-index: -2;
+	width: 100%;
+	transform-origin: 0 0;
 }
 
 #svg-freq-scale {
 	position: absolute;
-	z-index: 1;
+	z-index: -3;
 	height: inherit;
 	width: 48px;
+	transform-origin: 0 0;
 }
 
 #svg-time-scale {
 	position: absolute;
 	top: 670px;
-	z-index: 1;
+	z-index: -3;
 	height: 37px;
-	width: 80%;
+	width: 100%;
+	transform-origin: 0 0;
 }
 
-#svg-canvas {
+#spectrogram-canvas {
 	position: absolute;
-	z-index: 2;
-	width: 80%;
+	z-index: -4;
+	height: inherit;
+	width: 100%;
+	transform-origin: 0 0;
+}
+
+#hidden-spectrogram-canvas {
+	position: absolute;
+	z-index: -5;
+	height: inherit;
+	width: 100%;
+	display: none;	/* comment out to check if scaling is correct */
 }
 
 /** Center: sound space - waveforms **/
 
+#waves {
+	background-color: white;
+	width: 80%;
+	position: absolute;
+	bottom: 0;
+	top: 700px;
+}
+
 .waveform {
-	border: solid 1px;
 	height: 107px;
 	width: 100%;
 	margin: 5px 0 5px 0;
@@ -110,7 +144,7 @@ html, body {
 /** Left: information panel, misc. buttons**/
 
 #right-sidebar {
-	float: left;
-	width: 10%;
 	height: 100%;
+	background-color: white;
+	padding: 5px;
 }
