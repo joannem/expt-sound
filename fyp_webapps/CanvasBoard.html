@@ -22,6 +22,7 @@
 			<td id="tools-sound-space"></td>
 
 			<td id="sound-space">
+				<div id="top-canvas-board"></div>
 
 				<!-- spectrogram -->
 				<div id="canvas-board"></div>
@@ -32,15 +33,16 @@
 						version="1.1"
 						width="1050" height="700"
 					>
+						<g></g>
 					</svg>
 
 					<svg id="svg-freq-scale">
-						<g id="freq-ticks" transform="matrix(1 0 0 1 0 0)"></g>
+						<g id="freq-ticks"></g>
 					</svg>
 
 					<svg id="svg-time-scale">
 						<rect x="0" y="0" width="100%" height="100%" fill="#FFFFFF" fill-opacity="0.5"></rect>
-						<g id="time-ticks" transform="matrix(1 0 0 1 0 0)"></g>
+						<g id="time-ticks"></g>
 					</svg>
 
 					<canvas id="spectrogram-canvas"></canvas>

@@ -2,7 +2,6 @@
  * Script for CanvasBoard.html.
  * 
  * Created by joanne on 17/12/15.
- * Last modified on 15/01/15.
  */
 
 var gDragNDropFileLoader = new DragNDropFileLoader($("#sound-space"), onFileDecode);
@@ -156,9 +155,7 @@ $('#svg-display-button').click(function(){
 
 $("#reset-zoom-button").click(function() {
 	event.stopPropagation();
-	$("#svg-canvas-group").attr('transform', "matrix(1 0 0 1 0 0)");
-	$("#time-ticks").attr('transform', "matrix(1 0 0 1 0 0)");
-	$("#freq-ticks").attr('transform', "matrix(1 0 0 1 0 0)");
+	gSvgCanvas.resetZoom();
 });
 
 $('#recon-sound-button').click(function() {
@@ -169,9 +166,7 @@ $('#recon-sound-button').click(function() {
 
 	// TODO: temporary fix
 	//--- reset zoom
-	$("#svg-canvas-group").attr('transform', "matrix(1 0 0 1 0 0)");
-	$("#time-ticks").attr('transform', "matrix(1 0 0 1 0 0)");
-	$("#freq-ticks").attr('transform', "matrix(1 0 0 1 0 0)");
+	gSvgCanvas.resetZoom();
 
 	//--- create spectrogram matrix from SVG canvas
 	var extractedSpectrogram = [];

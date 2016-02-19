@@ -43,19 +43,24 @@ td {
 	height: 100%;
 }
 
+#top-canvas-board {
+	height: 5px;
+	background-color: white;
+}
+
 /* TODO: find for ways to replace hard px values */
 #canvas-board {
 	z-index: 0;
 	position: relative;
 	background-color: transparent;
 	height: 700px;
-	border-top: 5px solid white;
+	transform-origin: 0 0;
 }
 
 #sound-canvas {
 	z-index: -1;
 	position: absolute;
-	top: 0;
+	top: 5px;
 	height: 700px;
 	width: 80%;
 	background-color: #808080;
@@ -71,14 +76,14 @@ td {
 #svg-freq-scale {
 	position: absolute;
 	z-index: -3;
-	height: inherit;
+	height: 100%;
 	width: 48px;
 	transform-origin: 0 0;
 }
 
 #svg-time-scale {
 	position: absolute;
-	top: 670px;
+	bottom: 0;
 	z-index: -3;
 	height: 37px;
 	width: 100%;

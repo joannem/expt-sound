@@ -57,11 +57,12 @@ function DragNDropFileLoader(dropTarget, postDecodeCallbackFunction) {
 		e.stopPropagation();
 		e.preventDefault();
 		toggle ? dropTarget.css({
-			'border': "#D6D6D6 dashed 2px", 
-			'background-color': "#EEEEEE"
+			'background-color': "#EEEEEE",
+			'opacity': "0.5"
 		}) : dropTarget.css({
-			'border': "transparent dashed 2px",
-			'background-color': "#FFFFFF"});
+			'background-color': "transparent",
+			'opacity': "1"
+		});
 	}
 
 	/**
