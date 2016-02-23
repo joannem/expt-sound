@@ -34,7 +34,7 @@ function SvgCanvas(canvasObj) {
 			if (gCurrTool == "pencilTool") {
 				drawNewPath(evt.offsetX, evt.offsetY);
 			} else if (gCurrTool == "harmonicPencilTool") {
-				drawNewHarmonic(evt);
+				drawNewHarmonic(evt.offsetX, evt.offsetY);
 			} else {
 				console.log("drag...");
 				dragSpectrograms(evt.clientX, evt.clientY);
@@ -148,10 +148,11 @@ function SvgCanvas(canvasObj) {
 			x, y, x, y, ("M " + x + "," + y), "3");
 
 		$("#canvas-board").mousemove(function(evt) {
+			event.stopPropagation();
+
 			var x = (evt.offsetX - spectTransformMatrix[4]) / spectTransformMatrix[0];
 			var y = (evt.offsetY - spectTransformMatrix[5]) / spectTransformMatrix[3];
 
-			event.stopPropagation();
 			newSvgPathObj.drawPath(x, y);
 
 			//--- insert group onto canvas
@@ -172,16 +173,25 @@ function SvgCanvas(canvasObj) {
 		});
 	}
 
-	function drawNewHarmonic(evt) {
+	function drawNewHarmonic(x, y) {
+		x = (x - spectTransformMatrix[4]) / spectTransformMatrix[0];
+		y = (y - spectTransformMatrix[5]) / spectTransformMatrix[3];
+
 		var newSvgHarmonicObj = new SvgHarmonic(noOfSvgHarmonicObjs, noOfSvgPathObjs, 
-			evt.offsetX, evt.offsetY, evt.offsetX, evt.offsetY, "3");
+			x, y, x, y, "3");
 		
-		canvasObj.mousemove(function(evt) {
+		$("#canvas-board").mousemove(function(evt) {
 			event.stopPropagation();
-			newSvgHarmonicObj.drawHarmonics(evt.offsetX, evt.offsetY);
+
+			var x = (evt.offsetX - spectTransformMatrix[4]) / spectTransformMatrix[0];
+			var y = (evt.offsetY - spectTransformMatrix[5]) / spectTransformMatrix[3];
+
+			newSvgHarmonicObj.drawHarmonics(x, y);
 
 			//--- insert group onto canvas
-			canvasObj[0].appendChild(newSvgHarmonicObj.getGroupedSvgHarmonicObj());
+			$("#svg-canvas").css({transform: "matrix(1 0 0 1 0 0)"});
+			canvasObj[0].children[0].appendChild(newSvgHarmonicObj.getGroupedSvgHarmonicObj());
+			$("#svg-canvas").css({transform: "matrix(" + spectTransformMatrix.join(',') + ")"});
 
 		}).mouseup(function(){
 			event.stopPropagation();
