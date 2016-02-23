@@ -24,7 +24,7 @@ function SvgCanvas(canvasObj) {
 	drawFreqTicks();
 	drawTimeTicks();
 	
-	$("#canvas-board").mousedown(function(evt) {
+	$("#sound-canvas").mousedown(function(evt) {
 		evt.stopPropagation();
 		that.deselectAllPaths();
 		
@@ -36,13 +36,12 @@ function SvgCanvas(canvasObj) {
 			} else if (gCurrTool == "harmonicPencilTool") {
 				drawNewHarmonic(evt.offsetX, evt.offsetY);
 			} else {
-				console.log("drag...");
 				dragSpectrograms(evt.clientX, evt.clientY);
 			}
 		}
 	});
 
-	$("#canvas-board").bind('mousewheel', function(evt) {
+	$("#sound-canvas").bind('mousewheel', function(evt) {
 		evt.stopPropagation();
 
 		zoomSpectrograms(evt.originalEvent.wheelDelta, evt.offsetX, evt.offsetY);
@@ -141,19 +140,13 @@ function SvgCanvas(canvasObj) {
 	//----- private methods called after initialisation -----//
 
 	function drawNewPath(x, y) {
-		x = (x - spectTransformMatrix[4]) / spectTransformMatrix[0];
-		y = (y - spectTransformMatrix[5]) / spectTransformMatrix[3];
-
 		var newSvgPathObj = new SvgPathObject(noOfSvgPathObjs,
 			x, y, x, y, ("M " + x + "," + y), "3");
 
-		$("#canvas-board").mousemove(function(evt) {
+		$("#sound-canvas").mousemove(function(evt) {
 			event.stopPropagation();
 
-			var x = (evt.offsetX - spectTransformMatrix[4]) / spectTransformMatrix[0];
-			var y = (evt.offsetY - spectTransformMatrix[5]) / spectTransformMatrix[3];
-
-			newSvgPathObj.drawPath(x, y);
+			newSvgPathObj.drawPath(evt.offsetX, evt.offsetY);
 
 			//--- insert group onto canvas
 			$("#svg-canvas").css({transform: "matrix(1 0 0 1 0 0)"});
@@ -174,19 +167,13 @@ function SvgCanvas(canvasObj) {
 	}
 
 	function drawNewHarmonic(x, y) {
-		x = (x - spectTransformMatrix[4]) / spectTransformMatrix[0];
-		y = (y - spectTransformMatrix[5]) / spectTransformMatrix[3];
-
 		var newSvgHarmonicObj = new SvgHarmonic(noOfSvgHarmonicObjs, noOfSvgPathObjs, 
 			x, y, x, y, "3");
 		
-		$("#canvas-board").mousemove(function(evt) {
+		$("#sound-canvas").mousemove(function(evt) {
 			event.stopPropagation();
 
-			var x = (evt.offsetX - spectTransformMatrix[4]) / spectTransformMatrix[0];
-			var y = (evt.offsetY - spectTransformMatrix[5]) / spectTransformMatrix[3];
-
-			newSvgHarmonicObj.drawHarmonics(x, y);
+			newSvgHarmonicObj.drawHarmonics(evt.offsetX, evt.offsetY);
 
 			//--- insert group onto canvas
 			$("#svg-canvas").css({transform: "matrix(1 0 0 1 0 0)"});

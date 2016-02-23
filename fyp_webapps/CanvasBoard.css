@@ -3,12 +3,15 @@ html, body {
 	width: 100%;
 	margin: 0;
 	overflow: hidden;
+
 }
 
 table {
 	border-collapse: collapse;
 	height: 100%;
 	width: 100%;
+	z-index: 1;
+	position: relative;
 }
 
 td {
@@ -22,6 +25,8 @@ td {
 	height: 100%;
 	width: 5%;
 	background-color: #D2D2D2;
+	z-index: 1;
+	position: relative;
 }
 
 #tools-panel > button {
@@ -35,6 +40,8 @@ td {
 #tools-sound-space {
 	width: 5px;
 	background-color: white;
+	z-index: 1;
+	position: relative;
 }
 
 /** Center: sound space - canvas **/
@@ -42,6 +49,7 @@ td {
 #sound-space {
 	width: 80%;
 	height: 100%;
+	
 }
 
 #top-canvas-board {
@@ -50,16 +58,8 @@ td {
 }
 
 /* TODO: find for ways to replace hard px values */
-#canvas-board {
-	z-index: 0;
-	position: relative;
-	background-color: transparent;
-	height: 700px;
-	transform-origin: 0 0;
-}
-
 #sound-canvas {
-	z-index: -1;
+	z-index: 0;
 	position: absolute;
 	top: 5px;
 	height: 700px;
@@ -69,14 +69,14 @@ td {
 
 #svg-canvas {
 	position: absolute;
-	z-index: -2;
+	z-index: -1;
 	width: 100%;
 	transform-origin: 0 0;
 }
 
 #svg-freq-scale {
 	position: absolute;
-	z-index: -3;
+	z-index: -2;
 	height: 100%;
 	width: 48px;
 	transform-origin: 0 0;
@@ -85,7 +85,7 @@ td {
 #svg-time-scale {
 	position: absolute;
 	bottom: 0;
-	z-index: -3;
+	z-index: -2;
 	height: 37px;
 	width: 100%;
 	transform-origin: 0 0;
@@ -93,7 +93,7 @@ td {
 
 #spectrogram-canvas {
 	position: absolute;
-	z-index: -4;
+	z-index: -3;
 	height: inherit;
 	width: 100%;
 	transform-origin: 0 0;
@@ -101,7 +101,7 @@ td {
 
 #hidden-spectrogram-canvas {
 	position: absolute;
-	z-index: -5;
+	z-index: -4;
 	height: inherit;
 	width: 100%;
 	display: none;	/* comment out to check if scaling is correct */
@@ -147,10 +147,12 @@ td {
 	width: 50px;
 }
 
-/** Left: information panel, misc. buttons**/
+/** Right: information panel, misc. buttons**/
 
 #right-sidebar {
 	height: 100%;
 	background-color: white;
 	padding: 5px;
+	z-index: 1;
+	position: relative;
 }
