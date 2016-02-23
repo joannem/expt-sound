@@ -8,6 +8,7 @@ html, body {
 table {
 	border-collapse: collapse;
 	height: 100%;
+	width: 100%;
 }
 
 td {
@@ -112,13 +113,13 @@ td {
 	background-color: white;
 	width: 80%;
 	position: absolute;
+	z-index: 0;
 	bottom: 0;
 	top: 700px;
 }
 
 .waveform {
 	height: 107px;
-	width: 100%;
 	margin: 5px 0 5px 0;
 	position: relative;
 	z-index: 0;
@@ -126,12 +127,12 @@ td {
 
 #waveform-canvas {
 	height: inherit;
-	width: inherit;
+	width: 100%;
 }
 
 #spsi-waveform-canvas {
 	height: inherit;
-	width: inherit;
+	width: 100%;
 }
 
 .playback-buttons {
