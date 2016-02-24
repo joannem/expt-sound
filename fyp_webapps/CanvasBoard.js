@@ -2,7 +2,6 @@
  * Script for CanvasBoard.html.
  * 
  * Created by joanne on 17/12/15.
- * Last modified on 15/01/15.
  */
 
 var gDragNDropFileLoader = new DragNDropFileLoader($("#sound-space"), onFileDecode);
@@ -62,14 +61,29 @@ $("#delete-button").click(function() {
 	gSvgCanvas.deleteSelectedSvgPaths();
 });
 
-
-/** context menu **/
-
 $("#copy-button").click(function() {
 	event.stopPropagation();
 	gSvgCanvas.duplicateSvgPath(gSelectedSvgPathId);
 });
 
+
+/** context menu **/
+
+$("#tab-path").click(function() {
+	event.stopPropagation();
+	$(this).addClass("selected");
+	$("#tab-harmonic").removeClass("selected");
+	$("#harmonic-context-menu").hide();
+	$("#path-context-menu").show();
+});
+
+$("#tab-harmonic").click(function() {
+	event.stopPropagation();
+	$(this).addClass("selected");
+	$("#tab-path").removeClass("selected");
+	$("#path-context-menu").hide();
+	$("#harmonic-context-menu").show();
+});
 
 /**  playback buttons **/
 
@@ -136,14 +150,19 @@ $('#svg-display-button').click(function(){
 	event.stopPropagation();
 	$("#svg-canvas").toggle();
 	var originalText = $(this).text();
-    $(this).text(originalText == 'Show canvas' ? 'Hide canvas' : 'Show canvas');
+	$(this).text(originalText == 'Show canvas' ? 'Hide canvas' : 'Show canvas');
+});
+
+$('#raster-display-button').click(function(){
+	event.stopPropagation();
+	$("#spectrogram-canvas").toggle();
+	var originalText = $(this).text();
+	$(this).text(originalText == 'Show rasterised canvas' ? 'Hide rasterised canvas' : 'Show rasterised canvas');
 });
 
 $("#reset-zoom-button").click(function() {
 	event.stopPropagation();
-	$("#svg-canvas-group").attr('transform', "matrix(1 0 0 1 0 0)");
-	$("#time-ticks").attr('transform', "matrix(1 0 0 1 0 0)");
-	$("#freq-ticks").attr('transform', "matrix(1 0 0 1 0 0)");
+	gSvgCanvas.resetZoom();
 });
 
 $('#recon-sound-button').click(function() {
@@ -154,9 +173,7 @@ $('#recon-sound-button').click(function() {
 
 	// TODO: temporary fix
 	//--- reset zoom
-	$("#svg-canvas-group").attr('transform', "matrix(1 0 0 1 0 0)");
-	$("#time-ticks").attr('transform', "matrix(1 0 0 1 0 0)");
-	$("#freq-ticks").attr('transform', "matrix(1 0 0 1 0 0)");
+	gSvgCanvas.resetZoom();
 
 	//--- create spectrogram matrix from SVG canvas
 	var extractedSpectrogram = [];

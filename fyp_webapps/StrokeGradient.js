@@ -7,7 +7,7 @@
  */
 
 // TODO: change white to black
-function StrokeGradient(pathId) {
+function StrokeGradient(pathId, opacity) {
 	"use strict";
 
 	var that = (this === window) ? {} : this;
@@ -19,6 +19,8 @@ function StrokeGradient(pathId) {
 	var yellowStopObj;
 	var whiteStopObj;
 
+	var svgns = "http://www.w3.org/2000/svg";
+
 	var redOffset = 25;
 	var yellowOffset = 50;
 	var whiteOffset = 75;
@@ -29,15 +31,13 @@ function StrokeGradient(pathId) {
 
 	var verticalPos = 50;
 
-	var opacity = 1;
-
 	createGradientDefObj();
 
 	//----- private methods -----//
 	function createGradientDefObj() {
-		gradientDefObj = document.createElementNS("http://www.w3.org/2000/svg", 'defs');
+		gradientDefObj = document.createElementNS(svgns, 'defs');
 
-		linearGradientObj = document.createElementNS("http://www.w3.org/2000/svg", 'linearGradient');
+		linearGradientObj = document.createElementNS(svgns, 'linearGradient');
 		linearGradientObj.setAttribute('id', id);
 		linearGradientObj.setAttribute('fx', redOffset + "%");
 		linearGradientObj.setAttribute('fy', verticalPos + "%");
@@ -54,7 +54,7 @@ function StrokeGradient(pathId) {
 	}
 
 	function createStopObj(stopColor, offsetVal) {
-		var stopObj = document.createElementNS("http://www.w3.org/2000/svg", 'stop');
+		var stopObj = document.createElementNS(svgns, 'stop');
 		stopObj.setAttribute('stop-color', stopColor);
 		stopObj.setAttribute('stop-opacity', opacity);
 		stopObj.setAttribute('offset', offsetVal + "%");
@@ -97,7 +97,6 @@ function StrokeGradient(pathId) {
 	}
 
 	this.setOpacity = function(newOpacityVal) {
-		opacity = newOpacityVal;
 		redStopObj.setAttribute('stop-opacity', newOpacityVal);
 		yellowStopObj.setAttribute('stop-opacity', newOpacityVal);
 		whiteStopObj.setAttribute('stop-opacity', newOpacityVal);
@@ -121,7 +120,6 @@ function StrokeGradient(pathId) {
 			redOffset: redOffset,
 			yellowOffset: yellowOffset,
 			whiteOffset: whiteOffset,
-			opacity: opacity
 		};
 	};
 

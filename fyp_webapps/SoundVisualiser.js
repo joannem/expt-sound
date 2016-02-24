@@ -29,6 +29,11 @@ function SoundVisualiser(waveformCanvasObj, spsiWaveformCanvasObj, spectrogramCa
 
 	var spsiWaveformCanvaCtx = spsiWaveformCanvasObj[0].getContext("2d");
 	var waveformCanvasCtx = waveformCanvasObj[0].getContext("2d");
+
+	//--- for dragging and zooming canvas
+	var dx = 0; var dy = 0;
+	var zoomDx = 0; var zoomDy = 0;
+	var zoomVal = 1.0;
 	
 	//--- values for calculating FFT:
 	var noOfFrames = 1050;	// default value (unknown until length of PCM data is known)
@@ -37,7 +42,7 @@ function SoundVisualiser(waveformCanvasObj, spsiWaveformCanvasObj, spectrogramCa
 	setupBlankCanvas(width, waveformHeight, spsiWaveformCanvasObj, spsiWaveformCanvaCtx);
 	setupBlankCanvas(width, waveformHeight, waveformCanvasObj, waveformCanvasCtx);
 
-	
+
 	//----- private methods -----//
 
 	function setupBlankCanvas(width, height, canvasObj, canvasCtx) {
@@ -47,9 +52,16 @@ function SoundVisualiser(waveformCanvasObj, spsiWaveformCanvasObj, spectrogramCa
 		canvasCtx.fillRect(0, 0, width, height);
 	}
 
+
 	//https://en.wikipedia.org/wiki/Grayscale
 	function rgb2grey(r, g, b){
 		return .299*r + .587*g + .114*b;
+	}
+
+	function updateSvgPattern() {
+		var xlinkns = "http://www.w3.org/1999/xlink";
+		var canvasDataUrl = spectrogramCanvasObj[0].toDataURL();
+		$("#pattern-img")[0].setAttributeNS(xlinkns, "href", canvasDataUrl);
 	}
 
 
@@ -85,7 +97,7 @@ function SoundVisualiser(waveformCanvasObj, spsiWaveformCanvasObj, spectrogramCa
 		console.log("Waveform: done.");
 	};
 
-	// TODO: MERGE!!
+	// TODO: MERGE!! draw waveform and draw recon waveform
 
 	/**
 	 * (Re)draws the reconstructed waveform of the sound onto the waveform canvas.
@@ -160,7 +172,9 @@ function SoundVisualiser(waveformCanvasObj, spsiWaveformCanvasObj, spectrogramCa
 			}
 
 		}
+
 		console.log('spectrogram: done');
+		updateSvgPattern();
 	};
 
 	this.spectrogramFromSvg = function(svgObj, extractedSpectrogram) {
@@ -225,7 +239,6 @@ function SoundVisualiser(waveformCanvasObj, spsiWaveformCanvasObj, spectrogramCa
 			// console.log(extractedSpectrogram);
 			hiddenCanvasObj.trigger("imgLoaded");
 		}
-		
 	};
 
 	return that;

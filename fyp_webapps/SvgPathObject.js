@@ -5,20 +5,24 @@
  * Created by joanne on 17/12/15.
  */
 
-function SvgPathObject(id, minX, minY, maxX, maxY, pathStr, strokeWidth) {
+function SvgPathObject(id, minX, minY, maxX, maxY, pathStr) {
 	"use strict";
 	var that = (this === window) ? {} : this;
 
-	//var id = id;
 	var selected = false;
+	var isHarmonic = false;
 
 	var pathSvgObj;
 	var guideBoxSvgObj;
 	var groupedSvgObj;
 
+	var svgns = "http://www.w3.org/2000/svg";
+
 	//--- properties of stroke
-	//var pathStr, strokeWidth;
-	var strokeGradient;
+	var strokeOpacity = 1.0;
+	var strokeWidth = 3;
+	var isGradient = true;
+	var strokeGradient = new StrokeGradient(id, strokeOpacity);
 
 	//--- for drawing guide box
 
@@ -28,7 +32,6 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr, strokeWidth) {
 	var currY = 0;
 
 	//--- initialising objects
-	strokeGradient = new StrokeGradient(id);
 	createSvgPathObject(strokeWidth);
 	createGuideBox();
 	appendObjectsIntoGroup();
@@ -72,7 +75,7 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr, strokeWidth) {
 		e.preventDefault();
 
 		if (gCurrTool == "selectTool" && selected) {
-			gSvgPathContextMenu.showContextMenu(e, updateStrokeWidth, strokeWidth, strokeGradient);
+			gSvgPathContextMenu.showContextMenu(e, updateStrokeProperties, strokeWidth, strokeOpacity, strokeGradient, isGradient);
 		}
 
 		$(this).off('contextmenu');
@@ -83,7 +86,7 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr, strokeWidth) {
 	//--- Called during initialisation only
 
 	function createSvgPathObject(strokeWidth) {
-		pathSvgObj = document.createElementNS("http://www.w3.org/2000/svg", 'path');
+		pathSvgObj = document.createElementNS(svgns, 'path');
 		pathSvgObj.setAttribute('d', pathStr);
 		pathSvgObj.setAttribute('stroke', "url(#" + strokeGradient.getGradientId() + ")");
 		pathSvgObj.setAttribute('stroke-width', strokeWidth + "px");
@@ -93,7 +96,7 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr, strokeWidth) {
 	}
 
 	function createGuideBox() {
-		guideBoxSvgObj = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
+		guideBoxSvgObj = document.createElementNS(svgns, 'rect');
 		guideBoxSvgObj.setAttribute('x', minX - 1);
 		guideBoxSvgObj.setAttribute('y', minY - 1);
 		guideBoxSvgObj.setAttribute('width', (maxX - minX) + 2);
@@ -105,7 +108,7 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr, strokeWidth) {
 	}
 
 	function appendObjectsIntoGroup() {
-		groupedSvgObj = document.createElementNS("http://www.w3.org/2000/svg", 'g');
+		groupedSvgObj = document.createElementNS(svgns, 'g');
 		groupedSvgObj.appendChild(strokeGradient.getGradientDefObj());
 		groupedSvgObj.appendChild(pathSvgObj);
 		groupedSvgObj.appendChild(guideBoxSvgObj);
@@ -131,11 +134,49 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr, strokeWidth) {
 		currY = evt.clientY;
 	}
 
+	function updateStrokeProperties(property, value) {
+		switch(property) {
+			case "strokeWidth":
+				updateStrokeWidth(value);
+				break;
+			case "opacity":
+				updateStrokeOpacity(value);
+				break;
+			case "strokeFillType":
+				updateStrokeFillType(value);
+				break;
+			case "strokeFillGradient":
+				updateStrokeFillGradient(value.color, value.newOffset);
+				break;
+			default:
+				console.log("Error: unable to determine stroke property");
+		}
+	}
+
 	function updateStrokeWidth(newStrokeWidth) {
 		strokeWidth = newStrokeWidth;
 		pathSvgObj.setAttribute('stroke-width', strokeWidth + "px");
 
 		that.updateGuideBox();
+	}
+
+	function updateStrokeOpacity(newStrokeOpacity) {
+		strokeOpacity = newStrokeOpacity;
+		pathSvgObj.setAttribute('stroke-opacity', strokeOpacity);
+		strokeGradient.setOpacity(strokeOpacity);
+	}
+	
+	function updateStrokeFillType(newIsGradient) {
+		isGradient = newIsGradient;
+		if (isGradient) {
+			pathSvgObj.setAttribute('stroke', "url(#" + strokeGradient.getGradientId() + ")");
+		} else {
+			pathSvgObj.setAttribute('stroke', "url(#svg-pattern)");
+		}
+	}
+
+	function updateStrokeFillGradient(color, newOffset) {
+		strokeGradient.setOffset(color, newOffset);
 	}
 
 	//----- privileged methods -----//
@@ -160,8 +201,6 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr, strokeWidth) {
 	};
 
 	this.offsetPosition = function() {
-		transformMatrix[4] += 20;
-		transformMatrix[5] += 20;
 		groupedSvgObj.setAttributeNS(null, "transform", "matrix(" + transformMatrix.join(' ') + ")");
 	};
 
@@ -203,15 +242,16 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr, strokeWidth) {
 	this.getStrokeProperties = function() {
 		// TODO: stroke gradient
 	  return {
+		  strokeWidth: strokeWidth,
+		  strokeOpacity: strokeOpacity,
+		  isGradient: isGradient,
 		  strokeGradient: strokeGradient.getGradientProperties(),
-		  strokeWidth: strokeWidth
 	  };
 	};
 
 	this.getStrokeGradient = function() {
 		return strokeGradient;
 	};
-
 
 	this.select = function() {
 		selected = true;

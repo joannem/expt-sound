@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Canvas Zooming</title>
+	<style type="text/css">
+		canvas {
+			border: 1px black solid;
+			position: relative;
+			z-index: 0;
+		}
+		button {
+			position: relative;
+			z-index: 0;
+		}
+		svg {
+			position: absolute;
+			top: 654px;
+			left: 9px;
+			z-index: 1;
+		}
+	</style>
+</head>
+<body>
+<div>
+	<canvas id="canvas" width="900px" height="600px"></canvas>
+	<br>
+	<button id="canvas-reset">Reset</button>
+	<br><br>
+	<canvas id="canvas-2" width="1000px" height="500px"></canvas>
+	<svg width="1000px" height="500px">
+		<g width="1000px" height="500px" transform="matrix(1 0 0 1 300 0)">
+			<rect x="0" y="0" width="100%" height="100%" fill="blue" fill-opacity="0.3"></rect>
+		</g>
+	</svg>
+</div>
+</body>
+</html>
+
+<script type="text/javascript" src="fyp_webapps/jquery-2.2.0.min.js"></script>
+<script type="text/javascript">
+var canvasCtx = $("#canvas")[0].getContext('2d');
+var canvasCtx2 = $("#canvas-2")[0].getContext('2d');
+
+var img = new Image();
+img.addEventListener("load", function() {
+	canvasCtx.drawImage(img, 100, 200);
+}, false);
+img.src = "./fyp_webapps/img/copy-icon.ico";
+canvasCtx.fillStyle = '#ff0000';
+canvasCtx.rect(0, 0, 900, 600);
+drawOnCanvas();
+canvasCtx.save();
+
+drawOnCanvas2();
+
+//--- scaling
+
+var dx = 0; var dy = 0;
+var zoomVal = 1.0;
+var zoomDx = 0; var zoomDy = 0;
+
+$('#canvas').mousedown(function(evt) {
+	evt.stopPropagation();
+
+	var prevX = evt.clientX; 
+	var prevY = evt.clientY;
+	
+	$(document).mousemove(function(evt) {
+		evt.stopPropagation();
+		
+		dx += evt.clientX - prevX;
+		dy += evt.clientY - prevY;
+		
+		canvasCtx.resetTransform();
+		canvasCtx.clearRect(0, 0, 900, 600);
+		canvasCtx.restore();
+		
+		canvasCtx.transform(1, 0, 0, 1, evt.clientX - prevX, evt.clientY - prevY);
+		drawOnCanvas();
+		canvasCtx.save();
+
+		prevX = evt.clientX;
+		prevY = evt.clientY;
+	}).mouseup(function() {
+		event.stopPropagation();
+		$(this).off('mousemove');
+		$(this).off('mouseup');
+	});
+});
+
+$("#canvas").bind('mousewheel', function(evt) {
+	evt.stopPropagation();
+	var prevZoom = zoomVal;
+
+	if(evt.originalEvent.wheelDelta < 0) {
+		//--- scroll down
+		zoomVal = +(zoomVal - 0.1).toFixed(2);
+	} else {
+		//--- scroll up
+		zoomVal = +(zoomVal + 0.1).toFixed(2);
+	}
+
+	zoomDx = +((1 - zoomVal/prevZoom) * (evt.offsetX - dx)).toFixed(2);
+	zoomDy = +((1 - zoomVal/prevZoom) * (evt.offsetY - dy)).toFixed(2);
+	
+	if (zoomVal > 0) {
+		canvasCtx.resetTransform();
+		canvasCtx.clearRect(0, 0, 900, 600);
+		canvasCtx.restore();
+
+		canvasCtx.transform(zoomVal/prevZoom, 0, 0, zoomVal/prevZoom, zoomDx, zoomDy);
+		drawOnCanvas();
+		canvasCtx.save();
+	}
+
+	return false;
+});
+
+$('#canvas-reset').click(function() {
+	event.stopPropagation();
+	canvasCtx.resetTransform();
+	canvasCtx.clearRect(0, 0, 900, 600);
+	drawOnCanvas();
+	canvasCtx.save();
+	dx = 0;
+	dy = 0;
+	zoomVal = 1.0;
+});
+
+function drawOnCanvas() {
+	canvasCtx.fillRect(0, 0, 900, 600);
+	canvasCtx.drawImage(img, 100, 200);
+}
+
+function drawOnCanvas2() {
+	canvasCtx2.fillStyle = '#00ff00';
+
+	canvasCtx2.globalAlpha = 0.3;
+
+	canvasCtx2.fillStyle = '#0000ff';
+	canvasCtx2.transform(1, 0, 0, 1, 20, 20);
+	// canvasCtx2.fillRect(0, 0, 450, 300);
+	canvasCtx2.transform(1, 0, 0, 1, 20, 20);
+	canvasCtx2.transform(1, 0, 0, 1, 20, 20);
+	canvasCtx2.transform(1, 0, 0, 1, 240, 20);
+	canvasCtx2.fillRect(0, 0, 450, 300);
+
+	canvasCtx2.resetTransform();
+	canvasCtx2.fillStyle = '#ff0000';
+	// canvasCtx2.setTransform(1, 0, 0, 1, 20, 20);
+	// canvasCtx2.fillRect(0, 0, 450, 300);
+	// canvasCtx2.setTransform(1, 0, 0, 1, 40, 40);
+	// canvasCtx2.fillRect(0, 0, 450, 300);
+}
+
+</script>

@@ -1,14 +1,31 @@
 html, body {
 	height: 100%;
+	width: 100%;
 	margin: 0;
+	/*overflow: hidden;*/
 }
 
-#tools-panel {
-	float: left;
+table {
+	border-collapse: collapse;
 	height: 100%;
+	width: 100%;
+	z-index: 1;
+	position: relative;
+}
+
+td {
+	vertical-align: top;
+	padding: 0px;
+}
+
+/** Left side: tool bar **/
+
+#tools-panel {
+	height: 100%;
+	width: 5%;
 	background-color: #D2D2D2;
-	min-width: 85px;
-	max-width: 5%;
+	z-index: 1;
+	position: relative;
 }
 
 #tools-panel > button {
@@ -16,64 +33,91 @@ html, body {
 	height: 55px;
 	width: 65px;
 	background-color: #FFFFFF;
-	border: none transparent;
+	border: 0px;
 }
+
+#tools-sound-space {
+	width: 5px;
+	background-color: white;
+	z-index: 1;
+	position: relative;
+}
+
+/** Center: sound space - canvas **/
 
 #sound-space {
-	float: left;
 	width: 80%;
-	margin: 0 10px 0 10px;
-	border: transparent dashed 2px;
+	height: 100%;
+	
 }
 
-/* TODO: find for ways to replace hard px values **/
-#canvas-board {    
-	border: solid 1px;
-	height: 700px;
-	width: 100%;
-	margin-bottom: 15px;
+#top-canvas-board {
+	height: 5px;
+	background-color: white;
 }
 
-#spectrogram-canvas {
-	position: absolute;
+/* TODO: find for ways to replace hard px values */
+#sound-canvas {
 	z-index: 0;
-	height: inherit;
-	width: 80%;
-}
-
-#hidden-spectrogram-canvas {
 	position: absolute;
-	z-index: -1;
-	height: inherit;
+	top: 5px;
+	height: 700px;
 	width: 80%;
-	display: none;	/* comment out to check if scaling is correct */
-}
-
-#svg-freq-scale {
-	position: absolute;
-	z-index: 1;
-	height: inherit;
-	width: 48px;
-}
-
-#svg-time-scale {
-	position: absolute;
-	top: 670px;
-	z-index: 1;
-	height: 37px;
-	width: 80%;
+	background-color: #808080;
 }
 
 #svg-canvas {
 	position: absolute;
-	z-index: 2;
+	z-index: -1;
+	width: 100%;
+	transform-origin: 0 0;
+}
+
+#svg-freq-scale {
+	position: absolute;
+	z-index: -2;
+	height: 100%;
+	width: 48px;
+	transform-origin: 0 0;
+}
+
+#svg-time-scale {
+	position: absolute;
+	bottom: 0;
+	z-index: -2;
+	height: 37px;
+	width: 100%;
+	transform-origin: 0 0;
+}
+
+#spectrogram-canvas {
+	position: absolute;
+	z-index: -3;
+	height: inherit;
+	width: 100%;
+	transform-origin: 0 0;
+}
+
+#hidden-spectrogram-canvas {
+	position: absolute;
+	z-index: -4;
+	height: inherit;
+	width: 100%;
+	display: none;	/* comment out to check if scaling is correct */
+}
+
+/** Center: sound space - waveforms **/
+
+#waves {
+	background-color: white;
 	width: 80%;
+	position: absolute;
+	z-index: 0;
+	bottom: 0;
 }
 
 .waveform {
-	border: solid 1px;
 	height: 107px;
-	width: 100%;
 	margin: 5px 0 5px 0;
 	position: relative;
 	z-index: 0;
@@ -81,12 +125,12 @@ html, body {
 
 #waveform-canvas {
 	height: inherit;
-	width: inherit;
+	width: 100%;
 }
 
 #spsi-waveform-canvas {
 	height: inherit;
-	width: inherit;
+	width: 100%;
 }
 
 .playback-buttons {
@@ -101,52 +145,12 @@ html, body {
 	width: 50px;
 }
 
+/** Right: information panel, misc. buttons**/
+
 #right-sidebar {
-	float: left;
-	width: 10%;
 	height: 100%;
-}
-
-#svg-path-context-menu {
-	background-color: #D2D2D2;
-	width: 200px;
-	position: absolute;
-	z-index: 10;
-	display: none;
-}
-
-#svg-path-context-menu > ul {
+	background-color: white;
 	padding: 5px;
-	list-style: none;
-	margin: 0;
-}
-
-#svg-path-context-menu > ul > li  {
-	margin: 5px 0 10px 0;
-}
-
-#svg-path-context-menu > ul > li > input[type=text] {
-	width: 40px;
-	text-align: center;
-	margin-right: 2px;
-}
-
-#copy-button {
-	height: 35px;
-	width: 100%;
-	border: none transparent;
-	text-align: left;
-	font-size: 18px;
-}
-
-#copy-icon {
-	height: 25px;
-	width: 25px;
-	margin: 0 16px 0 13px;
-}
-
-#fill-slider {
-	width:100%;
-	height: 35px;
-	border: solid #595959 1.5px;
+	z-index: 1;
+	position: relative;
 }

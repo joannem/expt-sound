@@ -16,62 +16,38 @@ function SvgCanvas(canvasObj) {
 	var noOfSvgHarmonicObjs = 0;
 
 	var zoomVal = 1.0;
-	var canvasTransformMatrix = [1, 0, 0, 1, 0, 0];
+	var zoomDx = 0; var zoomDy = 0;
+	var spectTransformMatrix = [1, 0, 0, 1, 0, 0];
 	var freqTicksTransformMatrix = [1, 0, 0, 1, 0, 0];
 	var timeTicksTransformMatrix = [1, 0, 0, 1, 0, 0];
 
 	drawFreqTicks();
 	drawTimeTicks();
 	
-	canvasObj.mousedown(function(evt) {
+	$("#sound-canvas").mousedown(function(evt) {
 		evt.stopPropagation();
 		that.deselectAllPaths();
+
 		if (evt.which == gLeftMouseButton) {
 			gSvgPathContextMenu.hideContextMenu();
 
 			if (gCurrTool == "pencilTool") {
-				drawNewPath(evt);
+				drawNewPath(evt.offsetX, evt.offsetY);
 			} else if (gCurrTool == "harmonicPencilTool") {
-				drawNewHarmonic(evt);
+				drawNewHarmonic(evt.offsetX, evt.offsetY);
 			} else {
-				dragCanvas(evt);
+				dragSpectrograms(evt.clientX, evt.clientY);
 			}
 		}
 	});
 
-	canvasObj.bind('mousewheel', function(evt) {
+	$("#sound-canvas").bind('mousewheel', function(evt) {
 		evt.stopPropagation();
-		if(evt.originalEvent.wheelDelta < 0) {
-			//--- scroll down
-			zoomVal = +(zoomVal - 0.1).toFixed(2);
-		}else {
-			//--- scroll up
-			zoomVal = +(zoomVal + 0.1).toFixed(2);
-		}
 
-		if (zoomVal > 0) {
-			canvasTransformMatrix[0] = zoomVal;
-			canvasTransformMatrix[3] = zoomVal;
-
-			canvasTransformMatrix[4] = +((1 - zoomVal) * evt.offsetX).toFixed(2);
-			canvasTransformMatrix[5] = +((1 - zoomVal) * evt.offsetY).toFixed(2);
-
-			timeTicksTransformMatrix[0] = zoomVal;
-			freqTicksTransformMatrix[3] = zoomVal;
-
-			timeTicksTransformMatrix[4] = +((1 - zoomVal) * evt.offsetX).toFixed(2);
-			freqTicksTransformMatrix[5] = +((1 - zoomVal) * evt.offsetY).toFixed(2);
-		}
-
-		// TODO: if zoom > 5... reset font and scales
-
-		$("#svg-canvas-group").attr('transform', "matrix(" + canvasTransformMatrix.join(' ') + ")");
-		$("#time-ticks").attr('transform', "matrix(" + timeTicksTransformMatrix.join(' ') + ")");
-		$("#freq-ticks").attr('transform', "matrix(" + freqTicksTransformMatrix.join(' ') + ")");
-
-		//--- prevent page fom scrolling
-		return false;
+		zoomSpectrograms(evt.originalEvent.wheelDelta, evt.offsetX, evt.offsetY);
+		return false;	// prevent page fom scrolling
 	});
+
 
 	//----- private methods called during initialisation -----//
 	
@@ -86,9 +62,8 @@ function SvgCanvas(canvasObj) {
 
 		for (var y = 0;  y <= canvasObj.height(); y += 10) {
 			newPath = document.createElementNS("http://www.w3.org/2000/svg", 'path');
-			newPath.setAttribute('stroke', "#FFFFFF");
+			newPath.setAttribute('stroke', "red");
 			newPath.setAttribute('vector-effect', "non-scaling-stroke");
-			// newPath.setAttribute('opacity', "0.5");
 			
 			$("#freq-ticks")[0].appendChild(newPath);
 			
@@ -98,7 +73,7 @@ function SvgCanvas(canvasObj) {
 				
 				newText = document.createElementNS("http://www.w3.org/2000/svg", 'text');
 				newText.setAttribute('font-size', 14);
-				newText.setAttribute('fill', "#00FF00");
+				newText.setAttribute('fill', "red");
 				newText.setAttribute('text-anchor', "middle");
 				newText.setAttribute('x', 24);
 				newText.setAttribute('y', y - 2);
@@ -161,19 +136,22 @@ function SvgCanvas(canvasObj) {
 		}
 	}
 
+
 	//----- private methods called after initialisation -----//
 
-	function drawNewPath(evt) {
+	function drawNewPath(x, y) {
 		var newSvgPathObj = new SvgPathObject(noOfSvgPathObjs,
-			evt.offsetX, evt.offsetY, evt.offsetX, evt.offsetY,
-			("M " + evt.offsetX + "," + evt.offsetY), "3");
+			x, y, x, y, ("M " + x + "," + y));
 
-		canvasObj.mousemove(function(evt) {
+		$("#sound-canvas").mousemove(function(evt) {
 			event.stopPropagation();
+
 			newSvgPathObj.drawPath(evt.offsetX, evt.offsetY);
 
 			//--- insert group onto canvas
-			canvasObj[0].children[0].appendChild(newSvgPathObj.getGroupedSvgObj());
+			canvasObj.css({transform: "matrix(1 0 0 1 0 0)"});
+			canvasObj[0].children[1].appendChild(newSvgPathObj.getGroupedSvgObj());
+			canvasObj.css({transform: "matrix(" + spectTransformMatrix.join(',') + ")"});
 
 		}).mouseup(function(){
 			event.stopPropagation();
@@ -188,16 +166,19 @@ function SvgCanvas(canvasObj) {
 		});
 	}
 
-	function drawNewHarmonic(evt) {
+	function drawNewHarmonic(x, y) {
 		var newSvgHarmonicObj = new SvgHarmonic(noOfSvgHarmonicObjs, noOfSvgPathObjs, 
-			evt.offsetX, evt.offsetY, evt.offsetX, evt.offsetY, "3");
+			x, y, x, y, "3");
 		
-		canvasObj.mousemove(function(evt) {
+		$("#sound-canvas").mousemove(function(evt) {
 			event.stopPropagation();
+
 			newSvgHarmonicObj.drawHarmonics(evt.offsetX, evt.offsetY);
 
 			//--- insert group onto canvas
-			canvasObj[0].appendChild(newSvgHarmonicObj.getGroupedSvgHarmonicObj());
+			canvasObj.css({transform: "matrix(1 0 0 1 0 0)"});
+			canvasObj[0].children[1].appendChild(newSvgHarmonicObj.getGroupedSvgHarmonicObj());
+			canvasObj.css({transform: "matrix(" + spectTransformMatrix.join(',') + ")"});
 
 		}).mouseup(function(){
 			event.stopPropagation();
@@ -213,21 +194,20 @@ function SvgCanvas(canvasObj) {
 		});
 	}
 
-	function dragCanvas(evt) {
-		var currX = evt.clientX;
-		var currY = evt.clientY;
-
+	function dragSpectrograms(currX, currY) {
 		$(document).mousemove(function(evt) {
 			evt.stopPropagation();
-			canvasTransformMatrix[4] += evt.clientX - currX;
-			canvasTransformMatrix[5] += evt.clientY - currY;
+
+			spectTransformMatrix[4] = +(spectTransformMatrix[4] + (evt.clientX - currX)).toFixed(1);
+			spectTransformMatrix[5] = +(spectTransformMatrix[5] + (evt.clientY - currY)).toFixed(1);
 
 			timeTicksTransformMatrix[4] += evt.clientX - currX;
 			freqTicksTransformMatrix[5] += evt.clientY - currY;
 
-			$("#svg-canvas-group").attr('transform', "matrix(" + canvasTransformMatrix.join(' ') + ")");
-			$("#time-ticks").attr('transform', "matrix(" + timeTicksTransformMatrix.join(' ') + ")");
-			$("#freq-ticks").attr('transform', "matrix(" + freqTicksTransformMatrix.join(' ') + ")");
+			$("#svg-canvas").css({transform: "matrix(" + spectTransformMatrix.join(',') + ")"});
+			$("#svg-freq-scale").css({transform: "matrix(" + freqTicksTransformMatrix.join(',') + ")"});
+			$("#svg-time-scale").css({transform: "matrix(" + timeTicksTransformMatrix.join(',') + ")"});
+			$("#spectrogram-canvas").css({transform: "matrix(" + spectTransformMatrix.join(',') + ")"});
 
 			currX = evt.clientX;
 			currY = evt.clientY;
@@ -238,7 +218,62 @@ function SvgCanvas(canvasObj) {
 		});
 	}
 
+	function zoomSpectrograms(mouseWheelDelta, offsetX, offsetY) {
+		var prevZoom = zoomVal;
+
+		if(mouseWheelDelta < 0) {
+			//--- scroll down
+			zoomVal = +(zoomVal - 0.1).toFixed(1);
+		}else {
+			//--- scroll up
+			zoomVal = +(zoomVal + 0.1).toFixed(1);
+		}
+
+
+		if (zoomVal > 0) {
+			//--- actual transforming for zooming
+			zoomDx = (1 - zoomVal/prevZoom) * (offsetX - spectTransformMatrix[4]);
+			zoomDy = (1 - zoomVal/prevZoom) * (offsetY - spectTransformMatrix[5]);
+
+			spectTransformMatrix[0] = zoomVal;
+			spectTransformMatrix[3] = zoomVal;
+
+			spectTransformMatrix[4] = +(zoomDx + spectTransformMatrix[4]).toFixed(1);
+			spectTransformMatrix[5] = +(zoomDy + spectTransformMatrix[5]).toFixed(1);
+
+			timeTicksTransformMatrix[0] = zoomVal;
+			freqTicksTransformMatrix[3] = zoomVal;
+
+			timeTicksTransformMatrix[4] = +(zoomDx + timeTicksTransformMatrix[4]).toFixed(1);
+			freqTicksTransformMatrix[5] = +(zoomDy + freqTicksTransformMatrix[5]).toFixed(1);
+
+			// TODO: if zoom > 5... reset font and scales
+			
+			$("#svg-canvas").css({transform: "matrix(" + spectTransformMatrix.join(',') + ")"});
+			$("#svg-freq-scale").css({transform: "matrix(" + freqTicksTransformMatrix.join(',') + ")"});
+			$("#svg-time-scale").css({transform: "matrix(" + timeTicksTransformMatrix.join(',') + ")"});
+			$("#spectrogram-canvas").css({transform: "matrix(" + spectTransformMatrix.join(',') + ")"});
+
+		} else {
+			zoomVal = prevZoom;
+		}
+	}
+	
+
 	//----- privileged methods -----//
+
+	this.resetZoom = function() {
+		zoomVal = 1.0;
+		spectTransformMatrix = [1, 0, 0, 1, 0, 0];
+		freqTicksTransformMatrix = [1, 0, 0, 1, 0, 0];
+		timeTicksTransformMatrix = [1, 0, 0, 1, 0, 0];
+
+		$("#canvas-board").css({transform: "matrix(" + spectTransformMatrix.join(',') + ")"});
+		$("#svg-canvas").css({transform: "matrix(" + spectTransformMatrix.join(',') + ")"});
+		$("#svg-freq-scale").css({transform: "matrix(" + freqTicksTransformMatrix.join(',') + ")"});
+		$("#svg-time-scale").css({transform: "matrix(" + timeTicksTransformMatrix.join(',') + ")"});
+		$("#spectrogram-canvas").css({transform: "matrix(" + spectTransformMatrix.join(',') + ")"});
+	};
 
 	/**
 	 * Duplicates all the selected SVG paths.
@@ -271,13 +306,13 @@ function SvgCanvas(canvasObj) {
 		var newSvgPathObj = new SvgPathObject(noOfSvgPathObjs,
 			guideBoxCoordinates.minX, guideBoxCoordinates.minY,
 			guideBoxCoordinates.maxX, guideBoxCoordinates.maxY,
-			pathStr, strokeProperties.strokeWidth);
+			pathStr);
 		//TODO: update gradient values, or find a better way to clone the SVG path
 
 		//--- insert group onto canvas
 		newSvgPathObj.offsetPosition();
 		newSvgPathObj.updateGuideBox();
-		canvasObj[0].children[0].appendChild(newSvgPathObj.getGroupedSvgObj());
+		canvasObj[0].children[1].appendChild(newSvgPathObj.getGroupedSvgObj());
 
 		//--- update list of objects in SvgCanvas
 		noOfSvgPathObjs++;
@@ -294,7 +329,7 @@ function SvgCanvas(canvasObj) {
 		while(currId < svgPathObjs.length) {
 			//--- delete from canvas and array
 			if (svgPathObjs[currId].isSelected()) {
-				canvasObj[0].children[0].removeChild(svgPathObjs[currId].getGroupedSvgObj());
+				canvasObj[0].children[1].removeChild(svgPathObjs[currId].getGroupedSvgObj());
 				svgPathObjs.splice(currId, 1);
 
 			} else {

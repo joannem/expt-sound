@@ -19,20 +19,29 @@ function SvgPathContextMenu () {
 	var whiteCurrX = 0;
 
 	var currStrokeGradient = null;
-	var currUpdateStrokeWidthCallback = null;
+	var updateStrokePropertiesCallback = null;
+
+	//--- initialise listeners
+	listenToWidthInput();
+	listenToGradientInput();
+	listenToPatternInput();
+	listenToOpacityInput();
 
 	//----- private methods -----//
-	
-	function turnOffAllInputListeners() {
-		$("#width-slider, #width-val").off("input");
-		$("#opacity-slider, #opacity-val").off("input");
-	}
 	
 	function listenToWidthInput() {
 		$("#width-slider, #width-val").on("input", function() {
 			$("#width-val").val($(this)[0].value);
-			currUpdateStrokeWidthCallback($(this)[0].value);
+			updateStrokePropertiesCallback("strokeWidth", $(this)[0].value);
 			
+		});
+	}
+
+	function listenToOpacityInput() {
+		$("#opacity-slider, #opacity-val").on("input", function() {
+			$("#opacity-val").val($(this)[0].value);
+			$("#Gradient-fill-red, #Gradient-fill-yellow, #Gradient-fill-white").attr('stop-opacity', $(this)[0].value);
+			updateStrokePropertiesCallback("opacity", $(this)[0].value);
 		});
 	}
 
@@ -62,48 +71,49 @@ function SvgPathContextMenu () {
 		switch(color) {
 			case "red":
 				colorCurrX = redCurrX;
-				dx = currX - redCurrX;
 				break;
 			case "yellow":
 				colorCurrX = yellowCurrX;
-				dx = currX - yellowCurrX;
 				break;
 			case "white":
 				colorCurrX = whiteCurrX;
-				dx = currX - whiteCurrX;
 				break;
 			default:
 				console.log("Error: unknown value of 'color'.");
 		}
 
 		//--- move slider
+		dx = currX - colorCurrX;
 		colorCurrX += dx;
 		$("#slider-" + color).attr('transform', "translate(" + (colorCurrX - 5) + ")");
 	}
 
 	function updateGradient(color, currX) {
-		//--- update path gradient
-		currStrokeGradient.setOffset(color, currX/fillMeterWidth * 100);
-
 		//--- update preview gradient
 		$("#Gradient-fill-" + color).attr('offset', currX/fillMeterWidth * 100 + "%");
 		if (color == "red") {
 			$("#Gradient-fill").attr('fx', ((currX - 5) / fillMeterWidth * 100) + "%");
 		}
+		//--- update path gradient
+		var newStrokeFillGradient = {
+			color: color,
+			newOffset: currX/fillMeterWidth * 100
+		};
+		updateStrokePropertiesCallback("strokeFillGradient", newStrokeFillGradient);
 	}
 
-	function listenToOpacityInput() {
-		$("#opacity-slider, #opacity-val").on("input", function() {
-			$("#opacity-val").val($(this)[0].value);
-			currStrokeGradient.setOpacity($(this)[0].value);
-			$("#Gradient-fill-red, #Gradient-fill-yellow, #Gradient-fill-white").attr('stop-opacity', $(this)[0].value);
+	function listenToPatternInput() {
+		$("#bg-fill-checkbox").change(function() {
+			var isGradient = !($(this).is(":checked"));
+			updateStrokePropertiesCallback("strokeFillType", isGradient);
 		});
 	}
 
+
 	//----- privileged methods -----//
 
-	this.showContextMenu = function(e, updateStrokeWidthCallback, strokeWidth, strokeGradient) {
-		currUpdateStrokeWidthCallback = updateStrokeWidthCallback;
+	this.showContextMenu = function(e, updateStrokeProperties, strokeWidth, strokeOpacity, strokeGradient, isGradient) {
+		updateStrokePropertiesCallback = updateStrokeProperties;
 
 		//--- set SVG path's width		
 		$("#width-val, #width-slider").val(strokeWidth);
@@ -124,22 +134,24 @@ function SvgPathContextMenu () {
 		$("#slider-yellow").attr('transform', "translate(" + (yellowCurrX - 5) + ")");
 		$("#slider-white").attr('transform', "translate(" + (whiteCurrX - 5) + ")");
 
+		if (!isGradient) {
+			$("#bg-fill-checkbox").prop('checked', true);
+		} else {
+			$("#bg-fill-checkbox").prop('checked', false);
+		}
+
 		//--- set SVG path's opacity value
-		$("#opacity-val, #opacity-slider").val(gradientValues.opacity);
-		$("#Gradient-fill-red, #Gradient-fill-yellow, #Gradient-fill-white").attr('stop-opacity', gradientValues.opacity);
+		$("#opacity-val, #opacity-slider").val(strokeOpacity);
+		$("#Gradient-fill-red, #Gradient-fill-yellow, #Gradient-fill-white").attr('stop-opacity', strokeOpacity);
 
 		//--- reposition context menu
 		$("#svg-path-context-menu").offset({
-			top: (e.offsetY),
-			left: (e.offsetX + 95)
+			top: (e.pageY),
+			left: (e.pageX)
 		});
 
 		//--- show menu
 		$("#svg-path-context-menu").show();
-
-		listenToWidthInput();
-		listenToGradientInput();
-		listenToOpacityInput();
 	};
 
 	this.hideContextMenu = function() {
@@ -148,7 +160,6 @@ function SvgPathContextMenu () {
 			left: 0
 		});	// reset position to prevent it from flying off the screen
 		$("#svg-path-context-menu").hide();
-		turnOffAllInputListeners();
 	}
  
 	return that;

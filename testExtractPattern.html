@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Extract Pattern</title>
+	<style type="text/css">
+		canvas {
+			border: 1px black solid;
+			position: absolute;
+			z-index: 0;
+		}
+		svg {
+			position: absolute;
+			left: 9px;
+			z-index: 1;
+		}
+	</style>
+</head>
+<body>
+<div>
+	<canvas id="canvas" width="900px" height="600px"></canvas>
+	<svg width="900px" height="600px">
+		
+		<pattern id="img1" patternUnits="userSpaceOnUse" width="900" height="600">
+			<image id="pattern-img" x="0" y="0" width="900" height="600" />
+		</pattern>
+
+		<g width="900px" height="600px" transform="matrix(1 0 0 1 50 50)">
+			<path id="path-1" d="M40,50 Q40,390 450,430 T90,130" fill="none" stroke="blue" stroke-width="10"/>
+			<polyline id="polyline-1" points="200 200 450 200 450 450 200 450" stroke="url(#img1)" fill="transparent" stroke-width="40" stroke-opacity="0.5"/>
+		</g>
+	</svg>
+</div>
+</body>
+</html>
+
+<script type="text/javascript" src="fyp_webapps/jquery-2.2.0.min.js"></script>
+<script type="text/javascript">
+var canvasCtx = $("#canvas")[0].getContext('2d');
+var img = new Image();
+img.addEventListener("load", function() {
+	canvasCtx.drawImage(img, 100, 200);
+}, false);
+img.src = "./fyp_webapps/img/copy-icon.ico";
+
+canvasCtx.fillStyle = '#d2d2d2';
+canvasCtx.fillRect(0, 0, 900, 600);
+canvasCtx.fillStyle = 'orange';
+canvasCtx.fillRect(0, 0, 450, 300);
+canvasCtx.fillStyle = 'red';
+canvasCtx.fillRect(450, 0, 450, 300);
+
+var xlinkns = "http://www.w3.org/1999/xlink";
+document.getElementById("pattern-img").setAttributeNS(xlinkns, "href", 
+	document.getElementById("canvas").toDataURL());
+
+</script>
