@@ -27,7 +27,7 @@ function SvgCanvas(canvasObj) {
 	$("#sound-canvas").mousedown(function(evt) {
 		evt.stopPropagation();
 		that.deselectAllPaths();
-		
+
 		if (evt.which == gLeftMouseButton) {
 			gSvgPathContextMenu.hideContextMenu();
 
@@ -141,7 +141,7 @@ function SvgCanvas(canvasObj) {
 
 	function drawNewPath(x, y) {
 		var newSvgPathObj = new SvgPathObject(noOfSvgPathObjs,
-			x, y, x, y, ("M " + x + "," + y), "3");
+			x, y, x, y, ("M " + x + "," + y));
 
 		$("#sound-canvas").mousemove(function(evt) {
 			event.stopPropagation();
@@ -149,9 +149,9 @@ function SvgCanvas(canvasObj) {
 			newSvgPathObj.drawPath(evt.offsetX, evt.offsetY);
 
 			//--- insert group onto canvas
-			$("#svg-canvas").css({transform: "matrix(1 0 0 1 0 0)"});
-			canvasObj[0].children[0].appendChild(newSvgPathObj.getGroupedSvgObj());
-			$("#svg-canvas").css({transform: "matrix(" + spectTransformMatrix.join(',') + ")"});
+			canvasObj.css({transform: "matrix(1 0 0 1 0 0)"});
+			canvasObj[0].children[1].appendChild(newSvgPathObj.getGroupedSvgObj());
+			canvasObj.css({transform: "matrix(" + spectTransformMatrix.join(',') + ")"});
 
 		}).mouseup(function(){
 			event.stopPropagation();
@@ -176,9 +176,9 @@ function SvgCanvas(canvasObj) {
 			newSvgHarmonicObj.drawHarmonics(evt.offsetX, evt.offsetY);
 
 			//--- insert group onto canvas
-			$("#svg-canvas").css({transform: "matrix(1 0 0 1 0 0)"});
-			canvasObj[0].children[0].appendChild(newSvgHarmonicObj.getGroupedSvgHarmonicObj());
-			$("#svg-canvas").css({transform: "matrix(" + spectTransformMatrix.join(',') + ")"});
+			canvasObj.css({transform: "matrix(1 0 0 1 0 0)"});
+			canvasObj[0].children[1].appendChild(newSvgHarmonicObj.getGroupedSvgHarmonicObj());
+			canvasObj.css({transform: "matrix(" + spectTransformMatrix.join(',') + ")"});
 
 		}).mouseup(function(){
 			event.stopPropagation();
@@ -306,13 +306,13 @@ function SvgCanvas(canvasObj) {
 		var newSvgPathObj = new SvgPathObject(noOfSvgPathObjs,
 			guideBoxCoordinates.minX, guideBoxCoordinates.minY,
 			guideBoxCoordinates.maxX, guideBoxCoordinates.maxY,
-			pathStr, strokeProperties.strokeWidth);
+			pathStr);
 		//TODO: update gradient values, or find a better way to clone the SVG path
 
 		//--- insert group onto canvas
 		newSvgPathObj.offsetPosition();
 		newSvgPathObj.updateGuideBox();
-		canvasObj[0].children[0].appendChild(newSvgPathObj.getGroupedSvgObj());
+		canvasObj[0].children[1].appendChild(newSvgPathObj.getGroupedSvgObj());
 
 		//--- update list of objects in SvgCanvas
 		noOfSvgPathObjs++;
@@ -329,7 +329,7 @@ function SvgCanvas(canvasObj) {
 		while(currId < svgPathObjs.length) {
 			//--- delete from canvas and array
 			if (svgPathObjs[currId].isSelected()) {
-				canvasObj[0].children[0].removeChild(svgPathObjs[currId].getGroupedSvgObj());
+				canvasObj[0].children[1].removeChild(svgPathObjs[currId].getGroupedSvgObj());
 				svgPathObjs.splice(currId, 1);
 
 			} else {

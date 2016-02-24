@@ -58,6 +58,12 @@ function SoundVisualiser(waveformCanvasObj, spsiWaveformCanvasObj, spectrogramCa
 		return .299*r + .587*g + .114*b;
 	}
 
+	function updateSvgPattern() {
+		var xlinkns = "http://www.w3.org/1999/xlink";
+		var canvasDataUrl = spectrogramCanvasObj[0].toDataURL();
+		$("#pattern-img")[0].setAttributeNS(xlinkns, "href", canvasDataUrl);
+	}
+
 
 	//----- privileged methods -----//
 	
@@ -168,6 +174,7 @@ function SoundVisualiser(waveformCanvasObj, spsiWaveformCanvasObj, spectrogramCa
 		}
 
 		console.log('spectrogram: done');
+		updateSvgPattern();
 	};
 
 	this.spectrogramFromSvg = function(svgObj, extractedSpectrogram) {

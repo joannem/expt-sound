@@ -2,8 +2,7 @@ html, body {
 	height: 100%;
 	width: 100%;
 	margin: 0;
-	overflow: hidden;
-
+	/*overflow: hidden;*/
 }
 
 table {
@@ -115,7 +114,6 @@ td {
 	position: absolute;
 	z-index: 0;
 	bottom: 0;
-	top: 700px;
 }
 
 .waveform {

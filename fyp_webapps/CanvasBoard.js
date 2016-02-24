@@ -61,13 +61,13 @@ $("#delete-button").click(function() {
 	gSvgCanvas.deleteSelectedSvgPaths();
 });
 
-
-/** context menu **/
-
 $("#copy-button").click(function() {
 	event.stopPropagation();
 	gSvgCanvas.duplicateSvgPath(gSelectedSvgPathId);
 });
+
+
+/** context menu **/
 
 $("#tab-path").click(function() {
 	event.stopPropagation();
@@ -150,7 +150,14 @@ $('#svg-display-button').click(function(){
 	event.stopPropagation();
 	$("#svg-canvas").toggle();
 	var originalText = $(this).text();
-    $(this).text(originalText == 'Show canvas' ? 'Hide canvas' : 'Show canvas');
+	$(this).text(originalText == 'Show canvas' ? 'Hide canvas' : 'Show canvas');
+});
+
+$('#raster-display-button').click(function(){
+	event.stopPropagation();
+	$("#spectrogram-canvas").toggle();
+	var originalText = $(this).text();
+	$(this).text(originalText == 'Show rasterised canvas' ? 'Hide rasterised canvas' : 'Show rasterised canvas');
 });
 
 $("#reset-zoom-button").click(function() {

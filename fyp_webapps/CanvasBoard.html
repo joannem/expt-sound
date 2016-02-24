@@ -32,6 +32,9 @@
 						version="1.1"
 						width="1050" height="700"
 					>
+						<pattern id="svg-pattern" patternUnits="userSpaceOnUse" width="1050" height="700">
+							<image id="pattern-img" x="0" y="0" width="100%" height="100%" />
+						</pattern>
 						<g></g>
 					</svg>
 
@@ -84,7 +87,8 @@
 				
 				<hr>
 				
-				<button id="svg-display-button">Hide canvas</button>
+				<button id="svg-display-button">Hide canvas</button> <br><br>
+				<button id="raster-display-button">Hide rasterised canvas</button>				
 				
 				<hr>
 
@@ -158,7 +162,7 @@
 								  stroke-width=1px;
 							></rect>
 
-							Sliders
+							<!-- Sliders -->
 							<rect id="slider-red" x="0" y="0" width="10px" height="100%" stroke="black"
 									fill="red" stroke-width="2" transform="translate(0)"></rect>
 							<rect id="slider-yellow" x="0" y="0" width="10px" height="100%" stroke="black"
@@ -167,6 +171,9 @@
 								  fill="white" stroke-width="2" transform="translate(0)"></rect>
 						</g>
 					</svg>
+				</div>
+				<div id="bg-fill">
+					<label for="bg-fill-checkbox"><input id="bg-fill-checkbox" type="checkbox" /> Grab fill from background</label>
 				</div>
 			</li>
 		</ul>

@@ -1,6 +1,6 @@
 #svg-path-context-menu {
 	background-color: #D2D2D2;
-	width: 200px;
+	width: 210px;
 	position: absolute;
 	z-index: 10;
 	display: none;
@@ -49,6 +49,10 @@
 	height: 35px;
 }
 
+#bg-fill {
+	padding-top: 7px;
+}
+
 /** Right tab: harmonic properties **/
 
 #harmonic-context-menu {
@@ -68,7 +72,7 @@
 }
 
 #harmonic-context-menu > li > table {
-	height: 35px;
+	/*height: 35px;*/
 	border-collapse: collapse;
 	text-align: center;
 	font-family: Arial;
@@ -80,7 +84,7 @@
 }
 
 #minus-harmonics, #add-harmonics {
-	height: 35px;
+	/*height: 35px;*/
 	width: 42px;
 	line-height: 35px;
 	display: inline-block;
