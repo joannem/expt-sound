@@ -2,7 +2,7 @@ html, body {
 	height: 100%;
 	width: 100%;
 	margin: 0;
-	/*overflow: hidden;*/
+	overflow: hidden;
 }
 
 table {
@@ -52,7 +52,10 @@ td {
 }
 
 #top-canvas-board {
+	z-index: 1;
+	position: absolute;
 	height: 5px;
+	width: inherit;
 	background-color: white;
 }
 
@@ -61,7 +64,7 @@ td {
 	z-index: 0;
 	position: absolute;
 	top: 5px;
-	height: 700px;
+	height: calc(100% - 5px - 273px);
 	width: 80%;
 	background-color: #808080;
 }
@@ -69,6 +72,7 @@ td {
 #svg-canvas {
 	position: absolute;
 	z-index: -1;
+	height: 100%;
 	width: 100%;
 	transform-origin: 0 0;
 }
@@ -93,7 +97,7 @@ td {
 #spectrogram-canvas {
 	position: absolute;
 	z-index: -3;
-	height: inherit;
+	height: 100%;
 	width: 100%;
 	transform-origin: 0 0;
 }
@@ -101,7 +105,7 @@ td {
 #hidden-spectrogram-canvas {
 	position: absolute;
 	z-index: -4;
-	height: inherit;
+	height: 100%;
 	width: 100%;
 	display: none;	/* comment out to check if scaling is correct */
 }
