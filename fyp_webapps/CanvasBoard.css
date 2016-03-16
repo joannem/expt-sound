@@ -101,6 +101,9 @@ td {
 	display: none;
 }
 
+#svg-time-scale > #time-ticks-5x {
+	display: none;
+}
 
 #svg-time-scale {
 	position: absolute;

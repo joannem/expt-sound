@@ -18,13 +18,11 @@ function SvgCanvas(canvasObj) {
 	var zoomVal = 1.0;
 	var zoomDx = 0; var zoomDy = 0;
 	var spectTransformMatrix = [1, 0, 0, 1, 0, 0];
-	// var freqTicksTransformMatrix = [1, 0, 0, 1, 0, 0];
-	// var timeTicksTransformMatrix = [1, 0, 0, 1, 0, 0];
 
 	var svgLinkNs = "http://www.w3.org/2000/svg";
 
 	drawFreqTicks();
-	drawTimeTicks();
+	drawTimeTicks(5 * 60);	// default, 5 mins
 	
 	$("#canvas-space").mousedown(function(evt) {
 		evt.stopPropagation();
@@ -86,20 +84,19 @@ function SvgCanvas(canvasObj) {
 		var tickNo = 0;
 		for (var y = 0; y <= canvasObj.height(); y += pxPerTick) {
 
-			
 			if (tickNo % 5 == 0) {
-				$("#freq-ticks-1x")[0].appendChild(makeNewTick("white", 0.5, y));
+				$("#freq-ticks-1x")[0].appendChild(makeNewFreqTick("white", 0.5, y));
 
 				if (tickNo % 25 == 0) {
 					$("#freq-ticks-1x")[0].appendChild(
-						makeNewTickText("red", 14, y, (tickNo * hzPerTick)));
+						makeNewFreqTickText("red", 14, y, (tickNo * hzPerTick)));
 				} else {
 					$("#freq-ticks-5x")[0].appendChild(
-						makeNewTickText("red", 4, y, (tickNo * hzPerTick)%1000));
+						makeNewFreqTickText("red", 4, y, (tickNo * hzPerTick)%1000));
 				}
 				
 			} else {
-				$("#freq-ticks-5x")[0].appendChild(makeNewTick("white", 0.2, y));
+				$("#freq-ticks-5x")[0].appendChild(makeNewFreqTick("white", 0.2, y));
 
 			}
 
@@ -107,7 +104,7 @@ function SvgCanvas(canvasObj) {
 		}
 	}
 
-	function makeNewTick(color, width, y) {
+	function makeNewFreqTick(color, width, y) {
 		var newLine = document.createElementNS(svgLinkNs, 'line');
 		newLine.setAttribute('stroke', color);
 		newLine.setAttribute('stroke-width', width + "px");
@@ -119,7 +116,7 @@ function SvgCanvas(canvasObj) {
 		return newLine;
 	}
 
-	function makeNewTickText(color, fontSize, y, value) {
+	function makeNewFreqTickText(color, fontSize, y, value) {
 		var newText = document.createElementNS(svgLinkNs, 'text');
 		newText.setAttribute('fill', color);
 		newText.setAttribute('font-size', fontSize);
@@ -131,54 +128,97 @@ function SvgCanvas(canvasObj) {
 		return newText;
 	}
 
+	// TODO: translate then zoom
+	
 	// TODO: change scale values again after uploading new sound file 
-	function drawTimeTicks() {
-		var newPath = null;
+	function drawTimeTicks(soundLenInSecs) {
 
-		var newText = null;
+		//--- calculate spacing between ticks relative to size of canvas
+		
+		//--- min tick spacing: 2.5px; max freq fixed at 22100Hz
+		var pxPerSec = (canvasObj.width() / soundLenInSecs);
+		var minSecPerTick = 2.5 / pxPerSec;
+		
+		var secPerTick = 10;	// if each tick is min 2.5px
+
+		if (minSecPerTick <= 1) {
+			secPerTick = 1;
+		} else if (minSecPerTick <= 10) {
+			secPerTick = 10;
+		} else if (minSecPerTick <= 15) {
+			secPerTick = 15;
+		} else if (minSecPerTick <= 30) {
+			secPerTick = 30;
+		} else if (minSecPerTick <= 60) {
+			secPerTick = 60;
+		} else if (minSecPerTick <= 300) {
+			secPerTick = 300;
+		} else {
+			console.log("Not enough screen resolution");
+			return;
+		}
+
+		var pxPerTick = pxPerSec * secPerTick;
+
+		//--- draw the ticks
+		
 		var noOfSecs = 0;
+		for (var x = 0;  x <= canvasObj.width(); x += pxPerTick) {
 
-		for (var x = 0;  x <= canvasObj.width(); x += 10) {
-			newPath = document.createElementNS("http://www.w3.org/2000/svg", 'path');
-			newPath.setAttribute('stroke', "black");
-			newPath.setAttribute('vector-effect', "non-scaling-stroke");
-			newPath.setAttribute('opacity', "0.5");
-			$("#time-ticks")[0].appendChild(newPath);
-			
-			if (x%120 == 0) {
-				newPath.setAttribute('d', "M " + x + ", 0 " + x + ",11");
-				newPath.setAttribute('stroke-width', "4px");
-
-				newText = document.createElementNS("http://www.w3.org/2000/svg", 'text');
-				newText.setAttribute('font-size', 14);
-				newText.setAttribute('text-anchor', "middle");
-				newText.setAttribute('x', x);
-				newText.setAttribute('y', 25);
-				noOfSecs = x / 2;
-
-				newText.innerHTML = ("0" + parseInt(noOfSecs/60)).slice(-2) + ":" + ("0" + noOfSecs%60).slice(-2);
-				$("#time-ticks")[0].appendChild(newText);
+			if (noOfSecs%60 == 0) {
+				$("#time-ticks-1x")[0].appendChild(makeNewTimeTick(x, 15, 1));
+				$("#time-ticks-1x")[0].appendChild(makeNewTimeTickText(12, x, noOfSecs));
 			} else {
-				if (x%60 == 0) {
-					newPath.setAttribute('d', "M " + x + ", 0 " + x + ",11");
-
-					newText = document.createElementNS("http://www.w3.org/2000/svg", 'text');
-					newText.setAttribute('font-size', 14);
-					newText.setAttribute('text-anchor', "middle");
-					newText.setAttribute('x', x);
-					newText.setAttribute('y', 25);
-					noOfSecs = x / 2;
-					
-					newText.innerHTML = ("0" + parseInt(noOfSecs/60)).slice(-2) + ":" + ("0" + noOfSecs%60).slice(-2);
-					$("#time-ticks")[0].appendChild(newText);
+				if (noOfSecs%15 == 0) {
+					$("#time-ticks-1x")[0].appendChild(makeNewTimeTick(x, 10, 1));
+					$("#time-ticks-1x")[0].appendChild(makeNewTimeTickText(12, x, noOfSecs));
 				} else {
-					newPath.setAttribute('d', "M " + x + ", 0 " + x + ",7");
+					if (noOfSecs%5 == 0) {
+						$("#time-ticks-1x")[0].appendChild(makeNewTimeTick(x, 10, 1));
+						$("#time-ticks-5x")[0].appendChild(makeNewTimeTickSecText(7, x, noOfSecs));
+					} else {
+						$("#time-ticks-1x")[0].appendChild(makeNewTimeTick(x, 7, 1));
+					}
 				}
-				newPath.setAttribute('stroke-width', "2px");
 			}
 
-			
+			noOfSecs += secPerTick;
 		}
+	}
+
+	function makeNewTimeTick(x, y, strokeWidth) {
+		var newLine = document.createElementNS(svgLinkNs, 'line');
+		newLine.setAttribute('stroke', "black");
+		newLine.setAttribute('opacity', "0.5");
+		newLine.setAttribute('x1', x);
+		newLine.setAttribute('y1', 0);
+		newLine.setAttribute('x2', x);
+		newLine.setAttribute('y2', y);
+		newLine.setAttribute('stroke-width', strokeWidth + "px");
+
+		return newLine;
+	}
+
+	function makeNewTimeTickText(fontSize, x, noOfSecs) {
+		var newText = document.createElementNS(svgLinkNs, 'text');
+		newText.setAttribute('font-size', fontSize);
+		newText.setAttribute('text-anchor', "middle");
+		newText.setAttribute('x', x);
+		newText.setAttribute('y', 20);
+		newText.innerHTML = ("0" + parseInt(noOfSecs/60)).slice(-2) + ":" + ("0" + noOfSecs%60).slice(-2);
+
+		return newText;
+	}
+
+	function makeNewTimeTickSecText(fontSize, x, noOfSecs) {
+		var newText = document.createElementNS(svgLinkNs, 'text');
+		newText.setAttribute('font-size', fontSize);
+		newText.setAttribute('text-anchor', "middle");
+		newText.setAttribute('x', x);
+		newText.setAttribute('y', 15);
+		newText.innerHTML = ("0" + noOfSecs%60).slice(-2);
+
+		return newText;
 	}
 
 
@@ -267,6 +307,7 @@ function SvgCanvas(canvasObj) {
 			zoomVal = +(zoomVal - 0.1).toFixed(1);
 			if (zoomVal == 4.9) {
 				$("#freq-ticks-5x").hide();
+				$("#time-ticks-5x").hide();
 			}
 
 		}else {
@@ -275,6 +316,7 @@ function SvgCanvas(canvasObj) {
 			zoomVal = +(zoomVal + 0.1).toFixed(1);
 			if (zoomVal == 5) {
 				$("#freq-ticks-5x").show();
+				$("#time-ticks-5x").show();
 			}
 
 		}
