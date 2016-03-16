@@ -60,14 +60,26 @@ td {
 }
 
 /* TODO: find for ways to replace hard px values */
-#sound-canvas {
+#canvas-space {
 	z-index: 0;
 	position: absolute;
 	top: 5px;
 	height: calc(100% - 5px - 273px);
 	width: 80%;
 	background-color: #808080;
+	transform-origin: 0 0;
 }
+
+#sound-canvas {
+	z-index: 0;
+	position: absolute;
+	top: 5px;
+	height: 100%;
+	width: 100%;
+	background-color: #808080;
+	transform-origin: 0 0;
+}
+
 
 #svg-canvas {
 	position: absolute;
@@ -84,6 +96,11 @@ td {
 	width: 48px;
 	transform-origin: 0 0;
 }
+
+#svg-freq-scale > #freq-ticks-5x {
+	display: none;
+}
+
 
 #svg-time-scale {
 	position: absolute;
