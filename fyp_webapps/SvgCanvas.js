@@ -128,7 +128,7 @@ function SvgCanvas(canvasObj) {
 		return newText;
 	}
 
-	// TODO: translate then zoom
+	// TODO: dragging then zoom bug
 	
 	// TODO: change scale values again after uploading new sound file 
 	function drawTimeTicks(soundLenInSecs) {

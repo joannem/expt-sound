@@ -2,13 +2,13 @@
  * Context menu of an SVG path.
  * Currently has 3 settings:
  * 	- Stroke width
- * 	- Stroke fill
  * 	- Stroke opacity
+ * 	- Stroke fill
  *
  * Created by joanne on 14/1/16.
  */
 
-function SvgPathContextMenu () {
+function SvgPathContextMenu() {
 	"use strict";
 	var that = (this === window) ? {} : this;
 

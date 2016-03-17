@@ -10,7 +10,6 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr) {
 	var that = (this === window) ? {} : this;
 
 	var selected = false;
-	var isHarmonic = false;
 
 	var pathSvgObj;
 	var guideBoxSvgObj;
@@ -159,12 +158,6 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr) {
 
 		that.updateGuideBox();
 	}
-
-	function updateStrokeOpacity(newStrokeOpacity) {
-		strokeOpacity = newStrokeOpacity;
-		pathSvgObj.setAttribute('stroke-opacity', strokeOpacity);
-		strokeGradient.setOpacity(strokeOpacity);
-	}
 	
 	function updateStrokeFillType(newIsGradient) {
 		isGradient = newIsGradient;
@@ -219,13 +212,19 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr) {
 		guideBoxSvgObj.setAttribute('height', (maxY - minY) + (thickness << 1));
 	};
 
-	this.updateId = function (newId) {
+	this.updateId = function(newId) {
 		id = newId;
 		strokeGradient.updateId(newId);
 	};
 
+	this.updateStrokeOpacity = function(newStrokeOpacity) {
+		strokeOpacity = newStrokeOpacity;
+		pathSvgObj.setAttribute('stroke-opacity', strokeOpacity);
+		strokeGradient.setOpacity(strokeOpacity);
+	};
+
 	this.isSelected = function() {
-	  return selected;
+		return selected;
 	};
 
 	this.getGuideboxCoordinates = function() {

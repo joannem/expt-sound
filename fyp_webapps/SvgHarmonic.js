@@ -61,7 +61,16 @@ function SvgHarmonic (id, pathId, minX, minY, maxX, maxY, strokeWidth) {
 	};
 	
 	//--- show context menu of SVG path object
-	
+	groupedSvgHarmonicObj.addEventListener("contextmenu", function(evt) {
+		evt.stopPropagation();
+		evt.preventDefault();
+
+		if (gCurrTool == "selectTool" && selected) {
+			gSvgHarmonicContextMenu.showHarmonicContextMenu(evt, svgPathObjs);
+		}
+
+		$(this).off('contextmenu');
+	});
 
 	
 	function createIndividualHarmonics() {

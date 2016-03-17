@@ -7,7 +7,9 @@
 var gDragNDropFileLoader = new DragNDropFileLoader($("#sound-space"), onFileDecode);
 var gSvgCanvas = new SvgCanvas($("#svg-canvas"));
 var gSoundVisualiser = new SoundVisualiser($("#waveform-canvas"), $("#spsi-waveform-canvas"), $("#spectrogram-canvas"), $('#hidden-spectrogram-canvas'), 513, 150, 1050);	// TODO: values are dummy values
+
 var gSvgPathContextMenu = new SvgPathContextMenu();
+var gSvgHarmonicContextMenu = new SvgHarmonicContextMenu();
 
 var gWaveSpect = new WaveSpect(10, 0.5);
 var gAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); 
@@ -64,25 +66,6 @@ $("#delete-button").click(function() {
 $("#copy-button").click(function() {
 	event.stopPropagation();
 	gSvgCanvas.duplicateSvgPath(gSelectedSvgPathId);
-});
-
-
-/** context menu **/
-
-$("#tab-path").click(function() {
-	event.stopPropagation();
-	$(this).addClass("selected");
-	$("#tab-harmonic").removeClass("selected");
-	$("#harmonic-context-menu").hide();
-	$("#path-context-menu").show();
-});
-
-$("#tab-harmonic").click(function() {
-	event.stopPropagation();
-	$(this).addClass("selected");
-	$("#tab-path").removeClass("selected");
-	$("#path-context-menu").hide();
-	$("#harmonic-context-menu").show();
 });
 
 /**  playback buttons **/
