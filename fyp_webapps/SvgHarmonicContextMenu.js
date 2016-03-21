@@ -36,8 +36,8 @@ function SvgHarmonicContextMenu() {
 				$("#level-value-" + harmonicNo).attr('width', newOpacity * 100.0 + "%");
 				harmonics[harmonicNo].updateStrokeOpacity(newOpacity * 1.0);
 			}).mouseup(function() {
-				$(this).off('mousemove');
-				$(this).off('mouseup');
+				$("#level-value-" + harmonicNo + ", #level-background-" + harmonicNo).off('mousemove');
+				$("#level-value-" + harmonicNo + ", #level-background-" + harmonicNo).off('mouseup');
 			});
 		});
 	}
@@ -67,8 +67,13 @@ function SvgHarmonicContextMenu() {
 		while ($("#harmonic-levels")[0].firstChild) {
 		    $("#harmonic-levels")[0].removeChild($("#harmonic-levels")[0].firstChild);
 		}
+
+		//--- remove old harmonic dividers
+		while ($("#harmonic-dividers")[0].firstChild) {
+		    $("#harmonic-dividers")[0].removeChild($("#harmonic-dividers")[0].firstChild);
+		}
 		
-		//--- add new harmonic levels
+		//--- add new harmonic levels and 
 		var height = 100.0 / noOfHarmonics;
 		var opacityVal = 0;
 		
@@ -79,6 +84,8 @@ function SvgHarmonicContextMenu() {
 				makeSvgRect("background", "#FFFFFF", i, 100, height));
 			$("#harmonic-levels")[0].appendChild(
 				makeSvgRect("value", "#4D4D4D", i, opacityVal, height));
+			$("#harmonic-dividers")[0].appendChild(
+				makeSvgLine(i, height));
 		}
 
 	}
@@ -95,6 +102,18 @@ function SvgHarmonicContextMenu() {
 		newRect.setAttribute('fill', fill);
 
 		return newRect;
+	}
+
+	function makeSvgLine(harmonicNo, height) {
+		var newLine = document.createElementNS(svgns, 'line');
+		newLine.setAttribute('x1', 0);
+		newLine.setAttribute('y1', (harmonicNo * height) + "%");
+		newLine.setAttribute('x2', "100%");
+		newLine.setAttribute('y2', (harmonicNo * height) + "%");
+		newLine.setAttribute('stroke', "#737373");
+		newLine.setAttribute('stroke-width', 1);
+
+		return newLine;
 	}
 
 	this.showHarmonicContextMenu = function(evt, harmonicPaths) {
