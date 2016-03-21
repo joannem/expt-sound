@@ -16,6 +16,10 @@ function SvgHarmonicContextMenu() {
 	var harmonics = [];
 	var noOfHarmonics = 0;
 
+	var addHarmonic = null;
+
+	createListeners();
+
 	function createListeners() {
 		listenToHarmonicLevelChange();
 		listenToNoOfHarmonics();
@@ -29,6 +33,7 @@ function SvgHarmonicContextMenu() {
 			
 			var newOpacity = evt.offsetX/harmonicLevelWidth;
 			$("#level-value-" + harmonicNo).attr('width', newOpacity * 100.0 + "%");
+
 			harmonics[harmonicNo].updateStrokeOpacity(newOpacity * 1.0);
 
 			$("#level-value-" + harmonicNo + ", #level-background-" + harmonicNo).mousemove(function(evt) {
@@ -45,19 +50,29 @@ function SvgHarmonicContextMenu() {
 	function listenToNoOfHarmonics() {
 		$("#no-of-harmonics-input").on("input", function() {
 			noOfHarmonics = $(this)[0].value;
-			//--- update interface
+			$("#no-of-harmonics-input").val(noOfHarmonics);
+			updateHarmonicLevelsDisplayed();
 		});
 
 		$("#add-harmonics").click(function(evt) {
 			evt.stopPropagation();
-			noOfHarmonics++;
-			//--- update interface
+			if (noOfHarmonics < 16) {
+				noOfHarmonics++;
+				$("#no-of-harmonics-input").val(noOfHarmonics);
+
+				that.addHarmonic();
+				updateHarmonicLevelsDisplayed();
+			}
 		});
 
 		$("#minus-harmonics").click(function(evt) {
 			evt.stopPropagation();
-			noOfHarmonics--;
-			//--- update interface
+
+			if (noOfHarmonics > 1) {
+				noOfHarmonics--;
+				$("#no-of-harmonics-input").val(noOfHarmonics);
+				updateHarmonicLevelsDisplayed();
+			}
 		});
 	}
 
@@ -88,6 +103,7 @@ function SvgHarmonicContextMenu() {
 				makeSvgLine(i, height));
 		}
 
+		listenToHarmonicLevelChange();
 	}
 
 	function makeSvgRect(type, fill, harmonicNo, width, height) {
@@ -96,7 +112,7 @@ function SvgHarmonicContextMenu() {
 		newRect.setAttribute('class', "level-meter");
 		newRect.setAttribute('id', "level-" + type + "-" + harmonicNo);
 		newRect.setAttribute('x', 0);
-		newRect.setAttribute('y', (harmonicNo * height) + "%");
+		newRect.setAttribute('y', (noOfHarmonics - 1 - harmonicNo) * height + "%");
 		newRect.setAttribute('height', height + "%");
 		newRect.setAttribute('width', width + "%");
 		newRect.setAttribute('fill', fill);
@@ -107,16 +123,18 @@ function SvgHarmonicContextMenu() {
 	function makeSvgLine(harmonicNo, height) {
 		var newLine = document.createElementNS(svgns, 'line');
 		newLine.setAttribute('x1', 0);
-		newLine.setAttribute('y1', (harmonicNo * height) + "%");
+		newLine.setAttribute('y1', (noOfHarmonics - 1 - harmonicNo) * height + "%");
 		newLine.setAttribute('x2', "100%");
-		newLine.setAttribute('y2', (harmonicNo * height) + "%");
+		newLine.setAttribute('y2', (noOfHarmonics - 1 - harmonicNo) * height + "%");
 		newLine.setAttribute('stroke', "#737373");
 		newLine.setAttribute('stroke-width', 1);
 
 		return newLine;
 	}
 
-	this.showHarmonicContextMenu = function(evt, harmonicPaths) {
+	this.showHarmonicContextMenu = function(evt, harmonicPaths, addHarmonic) {
+		that.addHarmonic = addHarmonic;
+
 		//--- update fields in the context menu
 		harmonics = harmonicPaths;
 		noOfHarmonics = harmonicPaths.length;
@@ -128,8 +146,6 @@ function SvgHarmonicContextMenu() {
 			top: (evt.pageY),
 			left: (evt.pageX)
 		});
-
-		createListeners();
 
 		//--- show menu
 		$("#svg-harmonic-context-menu").show();

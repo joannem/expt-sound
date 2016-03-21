@@ -17,6 +17,8 @@ function SvgHarmonic (id, pathId, minX, minY, maxX, maxY, strokeWidth) {
 	var harmonicGuideBoxSvgObj;
 	var groupedSvgHarmonicObj;
 
+	var baseFreq = 0;
+
 	//--- for dragging
 	var transformMatrix = [1, 0, 0, 1, 0, 0];
 	var currX = 0;
@@ -28,11 +30,11 @@ function SvgHarmonic (id, pathId, minX, minY, maxX, maxY, strokeWidth) {
 	appendObjectsIntoGroup();
 	groupedSvgHarmonicObj.setAttributeNS(null, "transform", "matrix(" + transformMatrix.join(' ') + ")");
 
-	//--- to select and move SVG path object
+	//--- to select and move SVG harmonic object
 	groupedSvgHarmonicObj.onmousedown = function(evt) {
 		evt.stopPropagation();
 		if (evt.which == gLeftMouseButton) {
-			// TODO hide context menu
+			gSvgHarmonicContextMenu.hideHarmonicContextMenu();
 			
 			if (gCurrTool = "selectTool") {
 				currX = evt.clientX;
@@ -60,13 +62,13 @@ function SvgHarmonic (id, pathId, minX, minY, maxX, maxY, strokeWidth) {
 		}
 	};
 	
-	//--- show context menu of SVG path object
+	//--- show context menu of SVG harmonic object
 	groupedSvgHarmonicObj.addEventListener("contextmenu", function(evt) {
 		evt.stopPropagation();
 		evt.preventDefault();
 
 		if (gCurrTool == "selectTool" && selected) {
-			gSvgHarmonicContextMenu.showHarmonicContextMenu(evt, svgPathObjs);
+			gSvgHarmonicContextMenu.showHarmonicContextMenu(evt, svgPathObjs, that.addHarmonic);
 		}
 
 		$(this).off('contextmenu');
@@ -75,9 +77,11 @@ function SvgHarmonic (id, pathId, minX, minY, maxX, maxY, strokeWidth) {
 	
 	function createIndividualHarmonics() {
 		// TODO: find a way to calculate hz and map it to px
-		svgPathObjs[0] = new SvgPathObject(pathId, minX, minY, maxX, maxY, ("M " + minX + "," + minY), strokeWidth);
-		svgPathObjs[1] = new SvgPathObject(pathId + 1, minX, minY + 10, maxX, maxY + 10, ("M " + minX + "," + (minY + 10)), strokeWidth);
-		svgPathObjs[2] = new SvgPathObject(pathId + 2, minX, minY + 20, maxX, maxY + 20, ("M " + minX + "," + (minY + 20)), strokeWidth);
+		for (var i = 0; i < noOfHarmonics; i++) {
+			svgPathObjs[i] = new SvgPathObject(pathId + i, minX, minY, maxX, maxY, ("M " + minX + "," + minY), strokeWidth);
+		}
+		svgPathObjs[1].offsetPosition([1, 0, 0, 1, 0, -10]);
+		svgPathObjs[2].offsetPosition([1, 0, 0, 1, 0, -20]);
 	}
 
 	function createGuideBox() {
@@ -134,8 +138,8 @@ function SvgHarmonic (id, pathId, minX, minY, maxX, maxY, strokeWidth) {
 
 	this.drawHarmonics = function(x, y) {
 		svgPathObjs[0].drawPath(x, y);
-		svgPathObjs[1].drawPath(x, y + 10);
-		svgPathObjs[2].drawPath(x, y + 20);
+		svgPathObjs[1].drawPath(x, y);
+		svgPathObjs[2].drawPath(x, y);
 	};
 
 	/**
@@ -148,12 +152,12 @@ function SvgHarmonic (id, pathId, minX, minY, maxX, maxY, strokeWidth) {
 	 */
 	this.updateGuideBox = function() {
 		var thickness = strokeWidth >> 1;
-		var minCoor = svgPathObjs[0].getGuideboxCoordinates();
-		var maxCoor = svgPathObjs[noOfHarmonics - 1].getGuideboxCoordinates();
-		harmonicGuideBoxSvgObj.setAttribute('x', minCoor.minX - thickness);
-		harmonicGuideBoxSvgObj.setAttribute('y', minCoor.minY - thickness);
-		harmonicGuideBoxSvgObj.setAttribute('width', (maxCoor.maxX - minCoor.minX) + (thickness << 1));
-		harmonicGuideBoxSvgObj.setAttribute('height', (maxCoor.maxY - minCoor.minY) + (thickness << 1));
+		var coor = svgPathObjs[0].getGuideboxCoordinates();
+		
+		harmonicGuideBoxSvgObj.setAttribute('x', coor.minX - thickness);
+		harmonicGuideBoxSvgObj.setAttribute('y', coor.minY - (noOfHarmonics-1)*10 - thickness);
+		harmonicGuideBoxSvgObj.setAttribute('width', (coor.maxX - coor.minX) + (thickness << 1));
+		harmonicGuideBoxSvgObj.setAttribute('height', (coor.maxY - coor.minY + (noOfHarmonics-1)*10) + (thickness << 1));
 	};
 
 	this.select = function() {
@@ -165,6 +169,24 @@ function SvgHarmonic (id, pathId, minX, minY, maxX, maxY, strokeWidth) {
 	this.deselect = function() {
 		selected = false;
 		harmonicGuideBoxSvgObj.setAttribute('stroke-opacity', 0);
+	};
+
+	this.addHarmonic = function() {
+		noOfHarmonics++;
+		svgPathObjs[noOfHarmonics-1] = new SvgPathObject(gNoOfSvgPathObjs, minX, minY + 20, maxX, maxY + 20, (svgPathObjs[0].getPathStr()), strokeWidth);
+		groupedSvgHarmonicObj.insertBefore(svgPathObjs[noOfHarmonics-1].getGroupedSvgObj(), svgPathObjs[noOfHarmonics-2].getGroupedSvgObj().nextSibling);
+		svgPathObjs[noOfHarmonics-1].offsetPosition([1, 0, 0, 1, 0, -10 * (noOfHarmonics-1)]);
+		
+		gNoOfSvgPathObjs++;
+
+		that.updateGuideBox();
+	};
+
+	// TOOD: hide harmonic ?
+	
+	// delete harmonic
+	this.deleteHarmonic = function() {
+		noOfHarmonics--;
 	};
 
 }

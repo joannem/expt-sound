@@ -48,7 +48,6 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr) {
 				currX = evt.clientX;
 				currY = evt.clientY;
 
-				// TODO: move multiple objects at one time
 				$(document).mousemove(function(evt) {
 					event.stopPropagation();
 					moveGroup(evt);
@@ -193,7 +192,8 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr) {
 		maxY = (maxY > y) ? maxY : y;
 	};
 
-	this.offsetPosition = function() {
+	this.offsetPosition = function(newTransformMatrix) {
+		transformMatrix = newTransformMatrix;
 		groupedSvgObj.setAttributeNS(null, "transform", "matrix(" + transformMatrix.join(' ') + ")");
 	};
 
@@ -239,7 +239,6 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr) {
 	};
 
 	this.getStrokeProperties = function() {
-		// TODO: stroke gradient
 	  return {
 		  strokeWidth: strokeWidth,
 		  strokeOpacity: strokeOpacity,

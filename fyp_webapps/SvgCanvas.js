@@ -12,9 +12,7 @@ function SvgCanvas(canvasObj) {
 
 	var svgPathObjs = [];
 	var svgHarmonicObjs = [];
-	var noOfSvgPathObjs = 0;
-	var noOfSvgHarmonicObjs = 0;
-
+	
 	var zoomVal = 1.0;
 	var zoomDx = 0; var zoomDy = 0;
 	var spectTransformMatrix = [1, 0, 0, 1, 0, 0];
@@ -30,6 +28,7 @@ function SvgCanvas(canvasObj) {
 
 		if (evt.which == gLeftMouseButton) {
 			gSvgPathContextMenu.hideContextMenu();
+			gSvgHarmonicContextMenu.hideHarmonicContextMenu();
 
 			if (gCurrTool == "pencilTool") {
 				drawNewPath(evt.offsetX, evt.offsetY);
@@ -225,7 +224,7 @@ function SvgCanvas(canvasObj) {
 	//----- private methods called after initialisation -----//
 
 	function drawNewPath(x, y) {
-		var newSvgPathObj = new SvgPathObject(noOfSvgPathObjs,
+		var newSvgPathObj = new SvgPathObject(gNoOfSvgPathObjs,
 			x, y, x, y, ("M " + x + "," + y));
 
 		$("#sound-canvas").mousemove(function(evt) {
@@ -244,7 +243,7 @@ function SvgCanvas(canvasObj) {
 			newSvgPathObj.updateGuideBox();
 
 			//--- update list of objects in SvgCanvas
-			noOfSvgPathObjs++;
+			gNoOfSvgPathObjs++;
 			svgPathObjs.push(newSvgPathObj);
 
 			$(this).off('mouseup');
@@ -252,7 +251,7 @@ function SvgCanvas(canvasObj) {
 	}
 
 	function drawNewHarmonic(x, y) {
-		var newSvgHarmonicObj = new SvgHarmonic(noOfSvgHarmonicObjs, noOfSvgPathObjs, 
+		var newSvgHarmonicObj = new SvgHarmonic(gNoOfSvgHarmonicObjs, gNoOfSvgPathObjs, 
 			x, y, x, y, "3");
 		
 		$("#sound-canvas").mousemove(function(evt) {
@@ -271,8 +270,8 @@ function SvgCanvas(canvasObj) {
 			newSvgHarmonicObj.updateGuideBox();
 
 			//--- update list of objects in SvgCanvas
-			noOfSvgPathObjs += 3;
-			noOfSvgHarmonicObjs++;
+			gNoOfSvgPathObjs += 3;
+			gNoOfSvgHarmonicObjs++;
 			svgHarmonicObjs.push(newSvgHarmonicObj);
 
 			$(this).off('mouseup');
@@ -379,7 +378,7 @@ function SvgCanvas(canvasObj) {
 		var strokeProperties = svgPathObjs[id].getStrokeProperties();
 
 		//--- create new SVG path object based off properties from the original path
-		var newSvgPathObj = new SvgPathObject(noOfSvgPathObjs,
+		var newSvgPathObj = new SvgPathObject(gNoOfSvgPathObjs,
 			guideBoxCoordinates.minX, guideBoxCoordinates.minY,
 			guideBoxCoordinates.maxX, guideBoxCoordinates.maxY,
 			pathStr);
@@ -391,7 +390,7 @@ function SvgCanvas(canvasObj) {
 		canvasObj[0].children[1].appendChild(newSvgPathObj.getGroupedSvgObj());
 
 		//--- update list of objects in SvgCanvas
-		noOfSvgPathObjs++;
+		gNoOfSvgPathObjs++;
 		svgPathObjs.push(newSvgPathObj);
 	};
 

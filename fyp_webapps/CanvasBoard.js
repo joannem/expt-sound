@@ -21,6 +21,9 @@ var gCurrTool = "pencilTool";
 var gSelectedSvgPathId = 0;
 var gSelectedSvgHarmonicId = 0;
 
+var gNoOfSvgPathObjs = 0;
+var gNoOfSvgHarmonicObjs = 0;
+
 var gLeftMouseButton = 1;
 
 
