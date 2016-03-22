@@ -17,6 +17,7 @@ function SvgHarmonicContextMenu() {
 	var noOfHarmonics = 0;
 
 	var addHarmonic = null;
+	var deleteHarmonic = null;
 
 	createListeners();
 
@@ -71,6 +72,8 @@ function SvgHarmonicContextMenu() {
 			if (noOfHarmonics > 1) {
 				noOfHarmonics--;
 				$("#no-of-harmonics-input").val(noOfHarmonics);
+
+				that.deleteHarmonic();
 				updateHarmonicLevelsDisplayed();
 			}
 		});
@@ -132,8 +135,9 @@ function SvgHarmonicContextMenu() {
 		return newLine;
 	}
 
-	this.showHarmonicContextMenu = function(evt, harmonicPaths, addHarmonic) {
+	this.showHarmonicContextMenu = function(evt, harmonicPaths, addHarmonic, deleteHarmonic) {
 		that.addHarmonic = addHarmonic;
+		that.deleteHarmonic = deleteHarmonic;
 
 		//--- update fields in the context menu
 		harmonics = harmonicPaths;
