@@ -27,8 +27,6 @@ function SvgCanvas(canvasObj) {
 		that.deselectAllPaths();
 
 		if (evt.which == gLeftMouseButton) {
-			// gSvgPathContextMenu.hideContextMenu();
-			// gSvgHarmonicContextMenu.hideHarmonicContextMenu();
 			gContextMenu.hideContextMenu();
 
 			if (gCurrTool == "pencilTool") {

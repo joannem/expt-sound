@@ -8,8 +8,6 @@ var gDragNDropFileLoader = new DragNDropFileLoader($("#sound-space"), onFileDeco
 var gSvgCanvas = new SvgCanvas($("#svg-canvas"));
 var gSoundVisualiser = new SoundVisualiser($("#waveform-canvas"), $("#spsi-waveform-canvas"), $("#spectrogram-canvas"), $('#hidden-spectrogram-canvas'), 513, 150, 1050);	// TODO: values are dummy values
 
-// var gSvgPathContextMenu = new SvgPathContextMenu();
-// var gSvgHarmonicContextMenu = new SvgHarmonicContextMenu();
 var gContextMenu = new ContextMenu();
 
 var gWaveSpect = new WaveSpect(10, 0.5);

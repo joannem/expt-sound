@@ -268,7 +268,6 @@ function ContextMenu() {
 			evt.stopPropagation();
 
 			currHarmonicNo = ($(this)[0].id).split("-")[2];
-			// svgPaths[currHarmonicNo].displayPathProperties($("#svg-harmonic-context-menu").offset().top, $("#svg-harmonic-context-menu").offset().left);
 			setPathValues(svgPaths[currHarmonicNo].getStrokeProperties());
 			$("#svg-harmonic-context-menu").hide();
 			$("#svg-path-context-menu").show();

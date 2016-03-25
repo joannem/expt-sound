@@ -42,7 +42,6 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr) {
 			evt.stopPropagation();
 			
 			if (evt.which == gLeftMouseButton) {
-				// gSvgPathContextMenu.hideContextMenu();
 				gContextMenu.hideContextMenu();
 			
 				var moved = false;
@@ -178,13 +177,6 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr) {
 		maxX = (maxX > x) ? maxX : x;
 		minY = (minY < y) ? minY : y;
 		maxY = (maxY > y) ? maxY : y;
-	};
-
-	// this.displayPathProperties = function(top, left) {
-	// 	gContextMenu.showContextMenus(top, left, false, that);
-	// 	// gSvgHarmonicContextMenu.hideHarmonicContextMenu();
-	// 	// gSvgPathContextMenu.showContextMenu(top, left, updateStrokeProperties, strokeWidth, strokeOpacity, strokeGradient, isGradient);
-	// };
 
 	this.offsetPosition = function(newTransformMatrix) {
 		transformMatrix = newTransformMatrix;
