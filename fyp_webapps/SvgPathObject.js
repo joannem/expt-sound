@@ -42,7 +42,8 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr) {
 			evt.stopPropagation();
 			
 			if (evt.which == gLeftMouseButton) {
-				gSvgPathContextMenu.hideContextMenu();
+				// gSvgPathContextMenu.hideContextMenu();
+				gContextMenu.hideContextMenu();
 			
 				var moved = false;
 				currX = evt.clientX;
@@ -68,12 +69,12 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr) {
 	};
 
 	//--- show context menu of SVG path object
-	groupedSvgObj.addEventListener("contextmenu", function(e) {
-		e.stopPropagation();
-		e.preventDefault();
+	groupedSvgObj.addEventListener("contextmenu", function(evt) {
+		evt.stopPropagation();
+		evt.preventDefault();
 
 		if (gCurrTool == "selectTool" && selected) {
-			gSvgPathContextMenu.showContextMenu(e, updateStrokeProperties, strokeWidth, strokeOpacity, strokeGradient, isGradient);
+			that.displayPathProperties(evt.pageY, evt.pageX);
 		}
 
 		$(this).off('contextmenu');
@@ -132,31 +133,18 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr) {
 		currY = evt.clientY;
 	}
 
-	function updateStrokeProperties(property, value) {
-		switch(property) {
-			case "strokeWidth":
-				updateStrokeWidth(value);
-				break;
-			case "opacity":
-				updateStrokeOpacity(value);
-				break;
-			case "strokeFillType":
-				updateStrokeFillType(value);
-				break;
-			case "strokeFillGradient":
-				updateStrokeFillGradient(value.color, value.newOffset);
-				break;
-			default:
-				console.log("Error: unable to determine stroke property");
-		}
-	}
-
 	function updateStrokeWidth(newStrokeWidth) {
 		strokeWidth = newStrokeWidth;
 		pathSvgObj.setAttribute('stroke-width', strokeWidth + "px");
 
 		that.updateGuideBox();
 	}
+
+	function updateStrokeOpacity (newStrokeOpacity) {
+		strokeOpacity = newStrokeOpacity;
+		pathSvgObj.setAttribute('stroke-opacity', strokeOpacity);
+		strokeGradient.setOpacity(strokeOpacity);
+	};
 	
 	function updateStrokeFillType(newIsGradient) {
 		isGradient = newIsGradient;
@@ -192,6 +180,12 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr) {
 		maxY = (maxY > y) ? maxY : y;
 	};
 
+	// this.displayPathProperties = function(top, left) {
+	// 	gContextMenu.showContextMenus(top, left, false, that);
+	// 	// gSvgHarmonicContextMenu.hideHarmonicContextMenu();
+	// 	// gSvgPathContextMenu.showContextMenu(top, left, updateStrokeProperties, strokeWidth, strokeOpacity, strokeGradient, isGradient);
+	// };
+
 	this.offsetPosition = function(newTransformMatrix) {
 		transformMatrix = newTransformMatrix;
 		groupedSvgObj.setAttributeNS(null, "transform", "matrix(" + transformMatrix.join(' ') + ")");
@@ -217,11 +211,24 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr) {
 		strokeGradient.updateId(newId);
 	};
 
-	this.updateStrokeOpacity = function(newStrokeOpacity) {
-		strokeOpacity = newStrokeOpacity;
-		pathSvgObj.setAttribute('stroke-opacity', strokeOpacity);
-		strokeGradient.setOpacity(strokeOpacity);
-	};
+	this.updateStrokeProperties = function(property, value) {
+		switch(property) {
+			case "strokeWidth":
+				updateStrokeWidth(value);
+				break;
+			case "opacity":
+				updateStrokeOpacity(value);
+				break;
+			case "strokeFillType":
+				updateStrokeFillType(value);
+				break;
+			case "strokeFillGradient":
+				updateStrokeFillGradient(value.color, value.newOffset);
+				break;
+			default:
+				console.log("Error: unable to determine stroke property");
+		}
+	}
 
 	this.isSelected = function() {
 		return selected;

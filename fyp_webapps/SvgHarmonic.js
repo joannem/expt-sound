@@ -34,7 +34,8 @@ function SvgHarmonic (id, pathId, minX, minY, maxX, maxY, strokeWidth) {
 	groupedSvgHarmonicObj.onmousedown = function(evt) {
 		evt.stopPropagation();
 		if (evt.which == gLeftMouseButton) {
-			gSvgHarmonicContextMenu.hideHarmonicContextMenu();
+			// gSvgHarmonicContextMenu.hideHarmonicContextMenu();
+			gContextMenu.hideContextMenu();
 			
 			if (gCurrTool = "selectTool") {
 				currX = evt.clientX;
@@ -68,7 +69,8 @@ function SvgHarmonic (id, pathId, minX, minY, maxX, maxY, strokeWidth) {
 		evt.preventDefault();
 
 		if (gCurrTool == "selectTool" && selected) {
-			gSvgHarmonicContextMenu.showHarmonicContextMenu(evt, svgPathObjs, that.addHarmonic, that.deleteHarmonic);
+			// gSvgHarmonicContextMenu.showHarmonicContextMenu(evt.pageY, evt.pageX, svgPathObjs, that.addHarmonic, that.deleteHarmonic);
+			gContextMenu.showContextMenus(evt.pageY, evt.pageX, true, that);
 		}
 
 		$(this).off('contextmenu');
@@ -169,6 +171,10 @@ function SvgHarmonic (id, pathId, minX, minY, maxX, maxY, strokeWidth) {
 	this.deselect = function() {
 		selected = false;
 		harmonicGuideBoxSvgObj.setAttribute('stroke-opacity', 0);
+	};
+
+	this.getSvgPathObjs = function() {
+		return svgPathObjs;
 	};
 
 	this.addHarmonic = function() {

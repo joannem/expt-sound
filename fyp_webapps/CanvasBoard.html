@@ -116,6 +116,9 @@
 	<div class="context-menu" id="svg-path-context-menu">
 		<ul id="path-context-menu">
 			<li>
+				<button id="back-harmonic-button"> < Back</button>
+			</li>
+			<li>
 				<button id="copy-button"><img id="copy-icon" src="img/copy-icon.ico">Copy</button>
 			</li>
 
@@ -184,15 +187,15 @@
 	<div class="context-menu" id="svg-harmonic-context-menu">
 		<ul id="harmonic-context-menu">
 			<li id="harmonic-levels-container">
-				<svg id="harmonic-levels-svg" width="100%" height="100%">
+				<svg id="harmonic-levels-svg" width="80%" height="100%">
 					<rect x="0" y="0" width="100%" height="100%" fill="#F2F2F2"></rect>
-
-					<g id="harmonic-levels">
+					<g id="harmonic-levels"></g>
+					<g id="harmonic-dividers"></g>
+				</svg>
+				<svg id="harmonic-paths-buttons-svg" width="20%" height="100%">
+					<g id="harmonic-paths-buttons">
 					</g>
-
-					<g id="harmonic-dividers">
-					</g>
-
+					<g id="harmonic-paths-buttons-dividers"></g>
 				</svg>
 			</li>
 			
@@ -213,8 +216,9 @@
 <script type="text/javascript" src="fft.js"></script>
 <script type="text/javascript" src="SvgCanvas.js"></script>
 <script type="text/javascript" src="StrokeGradient.js"></script>
-<script type="text/javascript" src="SvgPathContextMenu.js"></script>
-<script type="text/javascript" src="SvgHarmonicContextMenu.js"></script>
+<script type="text/javascript" src="ContextMenu.js"></script>
+<!-- <script type="text/javascript" src="SvgPathContextMenu.js"></script>
+<script type="text/javascript" src="SvgHarmonicContextMenu.js"></script> -->
 <script type="text/javascript" src="SvgPathObject.js"></script>
 <script type="text/javascript" src="SvgHarmonic.js"></script>
 <script type="text/javascript" src="DragNDropFileLoader.js"></script>

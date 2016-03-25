@@ -1,6 +1,6 @@
 .context-menu {
 	background-color: #D2D2D2;
-	width: 210px;
+	width: 250px;
 	position: absolute;
 	z-index: 10;
 	display: none;
@@ -35,9 +35,6 @@
 	margin: 0 16px 0 13px;
 }
 
-#path-context-menu {
-}
-
 #path-context-menu > li > input[type=text] {
 	width: 25px;
 	text-align: center;
@@ -65,12 +62,15 @@
 	height: 186.4px;
 }
 
+#harmonic-paths-buttons-svg {
+	float: right;
+}
+
 #harmonic-context-menu > li {
 	margin: 0;
 }
 
 #harmonic-context-menu > li > table {
-	/*height: 35px;*/
 	border-collapse: collapse;
 	text-align: center;
 	font-family: Arial;
@@ -82,7 +82,6 @@
 }
 
 #minus-harmonics, #add-harmonics {
-	/*height: 35px;*/
 	width: 42px;
 	line-height: 35px;
 	display: inline-block;

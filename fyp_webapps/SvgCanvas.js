@@ -27,8 +27,9 @@ function SvgCanvas(canvasObj) {
 		that.deselectAllPaths();
 
 		if (evt.which == gLeftMouseButton) {
-			gSvgPathContextMenu.hideContextMenu();
-			gSvgHarmonicContextMenu.hideHarmonicContextMenu();
+			// gSvgPathContextMenu.hideContextMenu();
+			// gSvgHarmonicContextMenu.hideHarmonicContextMenu();
+			gContextMenu.hideContextMenu();
 
 			if (gCurrTool == "pencilTool") {
 				drawNewPath(evt.offsetX, evt.offsetY);
@@ -129,7 +130,6 @@ function SvgCanvas(canvasObj) {
 
 	// TODO: dragging then zoom bug
 	
-	// TODO: change scale values again after uploading new sound file 
 	function drawTimeTicks(soundLenInSecs) {
 
 		//--- calculate spacing between ticks relative to size of canvas
@@ -385,7 +385,6 @@ function SvgCanvas(canvasObj) {
 		//TODO: update gradient values, or find a better way to clone the SVG path
 
 		//--- insert group onto canvas
-		newSvgPathObj.offsetPosition();
 		newSvgPathObj.updateGuideBox();
 		canvasObj[0].children[1].appendChild(newSvgPathObj.getGroupedSvgObj());
 
