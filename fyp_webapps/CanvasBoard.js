@@ -4,6 +4,7 @@
  * Created by joanne on 17/12/15.
  */
 
+var gSvgCreator = new SvgCreator();
 var gDragNDropFileLoader = new DragNDropFileLoader($("#sound-space"), onFileDecode);
 var gSvgCanvas = new SvgCanvas($("#svg-canvas"));
 var gSoundVisualiser = new SoundVisualiser($("#waveform-canvas"), $("#spsi-waveform-canvas"), $("#spectrogram-canvas"), $('#hidden-spectrogram-canvas'), 513, 150, 1050);	// TODO: values are dummy values
