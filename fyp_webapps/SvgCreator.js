@@ -72,7 +72,7 @@ function SvgCreator() {
 
 	this.createSvgText = function(text, x, y, color, fontSize) {
 		var svgText = document.createElementNS(svgLinkNs, 'text');
-		svgText.setAttribute('color', color);
+		svgText.setAttribute('fill', color);
 		svgText.setAttribute('font-size', fontSize);
 		svgText.setAttribute('text-anchor', "middle");
 		svgText.setAttribute('x', x);
