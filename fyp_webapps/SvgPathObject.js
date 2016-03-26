@@ -143,7 +143,7 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr) {
 		strokeOpacity = newStrokeOpacity;
 		pathSvgObj.setAttribute('stroke-opacity', strokeOpacity);
 		strokeGradient.setOpacity(strokeOpacity);
-	};
+	}
 	
 	function updateStrokeFillType(newIsGradient) {
 		isGradient = newIsGradient;
@@ -177,6 +177,7 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr) {
 		maxX = (maxX > x) ? maxX : x;
 		minY = (minY < y) ? minY : y;
 		maxY = (maxY > y) ? maxY : y;
+	};
 
 	this.offsetPosition = function(newTransformMatrix) {
 		transformMatrix = newTransformMatrix;
@@ -220,7 +221,7 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr) {
 			default:
 				console.log("Error: unable to determine stroke property");
 		}
-	}
+	};
 
 	this.isSelected = function() {
 		return selected;
