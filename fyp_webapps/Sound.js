@@ -50,7 +50,7 @@ function Sound (audioCtx, soundData, onendedCallbackFunction) {
 			}
 		}
 	}
-	
+
 	function loadBufferSrc(relativePlayStartTimeInSecs) {
 		bufferSrc = audioCtx.createBufferSource();
 		bufferSrc.buffer = soundData;

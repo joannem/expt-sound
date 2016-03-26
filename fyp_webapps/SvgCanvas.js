@@ -12,24 +12,22 @@ function SvgCanvas(canvasObj) {
 
 	var svgPathObjs = [];
 	var svgHarmonicObjs = [];
-	var noOfSvgPathObjs = 0;
-	var noOfSvgHarmonicObjs = 0;
-
+	
 	var zoomVal = 1.0;
 	var zoomDx = 0; var zoomDy = 0;
 	var spectTransformMatrix = [1, 0, 0, 1, 0, 0];
-	var freqTicksTransformMatrix = [1, 0, 0, 1, 0, 0];
-	var timeTicksTransformMatrix = [1, 0, 0, 1, 0, 0];
+
+	var svgLinkNs = "http://www.w3.org/2000/svg";
 
 	drawFreqTicks();
-	drawTimeTicks();
+	drawTimeTicks(5 * 60);	// default, 5 mins
 	
-	$("#sound-canvas").mousedown(function(evt) {
+	$("#canvas-space").mousedown(function(evt) {
 		evt.stopPropagation();
 		that.deselectAllPaths();
 
 		if (evt.which == gLeftMouseButton) {
-			gSvgPathContextMenu.hideContextMenu();
+			gContextMenu.hideContextMenu();
 
 			if (gCurrTool == "pencilTool") {
 				drawNewPath(evt.offsetX, evt.offsetY);
@@ -41,7 +39,7 @@ function SvgCanvas(canvasObj) {
 		}
 	});
 
-	$("#sound-canvas").bind('mousewheel', function(evt) {
+	$("#canvas-space").bind('mousewheel', function(evt) {
 		evt.stopPropagation();
 
 		zoomSpectrograms(evt.originalEvent.wheelDelta, evt.offsetX, evt.offsetY);
@@ -51,96 +49,180 @@ function SvgCanvas(canvasObj) {
 
 	//----- private methods called during initialisation -----//
 	
-	// TODO: change scale values 
-	// TODO: change scale values again after uploading new sound file 
-
 	function drawFreqTicks() {
-		var newPath = null;
-		var pathStr = "";
 
-		var newText = null;
+		//--- calculate spacing between ticks relative to size of canvas
+		
+		//--- min tick spacing: 1.25px; max freq fixed at 22100Hz
+		var pxPerHz = (canvasObj.height() / 22100.0);
+		var minHzPerTick = 1.25 / pxPerHz;
+		
+		var hzPerTick = 10;	// if each tick is min 2.5px
 
-		for (var y = 0;  y <= canvasObj.height(); y += 10) {
-			newPath = document.createElementNS("http://www.w3.org/2000/svg", 'path');
-			newPath.setAttribute('stroke', "red");
-			newPath.setAttribute('vector-effect', "non-scaling-stroke");
-			
-			$("#freq-ticks")[0].appendChild(newPath);
-			
-			if (y%50 == 0) {
-				newPath.setAttribute('d', "M 12," + y + " 36," + y);
-				newPath.setAttribute('stroke-width', "2px");
+		if (minHzPerTick <= 10) {
+			hzPerTick = 10;
+		} else if (minHzPerTick <= 20) {
+			hzPerTick = 20;
+		} else if (minHzPerTick <= 50) {
+			hzPerTick = 50;
+		} else if (minHzPerTick <= 100) {
+			hzPerTick = 100;
+		} else if (minHzPerTick <= 200) {
+			hzPerTick = 200;
+		} else {
+			console.log("Not enough screen resolution");
+			return;
+		}
+
+		var pxPerTick = pxPerHz * hzPerTick;
+
+		
+		//--- draw the ticks
+		
+		var tickNo = 0;
+		for (var y = 0; y <= canvasObj.height(); y += pxPerTick) {
+
+			if (tickNo % 5 == 0) {
+				$("#freq-ticks-1x")[0].appendChild(makeNewFreqTick("white", 0.5, y));
+
+				if (tickNo % 25 == 0) {
+					$("#freq-ticks-1x")[0].appendChild(
+						makeNewFreqTickText("red", 14, y, (tickNo * hzPerTick)));
+				} else {
+					$("#freq-ticks-5x")[0].appendChild(
+						makeNewFreqTickText("red", 4, y, (tickNo * hzPerTick)%1000));
+				}
 				
-				newText = document.createElementNS("http://www.w3.org/2000/svg", 'text');
-				newText.setAttribute('font-size', 14);
-				newText.setAttribute('fill', "red");
-				newText.setAttribute('text-anchor', "middle");
-				newText.setAttribute('x', 24);
-				newText.setAttribute('y', y - 2);
-				newText.innerHTML = (canvasObj.height() - y) * 5;
-				$("#freq-ticks")[0].appendChild(newText);
 			} else {
-				newPath.setAttribute('d', "M 18," + y + " 30," + y);
-				newPath.setAttribute('stroke-width', "1px");
-			}		
+				$("#freq-ticks-5x")[0].appendChild(makeNewFreqTick("white", 0.2, y));
+
+			}
+
+			tickNo++;
 		}
 	}
 
-	function drawTimeTicks() {
-		var newPath = null;
-		var pathStr = "";
+	function makeNewFreqTick(color, width, y) {
+		var newLine = document.createElementNS(svgLinkNs, 'line');
+		newLine.setAttribute('stroke', color);
+		newLine.setAttribute('stroke-width', width + "px");
+		newLine.setAttribute('x1', 18);
+		newLine.setAttribute('y1', canvasObj.height() - y);
+		newLine.setAttribute('x2', 30);
+		newLine.setAttribute('y2', canvasObj.height() - y);
 
-		var newText = null;
+		return newLine;
+	}
+
+	function makeNewFreqTickText(color, fontSize, y, value) {
+		var newText = document.createElementNS(svgLinkNs, 'text');
+		newText.setAttribute('fill', color);
+		newText.setAttribute('font-size', fontSize);
+		newText.setAttribute('text-anchor', "middle");
+		newText.setAttribute('x', 24);
+		newText.setAttribute('y', canvasObj.height() - y);
+		newText.innerHTML = value;
+
+		return newText;
+	}
+
+	// TODO: dragging then zoom bug
+	
+	function drawTimeTicks(soundLenInSecs) {
+
+		//--- calculate spacing between ticks relative to size of canvas
+		
+		//--- min tick spacing: 2.5px; max freq fixed at 22100Hz
+		var pxPerSec = (canvasObj.width() / soundLenInSecs);
+		var minSecPerTick = 2.5 / pxPerSec;
+		
+		var secPerTick = 10;	// if each tick is min 2.5px
+
+		if (minSecPerTick <= 1) {
+			secPerTick = 1;
+		} else if (minSecPerTick <= 10) {
+			secPerTick = 10;
+		} else if (minSecPerTick <= 15) {
+			secPerTick = 15;
+		} else if (minSecPerTick <= 30) {
+			secPerTick = 30;
+		} else if (minSecPerTick <= 60) {
+			secPerTick = 60;
+		} else if (minSecPerTick <= 300) {
+			secPerTick = 300;
+		} else {
+			console.log("Not enough screen resolution");
+			return;
+		}
+
+		var pxPerTick = pxPerSec * secPerTick;
+
+		//--- draw the ticks
+		
 		var noOfSecs = 0;
+		for (var x = 0;  x <= canvasObj.width(); x += pxPerTick) {
 
-		for (var x = 0;  x <= canvasObj.width(); x += 10) {
-			newPath = document.createElementNS("http://www.w3.org/2000/svg", 'path');
-			newPath.setAttribute('stroke', "black");
-			newPath.setAttribute('vector-effect', "non-scaling-stroke");
-			newPath.setAttribute('opacity', "0.5");
-			$("#time-ticks")[0].appendChild(newPath);
-			
-			if (x%120 == 0) {
-				newPath.setAttribute('d', "M " + x + ", 0 " + x + ",11");
-				newPath.setAttribute('stroke-width', "4px");
-
-				newText = document.createElementNS("http://www.w3.org/2000/svg", 'text');
-				newText.setAttribute('font-size', 14);
-				newText.setAttribute('text-anchor', "middle");
-				newText.setAttribute('x', x);
-				newText.setAttribute('y', 25);
-				noOfSecs = x / 2;
-
-				newText.innerHTML = ("0" + parseInt(noOfSecs/60)).slice(-2) + ":" + ("0" + noOfSecs%60).slice(-2);
-				$("#time-ticks")[0].appendChild(newText);
+			if (noOfSecs%60 == 0) {
+				$("#time-ticks-1x")[0].appendChild(makeNewTimeTick(x, 15, 1));
+				$("#time-ticks-1x")[0].appendChild(makeNewTimeTickText(12, x, noOfSecs));
 			} else {
-				if (x%60 == 0) {
-					newPath.setAttribute('d', "M " + x + ", 0 " + x + ",11");
-
-					newText = document.createElementNS("http://www.w3.org/2000/svg", 'text');
-					newText.setAttribute('font-size', 14);
-					newText.setAttribute('text-anchor', "middle");
-					newText.setAttribute('x', x);
-					newText.setAttribute('y', 25);
-					noOfSecs = x / 2;
-					
-					newText.innerHTML = ("0" + parseInt(noOfSecs/60)).slice(-2) + ":" + ("0" + noOfSecs%60).slice(-2);
-					$("#time-ticks")[0].appendChild(newText);
+				if (noOfSecs%15 == 0) {
+					$("#time-ticks-1x")[0].appendChild(makeNewTimeTick(x, 10, 1));
+					$("#time-ticks-1x")[0].appendChild(makeNewTimeTickText(12, x, noOfSecs));
 				} else {
-					newPath.setAttribute('d', "M " + x + ", 0 " + x + ",7");
+					if (noOfSecs%5 == 0) {
+						$("#time-ticks-1x")[0].appendChild(makeNewTimeTick(x, 10, 1));
+						$("#time-ticks-5x")[0].appendChild(makeNewTimeTickSecText(7, x, noOfSecs));
+					} else {
+						$("#time-ticks-1x")[0].appendChild(makeNewTimeTick(x, 7, 1));
+					}
 				}
-				newPath.setAttribute('stroke-width', "2px");
 			}
 
-			
+			noOfSecs += secPerTick;
 		}
+	}
+
+	function makeNewTimeTick(x, y, strokeWidth) {
+		var newLine = document.createElementNS(svgLinkNs, 'line');
+		newLine.setAttribute('stroke', "black");
+		newLine.setAttribute('opacity', "0.5");
+		newLine.setAttribute('x1', x);
+		newLine.setAttribute('y1', 0);
+		newLine.setAttribute('x2', x);
+		newLine.setAttribute('y2', y);
+		newLine.setAttribute('stroke-width', strokeWidth + "px");
+
+		return newLine;
+	}
+
+	function makeNewTimeTickText(fontSize, x, noOfSecs) {
+		var newText = document.createElementNS(svgLinkNs, 'text');
+		newText.setAttribute('font-size', fontSize);
+		newText.setAttribute('text-anchor', "middle");
+		newText.setAttribute('x', x);
+		newText.setAttribute('y', 20);
+		newText.innerHTML = ("0" + parseInt(noOfSecs/60)).slice(-2) + ":" + ("0" + noOfSecs%60).slice(-2);
+
+		return newText;
+	}
+
+	function makeNewTimeTickSecText(fontSize, x, noOfSecs) {
+		var newText = document.createElementNS(svgLinkNs, 'text');
+		newText.setAttribute('font-size', fontSize);
+		newText.setAttribute('text-anchor', "middle");
+		newText.setAttribute('x', x);
+		newText.setAttribute('y', 15);
+		newText.innerHTML = ("0" + noOfSecs%60).slice(-2);
+
+		return newText;
 	}
 
 
 	//----- private methods called after initialisation -----//
 
 	function drawNewPath(x, y) {
-		var newSvgPathObj = new SvgPathObject(noOfSvgPathObjs,
+		var newSvgPathObj = new SvgPathObject(gNoOfSvgPathObjs,
 			x, y, x, y, ("M " + x + "," + y));
 
 		$("#sound-canvas").mousemove(function(evt) {
@@ -159,7 +241,7 @@ function SvgCanvas(canvasObj) {
 			newSvgPathObj.updateGuideBox();
 
 			//--- update list of objects in SvgCanvas
-			noOfSvgPathObjs++;
+			gNoOfSvgPathObjs++;
 			svgPathObjs.push(newSvgPathObj);
 
 			$(this).off('mouseup');
@@ -167,7 +249,7 @@ function SvgCanvas(canvasObj) {
 	}
 
 	function drawNewHarmonic(x, y) {
-		var newSvgHarmonicObj = new SvgHarmonic(noOfSvgHarmonicObjs, noOfSvgPathObjs, 
+		var newSvgHarmonicObj = new SvgHarmonic(gNoOfSvgHarmonicObjs, gNoOfSvgPathObjs, 
 			x, y, x, y, "3");
 		
 		$("#sound-canvas").mousemove(function(evt) {
@@ -186,8 +268,8 @@ function SvgCanvas(canvasObj) {
 			newSvgHarmonicObj.updateGuideBox();
 
 			//--- update list of objects in SvgCanvas
-			noOfSvgPathObjs += 3;
-			noOfSvgHarmonicObjs++;
+			gNoOfSvgPathObjs += 3;
+			gNoOfSvgHarmonicObjs++;
 			svgHarmonicObjs.push(newSvgHarmonicObj);
 
 			$(this).off('mouseup');
@@ -201,16 +283,11 @@ function SvgCanvas(canvasObj) {
 			spectTransformMatrix[4] = +(spectTransformMatrix[4] + (evt.clientX - currX)).toFixed(1);
 			spectTransformMatrix[5] = +(spectTransformMatrix[5] + (evt.clientY - currY)).toFixed(1);
 
-			timeTicksTransformMatrix[4] += evt.clientX - currX;
-			freqTicksTransformMatrix[5] += evt.clientY - currY;
-
-			$("#svg-canvas").css({transform: "matrix(" + spectTransformMatrix.join(',') + ")"});
-			$("#svg-freq-scale").css({transform: "matrix(" + freqTicksTransformMatrix.join(',') + ")"});
-			$("#svg-time-scale").css({transform: "matrix(" + timeTicksTransformMatrix.join(',') + ")"});
-			$("#spectrogram-canvas").css({transform: "matrix(" + spectTransformMatrix.join(',') + ")"});
+			$("#sound-canvas").css({transform: "matrix(" + spectTransformMatrix.join(',') + ")"});
 
 			currX = evt.clientX;
 			currY = evt.clientY;
+
 		}).mouseup(function() {
 			event.stopPropagation();
 			$(this).off('mousemove');
@@ -222,15 +299,28 @@ function SvgCanvas(canvasObj) {
 		var prevZoom = zoomVal;
 
 		if(mouseWheelDelta < 0) {
+			
 			//--- scroll down
 			zoomVal = +(zoomVal - 0.1).toFixed(1);
+			if (zoomVal == 4.9) {
+				$("#freq-ticks-5x").hide();
+				$("#time-ticks-5x").hide();
+			}
+
 		}else {
+			
 			//--- scroll up
 			zoomVal = +(zoomVal + 0.1).toFixed(1);
+			if (zoomVal == 5) {
+				$("#freq-ticks-5x").show();
+				$("#time-ticks-5x").show();
+			}
+
 		}
 
 
 		if (zoomVal > 0) {
+
 			//--- actual transforming for zooming
 			zoomDx = (1 - zoomVal/prevZoom) * (offsetX - spectTransformMatrix[4]);
 			zoomDy = (1 - zoomVal/prevZoom) * (offsetY - spectTransformMatrix[5]);
@@ -240,19 +330,8 @@ function SvgCanvas(canvasObj) {
 
 			spectTransformMatrix[4] = +(zoomDx + spectTransformMatrix[4]).toFixed(1);
 			spectTransformMatrix[5] = +(zoomDy + spectTransformMatrix[5]).toFixed(1);
-
-			timeTicksTransformMatrix[0] = zoomVal;
-			freqTicksTransformMatrix[3] = zoomVal;
-
-			timeTicksTransformMatrix[4] = +(zoomDx + timeTicksTransformMatrix[4]).toFixed(1);
-			freqTicksTransformMatrix[5] = +(zoomDy + freqTicksTransformMatrix[5]).toFixed(1);
-
-			// TODO: if zoom > 5... reset font and scales
 			
-			$("#svg-canvas").css({transform: "matrix(" + spectTransformMatrix.join(',') + ")"});
-			$("#svg-freq-scale").css({transform: "matrix(" + freqTicksTransformMatrix.join(',') + ")"});
-			$("#svg-time-scale").css({transform: "matrix(" + timeTicksTransformMatrix.join(',') + ")"});
-			$("#spectrogram-canvas").css({transform: "matrix(" + spectTransformMatrix.join(',') + ")"});
+			$("#sound-canvas").css({transform: "matrix(" + spectTransformMatrix.join(',') + ")"});
 
 		} else {
 			zoomVal = prevZoom;
@@ -265,14 +344,8 @@ function SvgCanvas(canvasObj) {
 	this.resetZoom = function() {
 		zoomVal = 1.0;
 		spectTransformMatrix = [1, 0, 0, 1, 0, 0];
-		freqTicksTransformMatrix = [1, 0, 0, 1, 0, 0];
-		timeTicksTransformMatrix = [1, 0, 0, 1, 0, 0];
-
-		$("#canvas-board").css({transform: "matrix(" + spectTransformMatrix.join(',') + ")"});
-		$("#svg-canvas").css({transform: "matrix(" + spectTransformMatrix.join(',') + ")"});
-		$("#svg-freq-scale").css({transform: "matrix(" + freqTicksTransformMatrix.join(',') + ")"});
-		$("#svg-time-scale").css({transform: "matrix(" + timeTicksTransformMatrix.join(',') + ")"});
-		$("#spectrogram-canvas").css({transform: "matrix(" + spectTransformMatrix.join(',') + ")"});
+		
+		$("#sound-canvas").css({transform: "matrix(" + spectTransformMatrix.join(',') + ")"});
 	};
 
 	/**
@@ -303,19 +376,18 @@ function SvgCanvas(canvasObj) {
 		var strokeProperties = svgPathObjs[id].getStrokeProperties();
 
 		//--- create new SVG path object based off properties from the original path
-		var newSvgPathObj = new SvgPathObject(noOfSvgPathObjs,
+		var newSvgPathObj = new SvgPathObject(gNoOfSvgPathObjs,
 			guideBoxCoordinates.minX, guideBoxCoordinates.minY,
 			guideBoxCoordinates.maxX, guideBoxCoordinates.maxY,
 			pathStr);
 		//TODO: update gradient values, or find a better way to clone the SVG path
 
 		//--- insert group onto canvas
-		newSvgPathObj.offsetPosition();
 		newSvgPathObj.updateGuideBox();
 		canvasObj[0].children[1].appendChild(newSvgPathObj.getGroupedSvgObj());
 
 		//--- update list of objects in SvgCanvas
-		noOfSvgPathObjs++;
+		gNoOfSvgPathObjs++;
 		svgPathObjs.push(newSvgPathObj);
 	};
 

@@ -26,29 +26,33 @@
 
 				<!-- spectrogram -->
 
-				<div id="sound-canvas">
-					<svg
-						id="svg-canvas"
-						version="1.1"
-						width="1050" height="700"
-					>
-						<pattern id="svg-pattern" patternUnits="userSpaceOnUse" width="1050" height="700">
-							<image id="pattern-img" x="0" y="0" width="100%" height="100%" />
-						</pattern>
-						<g></g>
-					</svg>
+				<div id="canvas-space">
+					<div id="sound-canvas">
+						<svg
+							id="svg-canvas"
+							version="1.1"
+							width="1050" height="513"
+						>
+							<pattern id="svg-pattern" patternUnits="userSpaceOnUse" width="1050" height="513">
+								<image id="pattern-img" x="0" y="0" width="100%" height="100%"></image>
+							</pattern>
+							<g></g>
+						</svg>
 
-					<svg id="svg-freq-scale">
-						<g id="freq-ticks"></g>
-					</svg>
+						<svg id="svg-freq-scale">
+							<g id="freq-ticks-1x"></g>
+							<g id="freq-ticks-5x"></g>
+						</svg>
 
-					<svg id="svg-time-scale">
-						<rect x="0" y="0" width="100%" height="100%" fill="#FFFFFF" fill-opacity="0.5"></rect>
-						<g id="time-ticks"></g>
-					</svg>
+						<svg id="svg-time-scale">
+							<rect x="0" y="0" width="100%" height="100%" fill="#FFFFFF" fill-opacity="0.5"></rect>
+							<g id="time-ticks-1x"></g>
+							<g id="time-ticks-5x"></g>
+						</svg>
 
-					<canvas id="spectrogram-canvas"></canvas>
-					<canvas id="hidden-spectrogram-canvas"></canvas>
+						<canvas id="spectrogram-canvas"></canvas>
+						<canvas id="hidden-spectrogram-canvas"></canvas>
+					</div>
 				</div>
 
 
@@ -89,7 +93,6 @@
 				
 				<button id="svg-display-button">Hide canvas</button> <br><br>
 				<button id="raster-display-button">Hide rasterised canvas</button>				
-				
 				<hr>
 
 				<button id="reset-zoom-button">Reset Zoom</button>
@@ -110,9 +113,11 @@
 		</tr>
 	</table>
 	
-
-	<div id="svg-path-context-menu">
+	<div class="context-menu" id="svg-path-context-menu">
 		<ul id="path-context-menu">
+			<li>
+				<button id="back-harmonic-button"> < Back</button>
+			</li>
 			<li>
 				<button id="copy-button"><img id="copy-icon" src="img/copy-icon.ico">Copy</button>
 			</li>
@@ -177,25 +182,23 @@
 				</div>
 			</li>
 		</ul>
+	</div>
 
+	<div class="context-menu" id="svg-harmonic-context-menu">
 		<ul id="harmonic-context-menu">
 			<li id="harmonic-levels-container">
-				<svg id="harmonic-levels" width="100%" height="100%">
+				<svg id="harmonic-levels-svg" width="80%" height="100%">
 					<rect x="0" y="0" width="100%" height="100%" fill="#F2F2F2"></rect>
-
-					<g id="harmonic-levels">
-						<rect class="level-meter" id="level-value-2" x="0" y="0" width="25%" height="33.33%" fill="#4D4D4D"></rect>
-						<rect class="level-meter" id="level-value-1" x="0" y="33.33%" width="50%" height="33.33%" fill="#4D4D4D"></rect>
-						<rect class="level-meter" id="level-value-0" x="0" y="66.66%" width="100%" height="33.33%" fill="#4D4D4D"></rect>
+					<g id="harmonic-levels"></g>
+					<g id="harmonic-dividers"></g>
+				</svg>
+				<svg id="harmonic-paths-buttons-svg" width="20%" height="100%">
+					<g id="harmonic-paths-buttons">
 					</g>
-
-					<g id="harmonic-dividers">
-						<line x1="0" y1="33.33%" x2="100%" y2="33.33%" stroke="#737373" stroke-width="1"></line>
-						<line x1="0" y1="66.66%" x2="100%" y2="66.66%" stroke="#737373" stroke-width="1"></line>
-					</g>
-
+					<g id="harmonic-paths-buttons-dividers"></g>
 				</svg>
 			</li>
+			
 			<!-- no of harmonics -->
 			<li><table><tbody><tr>
 				<td><span id="minus-harmonics">-</span></td>
@@ -203,12 +206,6 @@
 			</tr></tbody></table></li>
 		</ul>
 
-		<div id="svg-context-menu-tabs">
-			<table><tbody><tr>
-				<td class="selected" id="tab-path">path</td>
-				<td id="tab-harmonic">harmonic</td>
-			</tr></tbody></table>
-		</div>
 	</div>
 
 
@@ -219,7 +216,7 @@
 <script type="text/javascript" src="fft.js"></script>
 <script type="text/javascript" src="SvgCanvas.js"></script>
 <script type="text/javascript" src="StrokeGradient.js"></script>
-<script type="text/javascript" src="SvgPathContextMenu.js"></script>
+<script type="text/javascript" src="ContextMenu.js"></script>
 <script type="text/javascript" src="SvgPathObject.js"></script>
 <script type="text/javascript" src="SvgHarmonic.js"></script>
 <script type="text/javascript" src="DragNDropFileLoader.js"></script>

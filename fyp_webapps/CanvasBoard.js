@@ -7,7 +7,8 @@
 var gDragNDropFileLoader = new DragNDropFileLoader($("#sound-space"), onFileDecode);
 var gSvgCanvas = new SvgCanvas($("#svg-canvas"));
 var gSoundVisualiser = new SoundVisualiser($("#waveform-canvas"), $("#spsi-waveform-canvas"), $("#spectrogram-canvas"), $('#hidden-spectrogram-canvas'), 513, 150, 1050);	// TODO: values are dummy values
-var gSvgPathContextMenu = new SvgPathContextMenu();
+
+var gContextMenu = new ContextMenu();
 
 var gWaveSpect = new WaveSpect(10, 0.5);
 var gAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); 
@@ -18,6 +19,9 @@ var gOffset = 0;	//--- offset value of sound and slider in microsecs
 var gCurrTool = "pencilTool";
 var gSelectedSvgPathId = 0;
 var gSelectedSvgHarmonicId = 0;
+
+var gNoOfSvgPathObjs = 0;
+var gNoOfSvgHarmonicObjs = 0;
 
 var gLeftMouseButton = 1;
 
@@ -64,25 +68,6 @@ $("#delete-button").click(function() {
 $("#copy-button").click(function() {
 	event.stopPropagation();
 	gSvgCanvas.duplicateSvgPath(gSelectedSvgPathId);
-});
-
-
-/** context menu **/
-
-$("#tab-path").click(function() {
-	event.stopPropagation();
-	$(this).addClass("selected");
-	$("#tab-harmonic").removeClass("selected");
-	$("#harmonic-context-menu").hide();
-	$("#path-context-menu").show();
-});
-
-$("#tab-harmonic").click(function() {
-	event.stopPropagation();
-	$(this).addClass("selected");
-	$("#tab-path").removeClass("selected");
-	$("#path-context-menu").hide();
-	$("#harmonic-context-menu").show();
 });
 
 /**  playback buttons **/
@@ -184,7 +169,6 @@ $('#recon-sound-button').click(function() {
 		
 		//--- perform SPSI to reconstruct PCM data from spectrogram
 		var reconPcm = gWaveSpect.spectToWave(extractedSpectrogram);
-		// console.log(reconPcm);
 			
 		//--- replace gReconSound with new sound
 		var reconSoundBuffer = gAudioCtx.createBuffer(1, reconPcm.length, 44100);
@@ -207,7 +191,8 @@ function onFileDecode(soundData) {
 	gSound = new Sound(gAudioCtx, soundData , onSoundStop);
 
 	var monoSoundData = gSound.getMonoSoundData();
-
+	// TODO: change scale values again after uploading new sound file 
+	// gSvgCanvas.drawTimeTicks(soundLenInSecs)
 	gSoundVisualiser.drawWaveform(monoSoundData.monoPcmData, monoSoundData.pcmDataLen, monoSoundData.maxAmp);
 	gSoundVisualiser.drawSpectrogram(monoSoundData.monoPcmData, monoSoundData.pcmDataLen);
 	
@@ -216,5 +201,6 @@ function onFileDecode(soundData) {
 
 /** call-back function once sound is stopped **/
 function onSoundStop() {
+	$('#spsi-play-pause-btn').text('Play'); 
 	console.log("[test] sound stopped");
 }
