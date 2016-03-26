@@ -15,8 +15,6 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr) {
 	var guideBoxSvgObj;
 	var groupedSvgObj;
 
-	var svgns = "http://www.w3.org/2000/svg";
-
 	//--- properties of stroke
 	var strokeOpacity = 1.0;
 	var strokeWidth = 3;
@@ -73,7 +71,7 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr) {
 		evt.preventDefault();
 
 		if (gCurrTool == "selectTool" && selected) {
-			that.displayPathProperties(evt.pageY, evt.pageX);
+			gContextMenu.showContextMenus(evt.pageY, evt.pageX, false, that);
 		}
 
 		$(this).off('contextmenu');
@@ -84,29 +82,16 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr) {
 	//--- Called during initialisation only
 
 	function createSvgPathObject(strokeWidth) {
-		pathSvgObj = document.createElementNS(svgns, 'path');
-		pathSvgObj.setAttribute('d', pathStr);
-		pathSvgObj.setAttribute('stroke', "url(#" + strokeGradient.getGradientId() + ")");
-		pathSvgObj.setAttribute('stroke-width', strokeWidth + "px");
-		pathSvgObj.setAttribute('stroke-linecap', "round");
-		pathSvgObj.setAttribute('stroke-linejoin', "round");
-		pathSvgObj.setAttribute('fill', "transparent");
+		pathSvgObj = gSvgCreator.createSvgPath(pathStr, "url(#" + strokeGradient.getGradientId() + ")", strokeWidth);
 	}
 
 	function createGuideBox() {
-		guideBoxSvgObj = document.createElementNS(svgns, 'rect');
-		guideBoxSvgObj.setAttribute('x', minX - 1);
-		guideBoxSvgObj.setAttribute('y', minY - 1);
-		guideBoxSvgObj.setAttribute('width', (maxX - minX) + 2);
-		guideBoxSvgObj.setAttribute('height', (maxY - minY) + 2);
-		guideBoxSvgObj.setAttribute('stroke', "green");
-		guideBoxSvgObj.setAttribute('fill', "transparent");
-		guideBoxSvgObj.setAttribute('stroke-width', 1);
+		guideBoxSvgObj = gSvgCreator.createTransparentSvgRect(minX - 1, minY - 1, (maxX - minX) + 2, (maxY - minY) + 2, "green", 1);
 		guideBoxSvgObj.setAttribute('stroke-opacity', 0.5);
 	}
 
 	function appendObjectsIntoGroup() {
-		groupedSvgObj = document.createElementNS(svgns, 'g');
+		groupedSvgObj = gSvgCreator.createSvgGroup();
 		groupedSvgObj.appendChild(strokeGradient.getGradientDefObj());
 		groupedSvgObj.appendChild(pathSvgObj);
 		groupedSvgObj.appendChild(guideBoxSvgObj);
@@ -228,10 +213,10 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr) {
 	};
 
 	this.getGuideboxCoordinates = function() {
-	  return  {
-		  minX: minX, minY: minY,
-		  maxX: maxX, maxY: maxY
-	  };
+		return {
+			minX: minX, minY: minY,
+			maxX: maxX, maxY: maxY
+		};
 	};
 
 	this.getPathStr = function() {

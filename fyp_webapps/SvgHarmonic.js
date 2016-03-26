@@ -85,19 +85,12 @@ function SvgHarmonic (id, pathId, minX, minY, maxX, maxY, strokeWidth) {
 	}
 
 	function createGuideBox() {
-		harmonicGuideBoxSvgObj = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
-		harmonicGuideBoxSvgObj.setAttribute('x', minX - 1);
-		harmonicGuideBoxSvgObj.setAttribute('y', minY - 1);
-		harmonicGuideBoxSvgObj.setAttribute('width', (maxX - minX) + 2);
-		harmonicGuideBoxSvgObj.setAttribute('height', (maxY - minY) + 2);
-		harmonicGuideBoxSvgObj.setAttribute('stroke', "#00FFFF");
-		harmonicGuideBoxSvgObj.setAttribute('fill', "transparent");
-		harmonicGuideBoxSvgObj.setAttribute('stroke-width', 1);
+		harmonicGuideBoxSvgObj = gSvgCreator.createTransparentSvgRect(minX-1, minY-1, (maxX - minX) + 2, (maxY - minY) + 2, "#00FFFF", 1);
 		harmonicGuideBoxSvgObj.setAttribute('stroke-opacity', 0.5);
 	}
 
 	function appendObjectsIntoGroup() {
-		groupedSvgHarmonicObj = document.createElementNS("http://www.w3.org/2000/svg", 'g');
+		groupedSvgHarmonicObj = gSvgCreator.createSvgGroup();
 		groupedSvgHarmonicObj.appendChild(svgPathObjs[0].getGroupedSvgObj());
 		groupedSvgHarmonicObj.appendChild(svgPathObjs[1].getGroupedSvgObj());
 		groupedSvgHarmonicObj.appendChild(svgPathObjs[2].getGroupedSvgObj());
@@ -153,6 +146,10 @@ function SvgHarmonic (id, pathId, minX, minY, maxX, maxY, strokeWidth) {
 	this.updateGuideBox = function() {
 		var thickness = strokeWidth >> 1;
 		var coor = svgPathObjs[0].getGuideboxCoordinates();
+
+		for (var i = 0; i < svgPathObjs.length; i++) {
+			svgPathObjs[i].updateGuideBox();
+		}
 		
 		harmonicGuideBoxSvgObj.setAttribute('x', coor.minX - thickness);
 		harmonicGuideBoxSvgObj.setAttribute('y', coor.minY - (noOfHarmonics-1)*10 - thickness);
