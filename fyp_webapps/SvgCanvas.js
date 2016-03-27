@@ -12,6 +12,8 @@ function SvgCanvas(canvasObj) {
 
 	var svgPathObjs = [];
 	var svgHarmonicObjs = [];
+	var pxPerHz = 0;
+	var pxPerSec = 0;
 	
 	var zoomVal = 1.0;
 	var zoomDx = 0; var zoomDy = 0;
@@ -52,7 +54,7 @@ function SvgCanvas(canvasObj) {
 		//--- calculate spacing between ticks relative to size of canvas
 		
 		//--- min tick spacing: 1.25px; max freq fixed at 22100Hz
-		var pxPerHz = (canvasObj.height() / 22100.0);
+		pxPerHz = (canvasObj.height() / 22100.0);
 		var minHzPerTick = 1.25 / pxPerHz;
 		
 		var hzPerTick = 10;	// if each tick is min 2.5px
@@ -115,7 +117,7 @@ function SvgCanvas(canvasObj) {
 		//--- calculate spacing between ticks relative to size of canvas
 		
 		//--- min tick spacing: 2.5px; max freq fixed at 22100Hz
-		var pxPerSec = (canvasObj.width() / soundLenInSecs);
+		pxPerSec = (canvasObj.width() / soundLenInSecs);
 		var minSecPerTick = 2.5 / pxPerSec;
 		
 		var secPerTick = 10;	// if each tick is min 2.5px
@@ -380,6 +382,14 @@ function SvgCanvas(canvasObj) {
 		for (var i = 0; i < svgPathObjs.length; i++) {
 			svgPathObjs[i].deselect();
 		}
+	};
+
+	this.getPxPerHz = function() {
+		return pxPerHz;
+	};
+
+	this.getPxPerSec = function() {
+		return pxPerSec;
 	};
 
 	return that;

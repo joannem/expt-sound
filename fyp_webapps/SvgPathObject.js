@@ -87,7 +87,7 @@ function SvgPathObject(id, minX, minY, maxX, maxY, pathStr) {
 
 	function createGuideBox() {
 		guideBoxSvgObj = gSvgCreator.createTransparentSvgRect(minX - 1, minY - 1, (maxX - minX) + 2, (maxY - minY) + 2, "green", 1);
-		guideBoxSvgObj.setAttribute('stroke-opacity', 0.5);
+		guideBoxSvgObj.setAttribute('stroke-opacity', 0);
 	}
 
 	function appendObjectsIntoGroup() {

@@ -222,7 +222,6 @@ function ContextMenu() {
 		listenToPathInspector();
 	}
 
-	// TODO: mouse move a bit off
 	function listenToHarmonicLevelChange() {
 		$(".level-meter").mousedown(function(evt) {
 			evt.stopPropagation();
@@ -295,6 +294,7 @@ function ContextMenu() {
 		noOfHarmonics = svgPaths.length;
 		$("#no-of-harmonics-input").val(noOfHarmonics);
 		updateHarmonicLevelsDisplayed();
+		$("#context-menu-f0").text(harmonicObj.getFundamentalFreq());
 	}
 
 
