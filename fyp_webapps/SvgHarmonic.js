@@ -194,7 +194,7 @@ function SvgHarmonic (id, pathId, minX, minY, maxX, maxY, strokeWidth) {
 	this.addHarmonic = function() {
 		svgPathObjs[noOfHarmonics] = new SvgPathObject(gNoOfSvgPathObjs, minX, minY + 20, maxX, maxY + 20, (svgPathObjs[0].getPathStr()), strokeWidth);
 		groupedSvgHarmonicObj.insertBefore(svgPathObjs[noOfHarmonics].getGroupedSvgObj(), svgPathObjs[noOfHarmonics-1].getGroupedSvgObj().nextSibling);
-		svgPathObjs[noOfHarmonics].offsetPosition([1, 0, 0, 1, 0, -1 * ($("#svg-canvas").height() - minY) * noOfHarmonics]);
+		svgPathObjs[noOfHarmonics].offsetPosition([1, 0, 0, 1, 0, -1 * ($("#svg-canvas").height() - minY - transformMatrix[5]) * noOfHarmonics]);
 		
 		noOfHarmonics++;
 		gNoOfSvgPathObjs++;
