@@ -186,6 +186,7 @@
 
 	<div class="context-menu" id="svg-harmonic-context-menu">
 		<ul id="harmonic-context-menu">
+			<!-- harmonic levels -->
 			<li id="harmonic-levels-container">
 				<svg id="harmonic-levels-svg" width="80%" height="100%">
 					<rect x="0" y="0" width="100%" height="100%" fill="#F2F2F2"></rect>
@@ -198,12 +199,16 @@
 					<g id="harmonic-paths-buttons-dividers"></g>
 				</svg>
 			</li>
-			
+
 			<!-- no of harmonics -->
 			<li><table><tbody><tr>
 				<td><span id="minus-harmonics">-</span></td>
 				<td><input id="no-of-harmonics-input" type="text" value="3"></td><td><span id="add-harmonics">+</span></td>
 			</tr></tbody></table></li>
+			
+			<!-- f0 -->
+			<li>f0: <span id="context-menu-f0">100</span> hz</li>
+
 		</ul>
 
 	</div>
@@ -214,6 +219,7 @@
 <script type="text/javascript" src="jquery-2.2.0.min.js"></script>
 <script type="text/javascript" src="chroma.js"></script>
 <script type="text/javascript" src="fft.js"></script>
+<script type="text/javascript" src="SvgCreator.js"></script>
 <script type="text/javascript" src="SvgCanvas.js"></script>
 <script type="text/javascript" src="StrokeGradient.js"></script>
 <script type="text/javascript" src="ContextMenu.js"></script>

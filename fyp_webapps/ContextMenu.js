@@ -6,7 +6,6 @@ function ContextMenu() {
 	"use strict";
 	var that = (this === window) ? {} : this;
 	
-	var svgns = "http://www.w3.org/2000/svg";
 	var fillMeterWidth = $("#svg-path-context-menu").width()-10;
 	var harmonicLevelWidth = fillMeterWidth * 0.8;
 
@@ -199,41 +198,23 @@ function ContextMenu() {
 	}
 
 	function makeLevelSvgRect(type, fill, harmonicNo, width, height) {
-		var newRect = document.createElementNS(svgns, 'rect');
+		var newRect = gSvgCreator.createSolidSvgRect(0, (noOfHarmonics - 1 - harmonicNo) * height + "%", width + "%", height + "%", fill);
 		newRect.setAttribute('class', "level-meter");
 		newRect.setAttribute('id', "level-" + type + "-" + harmonicNo);
-		newRect.setAttribute('x', 0);
-		newRect.setAttribute('y', (noOfHarmonics - 1 - harmonicNo) * height + "%");
-		newRect.setAttribute('height', height + "%");
-		newRect.setAttribute('width', width + "%");
-		newRect.setAttribute('fill', fill);
-
+		
 		return newRect;
 	}
 
 	function makeLevelButtonSvgRect(harmonicNo, height) {
-		var newRect = document.createElementNS(svgns, 'rect');
+		var newRect = gSvgCreator.createSolidSvgRect(0, (noOfHarmonics - 1 - harmonicNo) * height + "%", "100%", height + "%", "orange");
 		newRect.setAttribute('class', "level-button");
 		newRect.setAttribute('id', "level-button" + "-" + harmonicNo);
-		newRect.setAttribute('x', 0);
-		newRect.setAttribute('y', (noOfHarmonics - 1 - harmonicNo) * height + "%");
-		newRect.setAttribute('height', height + "%");
-		newRect.setAttribute('width', "100%");
-		newRect.setAttribute('fill', "orange");
 
 		return newRect;
 	}
 
 	function makeSvgLine(harmonicNo, height) {
-		var newLine = document.createElementNS(svgns, 'line');
-		newLine.setAttribute('x1', 0);
-		newLine.setAttribute('y1', (noOfHarmonics - 1 - harmonicNo) * height + "%");
-		newLine.setAttribute('x2', "100%");
-		newLine.setAttribute('y2', (noOfHarmonics - 1 - harmonicNo) * height + "%");
-		newLine.setAttribute('stroke', "#737373");
-		newLine.setAttribute('stroke-width', 1);
-
-		return newLine;
+		return gSvgCreator.createHoriSvgLine(0, "100%", (noOfHarmonics - 1 - harmonicNo) * height + "%", "#737373", 1);
 	}
 
 	function resetListeners() {
@@ -241,7 +222,6 @@ function ContextMenu() {
 		listenToPathInspector();
 	}
 
-	// TODO: mouse move a bit off
 	function listenToHarmonicLevelChange() {
 		$(".level-meter").mousedown(function(evt) {
 			evt.stopPropagation();
@@ -314,6 +294,7 @@ function ContextMenu() {
 		noOfHarmonics = svgPaths.length;
 		$("#no-of-harmonics-input").val(noOfHarmonics);
 		updateHarmonicLevelsDisplayed();
+		$("#context-menu-f0").text(harmonicObj.getFundamentalFreq());
 	}
 
 

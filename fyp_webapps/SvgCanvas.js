@@ -12,12 +12,12 @@ function SvgCanvas(canvasObj) {
 
 	var svgPathObjs = [];
 	var svgHarmonicObjs = [];
+	var pxPerHz = 0;
+	var pxPerSec = 0;
 	
 	var zoomVal = 1.0;
 	var zoomDx = 0; var zoomDy = 0;
 	var spectTransformMatrix = [1, 0, 0, 1, 0, 0];
-
-	var svgLinkNs = "http://www.w3.org/2000/svg";
 
 	drawFreqTicks();
 	drawTimeTicks(5 * 60);	// default, 5 mins
@@ -54,7 +54,7 @@ function SvgCanvas(canvasObj) {
 		//--- calculate spacing between ticks relative to size of canvas
 		
 		//--- min tick spacing: 1.25px; max freq fixed at 22100Hz
-		var pxPerHz = (canvasObj.height() / 22100.0);
+		pxPerHz = (canvasObj.height() / 22100.0);
 		var minHzPerTick = 1.25 / pxPerHz;
 		
 		var hzPerTick = 10;	// if each tick is min 2.5px
@@ -103,27 +103,11 @@ function SvgCanvas(canvasObj) {
 	}
 
 	function makeNewFreqTick(color, width, y) {
-		var newLine = document.createElementNS(svgLinkNs, 'line');
-		newLine.setAttribute('stroke', color);
-		newLine.setAttribute('stroke-width', width + "px");
-		newLine.setAttribute('x1', 18);
-		newLine.setAttribute('y1', canvasObj.height() - y);
-		newLine.setAttribute('x2', 30);
-		newLine.setAttribute('y2', canvasObj.height() - y);
-
-		return newLine;
+		return gSvgCreator.createHoriSvgLine(18, 30, canvasObj.height() - y, color, width);
 	}
 
 	function makeNewFreqTickText(color, fontSize, y, value) {
-		var newText = document.createElementNS(svgLinkNs, 'text');
-		newText.setAttribute('fill', color);
-		newText.setAttribute('font-size', fontSize);
-		newText.setAttribute('text-anchor', "middle");
-		newText.setAttribute('x', 24);
-		newText.setAttribute('y', canvasObj.height() - y);
-		newText.innerHTML = value;
-
-		return newText;
+		return gSvgCreator.createSvgText(value, 24, canvasObj.height() - y, color, fontSize);
 	}
 
 	// TODO: dragging then zoom bug
@@ -133,7 +117,7 @@ function SvgCanvas(canvasObj) {
 		//--- calculate spacing between ticks relative to size of canvas
 		
 		//--- min tick spacing: 2.5px; max freq fixed at 22100Hz
-		var pxPerSec = (canvasObj.width() / soundLenInSecs);
+		pxPerSec = (canvasObj.width() / soundLenInSecs);
 		var minSecPerTick = 2.5 / pxPerSec;
 		
 		var secPerTick = 10;	// if each tick is min 2.5px
@@ -184,38 +168,20 @@ function SvgCanvas(canvasObj) {
 	}
 
 	function makeNewTimeTick(x, y, strokeWidth) {
-		var newLine = document.createElementNS(svgLinkNs, 'line');
-		newLine.setAttribute('stroke', "black");
+		var newLine = gSvgCreator.createVertSvgLine(x, 0, y, "black", strokeWidth);
 		newLine.setAttribute('opacity', "0.5");
-		newLine.setAttribute('x1', x);
-		newLine.setAttribute('y1', 0);
-		newLine.setAttribute('x2', x);
-		newLine.setAttribute('y2', y);
-		newLine.setAttribute('stroke-width', strokeWidth + "px");
-
+		
 		return newLine;
 	}
 
 	function makeNewTimeTickText(fontSize, x, noOfSecs) {
-		var newText = document.createElementNS(svgLinkNs, 'text');
-		newText.setAttribute('font-size', fontSize);
-		newText.setAttribute('text-anchor', "middle");
-		newText.setAttribute('x', x);
-		newText.setAttribute('y', 20);
-		newText.innerHTML = ("0" + parseInt(noOfSecs/60)).slice(-2) + ":" + ("0" + noOfSecs%60).slice(-2);
-
-		return newText;
+		var tickVal = ("0" + parseInt(noOfSecs/60)).slice(-2) + ":" + ("0" + noOfSecs%60).slice(-2);
+		return gSvgCreator.createSvgText(tickVal, x, 20, "black", fontSize)
 	}
 
 	function makeNewTimeTickSecText(fontSize, x, noOfSecs) {
-		var newText = document.createElementNS(svgLinkNs, 'text');
-		newText.setAttribute('font-size', fontSize);
-		newText.setAttribute('text-anchor', "middle");
-		newText.setAttribute('x', x);
-		newText.setAttribute('y', 15);
-		newText.innerHTML = ("0" + noOfSecs%60).slice(-2);
-
-		return newText;
+		var tickVal = ("0" + noOfSecs%60).slice(-2);
+		return gSvgCreator.createSvgText(tickVal, x, 15, "black", fontSize);
 	}
 
 
@@ -416,6 +382,14 @@ function SvgCanvas(canvasObj) {
 		for (var i = 0; i < svgPathObjs.length; i++) {
 			svgPathObjs[i].deselect();
 		}
+	};
+
+	this.getPxPerHz = function() {
+		return pxPerHz;
+	};
+
+	this.getPxPerSec = function() {
+		return pxPerSec;
 	};
 
 	return that;
